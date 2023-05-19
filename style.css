@@ -33,23 +33,15 @@ p {
   height: 60px;
   display: flex;
   align-items: center;
-  background-color: #1976d2;
+  background-color: #ff7500;
   color: white;
   font-weight: 600;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
+  justify-content: center;
 }
 
 .toolbar img {
-  margin: 0 16px;
-}
-
-.toolbar #twitter-logo {
-  height: 40px;
-  margin: 0 8px;
-}
-
-.toolbar #youtube-logo {
-  height: 40px;
-  margin: 0 16px;
+  padding-top: 50px;
 }
 
 .toolbar #twitter-logo:hover,
@@ -59,7 +51,7 @@ p {
 
 .content {
   display: flex;
-  margin: 82px auto 32px;
+  margin: 110px auto 32px;
   padding: 0 16px;
   max-width: 960px;
   flex-direction: column;
