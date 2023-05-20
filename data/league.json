@@ -1,0 +1,229 @@
+{
+  "seasons": [
+    {
+      "name": "2023",
+      "teams": [
+        {
+          "name": "bar_le_cocotier",
+          "players": [5, 6, 11, 15, 23, 24, 25, 26, 33, 34, 35]
+        },
+        {
+          "name": "la_bouchée_d'or",
+          "players": [9, 10, 7, 12, 17, 18, 30, 38, 39, 43, 44]
+        },
+        {
+          "name": "buffet_frédéric",
+          "players": [1, 2, 4, 14, 20, 21, 22, 31, 32, 36, 40]
+        },
+        {
+          "name": "centrale_auto_SM",
+          "players": [3, 8, 13, 16, 19, 27, 28, 29, 37, 41, 42]
+        }
+      ],
+      "schedule": [
+        {
+          "date": "2023-05-17",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "buffet_frédéric",
+              "away": "bar_le_cocotier"
+            },
+            {
+              "time": "20h30",
+              "home": "centrale_auto_SM",
+              "away": "la_bouchée_d'or"
+            }
+          ]
+        },
+        {
+          "date": "2023-05-24",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "centrale_auto_SM",
+              "away": "buffet_frédéric"
+            },
+            {
+              "time": "20h30",
+              "home": "bar_le_cocotier",
+              "away": "la_bouchée_d'or"
+            }
+          ]
+        },
+        {
+          "date": "2023-05-31",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "buffet_frédéric",
+              "away": "la_bouchée_d'or"
+            },
+            {
+              "time": "20h30",
+              "home": "centrale_auto_SM",
+              "away": "bar_le_cocotier"
+            }
+          ]
+        },
+        {
+          "date": "2023-06-07",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "la_bouchée_d'or",
+              "away": "centrale_auto_SM"
+            },
+            {
+              "time": "20h30",
+              "home": "bar_le_cocotier",
+              "away": "buffet_frédéric"
+            }
+          ]
+        },
+        {
+          "date": "2023-06-14",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "la_bouchée_d'or",
+              "away": "bar_le_cocotier"
+            },
+            {
+              "time": "20h30",
+              "home": "buffet_frédéric",
+              "away": "centrale_auto_SM"
+            }
+          ]
+        },
+        {
+          "date": "2023-06-21",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "bar_le_cocotier",
+              "away": "centrale_auto_SM"
+            },
+            {
+              "time": "20h30",
+              "home": "la_bouchée_d'or",
+              "away": "buffet_frédéric"
+            }
+          ]
+        },
+        {
+          "date": "2023-06-28",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "buffet_frédéric",
+              "away": "bar_le_cocotier"
+            },
+            {
+              "time": "20h30",
+              "home": "centrale_auto_SM",
+              "away": "la_bouchée_d'or"
+            }
+          ]
+        },
+        {
+          "date": "2023-07-05",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "centrale_auto_SM",
+              "away": "buffet_frédéric"
+            },
+            {
+              "time": "20h30",
+              "home": "bar_le_cocotier",
+              "away": "la_bouchée_d'or"
+            }
+          ]
+        },
+        {
+          "date": "2023-07-12",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "buffet_frédéric",
+              "away": "la_bouchée_d'or"
+            },
+            {
+              "time": "20h30",
+              "home": "centrale_auto_SM",
+              "away": "bar_le_cocotier"
+            }
+          ]
+        },
+        {
+          "date": "2023-07-19",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "la_bouchée_d'or",
+              "away": "centrale_auto_SM"
+            },
+            {
+              "time": "20h30",
+              "home": "bar_le_cocotier",
+              "away": "buffet_frédéric"
+            }
+          ]
+        },
+        {
+          "date": "2023-08-02",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "la_bouchée_d'or",
+              "away": "bar_le_cocotier"
+            },
+            {
+              "time": "20h30",
+              "home": "buffet_frédéric",
+              "away": "centrale_auto_SM"
+            }
+          ]
+        },
+        {
+          "date": "2023-08-09",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "bar_le_cocotier",
+              "away": "centrale_auto_SM"
+            },
+            {
+              "time": "20h30",
+              "home": "la_bouchée_d'or",
+              "away": "buffet_frédéric"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2022",
+      "teams": [
+        {
+          "name": "bar_le_cocotier",
+          "players": []
+        },
+        {
+          "name": "la_bouchée_d'or",
+          "players": []
+        },
+        {
+          "name": "buffet_frédéric",
+          "players": []
+        },
+        {
+          "name": "centrale_auto_SM",
+          "players": []
+        }
+      ],
+      "schedule": []
+    }
+  ]
+}

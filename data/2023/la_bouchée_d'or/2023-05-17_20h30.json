@@ -1,0 +1,148 @@
+{
+  "innings": [
+    {
+      "value": "1",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    },
+    {
+      "value": "2",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    },
+    {
+      "value": "3",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    },
+    {
+      "value": "4",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    },
+    {
+      "value": "5",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    },
+    {
+      "value": "6",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    },
+    {
+      "value": "7",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    },
+    {
+      "value": "8",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    },
+    {
+      "value": "9",
+      "hitters": [
+        {
+          "player_id": 0,
+          "bags": "",
+          "CS": false,
+          "R": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false
+        }
+      ]
+    }
+  ]
+}
