@@ -1,6 +1,8 @@
 import players from "./data/players.json" assert { type: "json" };
 import league from "./data/league.json" assert { type: "json" };
+import defaultGame from "./data/default_game.json" assert { type: "json" };
 
+var calendarHtml = "";
 const app = {
   init: () => {
     document.addEventListener("DOMContentLoaded", app.load);
@@ -16,17 +18,15 @@ const app = {
   loadPage: () => {
     const urlParams = new URLSearchParams(window.location.search);
     var page = urlParams.get("page");
-    const contentDiv = document.getElementById("page");
 
     if (page == "calendar") {
-      contentDiv.innerHTML = app.createCalendar();
+      app.createCalendar();
     } else {
       if (page != "ranking" && page != "stats") {
         page = "home";
       }
       const url = `./pages/${page}.html`;
 
-      const contentDiv = document.getElementById("page");
       fetch(url)
         .then((res) => {
           if (res.ok) {
@@ -34,12 +34,17 @@ const app = {
           }
         })
         .then((htmlPage) => {
-          contentDiv.innerHTML = htmlPage;
+          app.setPageHtml(htmlPage);
         });
     }
   },
 
-  createCalendar() {
+  setPageHtml(html) {
+    const contentDiv = document.getElementById("page");
+    contentDiv.innerHTML = html;
+  },
+
+  async createCalendar() {
     const urlParams = new URLSearchParams(window.location.search);
     var seasonSelected = urlParams.get("season");
     if (!league.seasons.includes(seasonSelected)) {
@@ -50,7 +55,7 @@ const app = {
       (season) => season.name == seasonSelected
     );
 
-    var calendarHtml = `<div class="page-title">
+    calendarHtml = `<div class="page-title">
         CALENDRIER
         <select name="season" id="season">
           <option value="2023">2023</option>
@@ -58,7 +63,7 @@ const app = {
         </select>
       </div>`;
 
-    seasonObject.schedule.forEach((date) => {
+    for (const date of seasonObject.schedule) {
       const gameDate = new Date(date.date + "T00:00");
       const options = { year: "numeric", month: "long", day: "numeric" };
 
@@ -66,12 +71,87 @@ const app = {
         <div class="date">${gameDate.toLocaleDateString("fr-CA", options)}</div>
         <div class="card-container">`;
 
-      date.games.forEach((game) => {
-        calendarHtml += `<div class="game">
+      for (const game of date.games) {
+        await app.createGame(game, seasonSelected, date);
+      }
+
+      calendarHtml += `</div></div>`;
+    }
+
+    app.setPageHtml(calendarHtml);
+  },
+
+  async createGame(game, season, date) {
+    var homeStatsJson = defaultGame;
+    var awayStatsJson = defaultGame;
+
+    const homeStats = await fetch(
+      `./data/${season}/${game.home}/${date.date}_${game.time}.json`
+    );
+    if (!homeStats.ok) {
+      const message = `An error has occured: ${homeStats.status}`;
+      console.log(message);
+    } else {
+      homeStatsJson = await homeStats.json();
+    }
+
+    const awayStats = await fetch(
+      `./data/${season}/${game.away}/${date.date}_${game.time}.json`
+    );
+    if (!awayStats.ok) {
+      const message = `An error has occured: ${awayStats.status}`;
+      console.log(message);
+    } else {
+      awayStatsJson = await awayStats.json();
+    }
+
+    var homePoints = 0;
+    var homeHits = 0;
+    var homeErrors = 0;
+
+    var awayPoints = 0;
+    var awayHits = 0;
+    var awayErrors = 0;
+
+    homeStatsJson.innings.forEach((inning) => {
+      inning.hitters.forEach((hitter) => {
+        if (hitter.bags == "4B") {
+          homePoints++;
+        }
+        if (hitter.CS) {
+          homeHits++;
+        }
+        if (hitter.ERR) {
+          awayErrors++;
+        }
+      });
+    });
+
+    awayStatsJson.innings.forEach((inning) => {
+      inning.hitters.forEach((hitter) => {
+        if (hitter.bags == "4B") {
+          awayPoints++;
+        }
+        if (hitter.CS) {
+          awayHits++;
+        }
+        if (hitter.ERR) {
+          homeErrors++;
+        }
+      });
+    });
+
+    calendarHtml += `<div class="game">
           <div class="time">${game.time}</div>
           <div id="confrontation" class="confrontation">
             <div id="teams">
-              <div class="team">
+              <div class="team ${
+                awayPoints == homePoints
+                  ? ""
+                  : awayPoints > homePoints
+                  ? "winner"
+                  : "loser"
+              }">
                 <a href="">
                   <img
                     alt="Logo"
@@ -84,7 +164,13 @@ const app = {
                   )}</span>
                 </a>
               </div>
-              <div class="team">
+              <div class="team ${
+                awayPoints == homePoints
+                  ? ""
+                  : awayPoints < homePoints
+                  ? "winner"
+                  : "loser"
+              }">
                 <a href="">
                   <img
                     alt="Logo"
@@ -99,54 +185,47 @@ const app = {
               </div>
             </div>`;
 
-        /*fetch(
-          `./data/${seasonSelected}/${game.home}/${date.date}_${game.time}.json`
-        )
-          .then((response) => {
-            if (response.ok) {
-              return response.json();
-            }
-          })
-          .then((json) => {
-            console.log(json);
-          })
-          .catch(console.log("Not Found Away"));*/
-
-        calendarHtml += `<div class="score">
+    calendarHtml += `<div class="score">
           <table class="innings">
-            <tr>
-              <th>1</th>
-              <th>2</th>
-              <th>3</th>
-              <th>4</th>
-              <th>5</th>
-              <th>6</th>
-              <th>7</th>
-              <th>8</th>
-              <th>9</th>
-            </tr>
-            <tr>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-            </tr>
+            <tr>`;
+
+    for (let i = 0; i < homeStatsJson.innings.length; i++) {
+      calendarHtml += `<th>${i + 1}</th>`;
+    }
+    calendarHtml += `</tr><tr>`;
+
+    awayStatsJson.innings.forEach((inning, index, array) => {
+      var points = 0;
+      if (index === array.length - 1 && inning.hitters.length == 0) {
+        points = "X";
+      } else {
+        inning.hitters.forEach((hitter) => {
+          if (hitter.bags == "4B") {
+            points++;
+          }
+        });
+      }
+
+      calendarHtml += `<td>${points}</td>`;
+    });
+    calendarHtml += `</tr><tr>`;
+
+    homeStatsJson.innings.forEach((inning, index, array) => {
+      var points = 0;
+      if (index === array.length - 1 && inning.hitters.length == 0) {
+        points = "X";
+      } else {
+        inning.hitters.forEach((hitter) => {
+          if (hitter.bags == "4B") {
+            points++;
+          }
+        });
+      }
+
+      calendarHtml += `<td>${points}</td>`;
+    });
+
+    calendarHtml += `</tr>
           </table>
           <table>
             <tr>
@@ -155,25 +234,19 @@ const app = {
               <th>E</th>
             </tr>
             <tr>
-              <th>0</th>
-              <th>0</th>
-              <th>0</th>
+              <th>${awayPoints}</th>
+              <th>${awayHits}</th>
+              <th>${awayErrors}</th>
             </tr>
             <tr>
-              <th>0</th>
-              <th>0</th>
-              <th>0</th>
+              <th>${homePoints}</th>
+              <th>${homeHits}</th>
+              <th>${homeErrors}</th>
             </tr>
           </table>
         </div>`;
 
-        calendarHtml += `</div></div>`;
-      });
-
-      calendarHtml += `</div></div>`;
-    });
-
-    return calendarHtml;
+    calendarHtml += `</div></div>`;
   },
 };
 app.init();
