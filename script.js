@@ -76,7 +76,7 @@ const app = {
                   <img
                     alt="Logo"
                     class="calendar-logo"
-                    src="./logo/${game.away}.png"
+                    src="./logo/${game.away.toLowerCase()}.png"
                   />
                   <span class="team-name">${game.away.replaceAll(
                     "_",
@@ -89,7 +89,7 @@ const app = {
                   <img
                     alt="Logo"
                     class="calendar-logo"
-                    src="./logo/${game.home}.png"
+                    src="./logo/${game.home.toLowerCase()}.png"
                   />
                   <span class="team-name">${game.home.replaceAll(
                     "_",
