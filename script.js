@@ -2,9 +2,12 @@ import players from "./data/players.json" assert { type: "json" };
 import league from "./data/league.json" assert { type: "json" };
 import defaultGame from "./data/default_game.json" assert { type: "json" };
 
-var calendarHtml = "";
+var pageHtml = "";
 var seasonSelected = "";
 var seasonJSON = "";
+
+const PTS_BY_WIN = 2;
+const PTS_BY_TIE = 1;
 
 const app = {
   init: () => {
@@ -15,44 +18,68 @@ const app = {
   load: () => {
     console.log(players);
     console.log(league);
-    seasonSelected = app.getSeason();
-    seasonJSON = app.getSeasonJSON();
-    app.setLoadingSpinner();
+    app.getSeason();
+    app.getSeasonJSON();
     app.loadPage();
   },
 
-  loadPage: () => {
+  loadPage() {
     const urlParams = new URLSearchParams(window.location.search);
     var page = urlParams.get("page");
 
-    if (page == "calendar") {
-      app.createCalendar();
-    } else {
-      if (page != "ranking" && page != "stats") {
-        page = "home";
-      }
-      const url = `./pages/${page}.html`;
+    var loadingText = "Chargement...";
+    this.setLoadingSpinner(loadingText);
 
-      fetch(url)
-        .then((res) => {
-          if (res.ok) {
-            return res.text();
-          }
-        })
-        .then((htmlPage) => {
-          app.setPageHtml(htmlPage);
-        });
+    switch (page) {
+      case "calendar":
+        this.createCalendar();
+        break;
+      case "ranking":
+        this.createRanking();
+        break;
+      default:
+        if (page != "stats") {
+          page = "home";
+        }
+        const url = `./pages/${page}.html`;
+
+        fetch(url)
+          .then((res) => {
+            if (res.ok) {
+              return res.text();
+            }
+          })
+          .then((htmlPage) => {
+            this.setPageHtml(htmlPage);
+          });
     }
+  },
+
+  setSeasonSelector() {
+    var selector = document.getElementById("season");
+    if (selector) {
+      selector.value = seasonSelected;
+    }
+
+    var ranking = document.getElementById("ranking");
+    ranking.href = `/?page=ranking&season=${seasonSelected}`;
+
+    var calendar = document.getElementById("calendar");
+    calendar.href = `/?page=calendar&season=${seasonSelected}`;
+
+    var stats = document.getElementById("stats");
+    stats.href = `/?page=stats&season=${seasonSelected}`;
   },
 
   setPageHtml(html) {
     const contentDiv = document.getElementById("page");
     contentDiv.innerHTML = html;
+    this.setSeasonSelector();
   },
 
-  setLoadingSpinner() {
-    const html = `<div class="loader"></div>`;
-    app.setPageHtml(html);
+  setLoadingSpinner(text) {
+    const html = `<div class="loader"></div><span class="spinner-text">${text}</span>`;
+    this.setPageHtml(html);
   },
 
   getTeamRecord(teamName) {
@@ -61,43 +88,119 @@ const app = {
 
   getSeason() {
     const urlParams = new URLSearchParams(window.location.search);
-    var seasonSelected = urlParams.get("season");
-    if (!league.seasons.includes(seasonSelected)) {
+    seasonSelected = urlParams.get("season");
+    if (
+      league.seasons.findIndex((season) => season.name == seasonSelected) == -1
+    ) {
       const newDate = new Date();
       seasonSelected = newDate.getFullYear();
     }
-    return seasonSelected;
+    console.log("Season selected: " + seasonSelected);
   },
 
   getSeasonJSON() {
-    return league.seasons.find((season) => season.name == seasonSelected);
+    seasonJSON = league.seasons.find((season) => season.name == seasonSelected);
+  },
+
+  createPageTitle(title) {
+    var html = `<div class="page-title">${title}<select name="season" id="season" onchange="changeSeason()">`;
+
+    league.seasons.forEach((season) => {
+      html += `<option value="${season.name}">${season.name}</option>`;
+    });
+
+    return (html += `</select></div>`);
+  },
+
+  createRanking() {
+    pageHtml = this.createPageTitle("Classement");
+
+    pageHtml += `<div class="ranking">
+      <table>
+        <tr class="header">
+          <th>Équipe</th>
+          <th>PJ</th>
+          <th>V</th>
+          <th>D</th>
+          <th>N</th>
+          <th>PTS</th>
+        </tr>`;
+
+    seasonJSON.teams.sort((a, b) => {
+      const scoreA = a.record.split("-");
+      const scoreB = b.record.split("-");
+
+      const ptsA =
+        parseInt(scoreA[0], 10) * PTS_BY_WIN +
+        parseInt(scoreA[2], 10) * PTS_BY_TIE;
+      const ptsB =
+        parseInt(scoreB[0], 10) * PTS_BY_WIN +
+        parseInt(scoreB[2], 10) * PTS_BY_TIE;
+
+      if (ptsA > ptsB) {
+        return -1;
+      }
+      if (ptsA < ptsB) {
+        return 1;
+      }
+
+      return 0;
+    });
+
+    seasonJSON.teams.forEach((team) => {
+      pageHtml += `<tr>
+          <td>
+            <div class="team">
+              <a href="">
+                <img
+                  alt="Logo"
+                  class="calendar-logo"
+                  src="./logo/${team.name}.png"
+                />
+                <div>
+                  <div class="team-name">${team.name.replaceAll("_", " ")}</div>
+                </div>
+              </a>
+            </div>
+          </td>`;
+      var score = team.record.split("-");
+      pageHtml += `<td>${
+        parseInt(score[0], 10) + parseInt(score[1], 10) + parseInt(score[2], 10)
+      }</td>
+          <td>${score[0]}</td>
+          <td>${score[1]}</td>
+          <td>${score[2]}</td>
+          <th>${
+            parseInt(score[0], 10) * PTS_BY_WIN +
+            parseInt(score[2], 10) * PTS_BY_TIE
+          }</th>`;
+      pageHtml += `</tr>`;
+    });
+
+    pageHtml += `</table></div>`;
+
+    this.setPageHtml(pageHtml);
   },
 
   async createCalendar() {
-    calendarHtml = `<div class="page-title">
-        CALENDRIER
-        <select name="season" id="season">
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
-        </select>
-      </div>`;
+    pageHtml = this.createPageTitle("Calendrier");
 
     for (const date of seasonJSON.schedule) {
       const gameDate = new Date(date.date + "T00:00");
       const options = { year: "numeric", month: "long", day: "numeric" };
 
-      calendarHtml += `<div class="date-card">
+      pageHtml += `<div class="date-card">
         <div class="date">${gameDate.toLocaleDateString("fr-CA", options)}</div>
         <div class="card-container">`;
 
       for (const game of date.games) {
-        await app.createGame(game, date);
+        await this.createGame(game, date);
       }
 
-      calendarHtml += `</div></div>`;
+      pageHtml += `</div></div>`;
     }
 
-    app.setPageHtml(calendarHtml);
+    this.setPageHtml(pageHtml);
   },
 
   async createGame(game, date) {
@@ -160,7 +263,7 @@ const app = {
       });
     });
 
-    calendarHtml += `<div class="game">
+    pageHtml += `<div class="game">
           <div class="time">${game.time}</div>
           <div id="confrontation" class="confrontation">
             <div id="teams">
@@ -171,7 +274,7 @@ const app = {
                   ? "winner"
                   : "loser"
               }">
-                <a href="">
+                <div class="team-group">
                   <img
                     alt="Logo"
                     class="calendar-logo"
@@ -183,7 +286,7 @@ const app = {
                     game.away
                   )}</div>
                   </div>
-                </a>
+                </div>
               </div>
               <div class="team ${
                 awayPoints == homePoints
@@ -192,7 +295,7 @@ const app = {
                   ? "winner"
                   : "loser"
               }">
-                <a href="">
+                <div class="team-group">
                   <img
                     alt="Logo"
                     class="calendar-logo"
@@ -204,18 +307,18 @@ const app = {
                     game.home
                   )}</div>
                   </div>
-                </a>
+                </div>
               </div>
             </div>`;
 
-    calendarHtml += `<div class="score">
+    pageHtml += `<div class="score">
           <table class="innings">
-            <tr>`;
+            <tr class="header">`;
 
     for (let i = 0; i < homeStatsJson.innings.length; i++) {
-      calendarHtml += `<th>${i + 1}</th>`;
+      pageHtml += `<th>${i + 1}</th>`;
     }
-    calendarHtml += `</tr><tr>`;
+    pageHtml += `</tr><tr>`;
 
     awayStatsJson.innings.forEach((inning, index, array) => {
       var points = 0;
@@ -229,9 +332,9 @@ const app = {
         });
       }
 
-      calendarHtml += `<td>${points}</td>`;
+      pageHtml += `<td>${points}</td>`;
     });
-    calendarHtml += `</tr><tr>`;
+    pageHtml += `</tr><tr>`;
 
     homeStatsJson.innings.forEach((inning, index, array) => {
       var points = 0;
@@ -245,13 +348,13 @@ const app = {
         });
       }
 
-      calendarHtml += `<td>${points}</td>`;
+      pageHtml += `<td>${points}</td>`;
     });
 
-    calendarHtml += `</tr>
+    pageHtml += `</tr>
           </table>
           <table>
-            <tr>
+            <tr class="header">
               <th>P</th>
               <th>CS</th>
               <th>E</th>
@@ -269,7 +372,7 @@ const app = {
           </table>
         </div>`;
 
-    calendarHtml += `</div></div>`;
+    pageHtml += `</div></div>`;
   },
 };
 app.init();

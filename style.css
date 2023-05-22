@@ -23,6 +23,18 @@ p {
 
 table {
   display: contents;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+th,
+tr,
+td {
+  padding: 2px;
+}
+
+table .header th {
+  border-bottom: 1px solid #888;
 }
 
 .winner img {
@@ -63,6 +75,11 @@ table {
   font-size: 0.8rem;
 }
 
+.spinner-text {
+  font-weight: bold;
+  padding: 5px;
+}
+
 .confrontation {
   display: flex;
   border-radius: 15px;
@@ -88,8 +105,10 @@ table {
   justify-content: center;
   align-items: center;
   padding: 10px 0px;
+  margin-bottom: 20px;
   font-size: 1.5rem;
   font-weight: bold;
+  text-transform: uppercase;
 }
 
 .page-title select {
@@ -101,6 +120,20 @@ table {
 
 .spacer {
   flex: 1;
+}
+
+.ranking {
+  border-radius: 15px;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
+}
+
+.ranking table td,
+.ranking table tr {
+  padding: 5px;
 }
 
 .date {
@@ -125,7 +158,16 @@ table {
   font-weight: bold;
 }
 
-.team a {
+.team a:hover .team-name {
+  color: #ff7500;
+}
+
+.team a:hover img {
+  border: 3px solid #ff7500;
+}
+
+.team a,
+.team .team-group {
   display: flex;
   align-items: center;
   font-weight: bold;
@@ -152,7 +194,7 @@ table {
 
 .content {
   display: flex;
-  margin: 110px auto 32px;
+  margin: 140px auto 32px;
   padding: 0 16px;
   max-width: 960px;
   flex-direction: column;
@@ -192,8 +234,8 @@ svg.material-icons:not(:last-child) {
   border: 1px solid #eee;
   background-color: #fafafa;
   height: 40px;
-  min-width: 200px;
-  margin: 0 8px 16px;
+  min-width: 100px;
+  margin: 0 8px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -335,7 +377,15 @@ svg#logo {
 /* Responsive Styles */
 @media screen and (max-width: 767px) {
   .card {
-    padding: 16px;
+    padding: 8px;
+    height: 16px;
+    margin: 0 5px;
+  }
+
+  .ranking table td,
+  .ranking table tr,
+  .ranking table th {
+    padding: 5px;
   }
 
   .game {
@@ -351,11 +401,6 @@ svg#logo {
 
   .content {
     padding: 0px;
-  }
-
-  .card:not(.highlight-card) {
-    height: 16px;
-    margin: 8px 0;
   }
 
   .card.highlight-card span {
