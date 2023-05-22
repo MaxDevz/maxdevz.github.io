@@ -33,11 +33,11 @@ table {
   border: 3px solid red;
 }
 
-.winner span {
+.winner .team-name {
   color: green;
 }
 
-.loser span {
+.loser .team-name {
   color: red;
 }
 
@@ -55,6 +55,12 @@ table {
 .team-name {
   padding: 0px 10px;
   text-transform: capitalize;
+}
+
+.team-record {
+  padding: 0px 10px;
+  color: #999;
+  font-size: 0.8rem;
 }
 
 .confrontation {
@@ -308,6 +314,24 @@ svg#logo {
   width: 1920px;
 }
 
+.loader {
+  border: 5px solid #ddd; /* Light grey */
+  border-top: 5px solid #ff7500; /* Blue */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Responsive Styles */
 @media screen and (max-width: 767px) {
   .card {
@@ -322,6 +346,7 @@ svg#logo {
 
   .date-card {
     padding: 0px;
+    padding-top: 10px;
   }
 
   .content {

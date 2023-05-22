@@ -3,6 +3,9 @@ import league from "./data/league.json" assert { type: "json" };
 import defaultGame from "./data/default_game.json" assert { type: "json" };
 
 var calendarHtml = "";
+var seasonSelected = "";
+var seasonJSON = "";
+
 const app = {
   init: () => {
     document.addEventListener("DOMContentLoaded", app.load);
@@ -12,6 +15,9 @@ const app = {
   load: () => {
     console.log(players);
     console.log(league);
+    seasonSelected = app.getSeason();
+    seasonJSON = app.getSeasonJSON();
+    app.setLoadingSpinner();
     app.loadPage();
   },
 
@@ -44,17 +50,30 @@ const app = {
     contentDiv.innerHTML = html;
   },
 
-  async createCalendar() {
+  setLoadingSpinner() {
+    const html = `<div class="loader"></div>`;
+    app.setPageHtml(html);
+  },
+
+  getTeamRecord(teamName) {
+    return seasonJSON.teams.find((team) => team.name == teamName).record;
+  },
+
+  getSeason() {
     const urlParams = new URLSearchParams(window.location.search);
     var seasonSelected = urlParams.get("season");
     if (!league.seasons.includes(seasonSelected)) {
       const newDate = new Date();
       seasonSelected = newDate.getFullYear();
     }
-    var seasonObject = league.seasons.find(
-      (season) => season.name == seasonSelected
-    );
+    return seasonSelected;
+  },
 
+  getSeasonJSON() {
+    return league.seasons.find((season) => season.name == seasonSelected);
+  },
+
+  async createCalendar() {
     calendarHtml = `<div class="page-title">
         CALENDRIER
         <select name="season" id="season">
@@ -63,7 +82,7 @@ const app = {
         </select>
       </div>`;
 
-    for (const date of seasonObject.schedule) {
+    for (const date of seasonJSON.schedule) {
       const gameDate = new Date(date.date + "T00:00");
       const options = { year: "numeric", month: "long", day: "numeric" };
 
@@ -72,7 +91,7 @@ const app = {
         <div class="card-container">`;
 
       for (const game of date.games) {
-        await app.createGame(game, seasonSelected, date);
+        await app.createGame(game, date);
       }
 
       calendarHtml += `</div></div>`;
@@ -81,12 +100,12 @@ const app = {
     app.setPageHtml(calendarHtml);
   },
 
-  async createGame(game, season, date) {
+  async createGame(game, date) {
     var homeStatsJson = defaultGame;
     var awayStatsJson = defaultGame;
 
     const homeStats = await fetch(
-      `./data/${season}/${game.home}/${date.date}_${game.time}.json`
+      `./data/${seasonSelected}/${game.home}/${date.date}_${game.time}.json`
     );
     if (!homeStats.ok) {
       const message = `An error has occured: ${homeStats.status}`;
@@ -96,7 +115,7 @@ const app = {
     }
 
     const awayStats = await fetch(
-      `./data/${season}/${game.away}/${date.date}_${game.time}.json`
+      `./data/${seasonSelected}/${game.away}/${date.date}_${game.time}.json`
     );
     if (!awayStats.ok) {
       const message = `An error has occured: ${awayStats.status}`;
@@ -158,10 +177,12 @@ const app = {
                     class="calendar-logo"
                     src="./logo/${game.away.toLowerCase()}.png"
                   />
-                  <span class="team-name">${game.away.replaceAll(
-                    "_",
-                    " "
-                  )}</span>
+                  <div>
+                  <div class="team-name">${game.away.replaceAll("_", " ")}</div>
+                  <div class="team-record">${this.getTeamRecord(
+                    game.away
+                  )}</div>
+                  </div>
                 </a>
               </div>
               <div class="team ${
@@ -177,10 +198,12 @@ const app = {
                     class="calendar-logo"
                     src="./logo/${game.home.toLowerCase()}.png"
                   />
-                  <span class="team-name">${game.home.replaceAll(
-                    "_",
-                    " "
-                  )}</span>
+                  <div>
+                  <div class="team-name">${game.home.replaceAll("_", " ")}</div>
+                  <div class="team-record">${this.getTeamRecord(
+                    game.home
+                  )}</div>
+                  </div>
                 </a>
               </div>
             </div>`;
