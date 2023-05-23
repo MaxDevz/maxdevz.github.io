@@ -1,3 +1,6 @@
+import { app } from "./script.js";
+window.app = app;
+
 function changeSeason() {
   const urlParams = new URLSearchParams(window.location.search);
   var page = urlParams.get("page");

@@ -45,11 +45,13 @@ table .header th {
   border: 3px solid red;
 }
 
-.winner .team-name {
+.winner .team-name,
+.positive {
   color: green;
 }
 
-.loser .team-name {
+.loser .team-name,
+.negative {
   color: red;
 }
 
@@ -58,6 +60,56 @@ table .header th {
   width: 50px;
   margin: 5px 0px;
   box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
+}
+
+.logo-filter {
+  border-radius: 50px;
+  width: 50px;
+  margin: 5px 0px;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
+}
+
+.team-filter {
+  padding-bottom: 30px;
+}
+
+.team-filter img {
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.logo-filter.team-selected {
+  border: 3px solid #ff7500;
+  box-shadow: 0 10px 17px rgba(255, 117, 0, 0.35);
+}
+
+.captain {
+  padding: 0 5px;
+  font-weight: bold;
+  color: #ff7500;
+  border-radius: 50px;
+}
+
+.legend {
+  padding: 10px;
+  text-align: center;
+}
+
+.legend-title {
+  font-weight: bold;
+  padding: 10px;
+}
+
+.legend span {
+  font-weight: bold;
+  padding-left: 10px;
+}
+
+.rating,
+.rank {
+  font-style: italic;
+  font-size: 0.8rem;
+  color: #888;
 }
 
 .game {
@@ -122,11 +174,34 @@ table .header th {
   flex: 1;
 }
 
-.ranking {
+.stats .name {
+  text-align: left;
+}
+
+.stats img {
+  width: 35px;
+}
+
+.stats {
+  overflow-x: auto;
   border-radius: 15px;
   border: 1px solid #eee;
   background-color: #fafafa;
   padding: 20px;
+  margin: 0 10px 20px;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
+}
+
+.stats table td,
+.stats table tr {
+  padding: 0 10px;
+}
+
+.ranking {
+  border-radius: 15px;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  padding: 20px 10px;
   margin-bottom: 20px;
   box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
 }
@@ -163,7 +238,8 @@ table .header th {
 }
 
 .team a:hover img {
-  border: 3px solid #ff7500;
+  border: 0.25rem solid #ff7500;
+  box-shadow: 0 10px 17px rgba(255, 117, 0, 0.35);
 }
 
 .team a,
@@ -376,6 +452,19 @@ svg#logo {
 
 /* Responsive Styles */
 @media screen and (max-width: 767px) {
+  .legend {
+    width: 95vw;
+  }
+
+  .stats {
+    width: 95vw;
+    padding: 20px 10px;
+  }
+
+  .ranking .team-name {
+    display: none;
+  }
+
   .card {
     padding: 8px;
     height: 16px;

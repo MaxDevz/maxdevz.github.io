@@ -5,17 +5,21 @@ import defaultGame from "./data/default_game.json" assert { type: "json" };
 var pageHtml = "";
 var seasonSelected = "";
 var seasonJSON = "";
+var playersInfo = null;
+var playersStats = new Map();
+var teamFiltered = "";
 
 const PTS_BY_WIN = 2;
 const PTS_BY_TIE = 1;
 
-const app = {
+export const app = {
   init: () => {
     document.addEventListener("DOMContentLoaded", app.load);
     console.log("HTML loaded");
   },
 
   load: () => {
+    window.app = app;
     console.log(players);
     console.log(league);
     app.getSeason();
@@ -31,27 +35,14 @@ const app = {
     this.setLoadingSpinner(loadingText);
 
     switch (page) {
-      case "calendar":
-        this.createCalendar();
-        break;
       case "ranking":
         this.createRanking();
         break;
+      case "stats":
+        this.createStats();
+        break;
       default:
-        if (page != "stats") {
-          page = "home";
-        }
-        const url = `./pages/${page}.html`;
-
-        fetch(url)
-          .then((res) => {
-            if (res.ok) {
-              return res.text();
-            }
-          })
-          .then((htmlPage) => {
-            this.setPageHtml(htmlPage);
-          });
+        this.createCalendar();
     }
   },
 
@@ -65,7 +56,7 @@ const app = {
     ranking.href = `/?page=ranking&season=${seasonSelected}`;
 
     var calendar = document.getElementById("calendar");
-    calendar.href = `/?page=calendar&season=${seasonSelected}`;
+    calendar.href = `/?season=${seasonSelected}`;
 
     var stats = document.getElementById("stats");
     stats.href = `/?page=stats&season=${seasonSelected}`;
@@ -86,6 +77,30 @@ const app = {
     return seasonJSON.teams.find((team) => team.name == teamName).record;
   },
 
+  getTeamPlayers(teamName) {
+    return seasonJSON.teams.find((team) => team.name == teamName).players;
+  },
+
+  getPlayerName(id) {
+    return players.players.find((player) => player.id == id).name;
+  },
+
+  async getPlayerInfo(id) {
+    if (!playersInfo) {
+      const seasonInfo = await fetch(
+        `./data/${seasonSelected}/players_${seasonSelected}.json`
+      );
+      if (!seasonInfo.ok) {
+        const message = `An error has occured: ${seasonInfo.status}`;
+        console.log(message);
+      } else {
+        playersInfo = await seasonInfo.json();
+      }
+    }
+
+    return playersInfo.players.find((player) => player.id == id);
+  },
+
   getSeason() {
     const urlParams = new URLSearchParams(window.location.search);
     seasonSelected = urlParams.get("season");
@@ -102,8 +117,17 @@ const app = {
     seasonJSON = league.seasons.find((season) => season.name == seasonSelected);
   },
 
+  formatDecimal(value) {
+    return value >= 1
+      ? (Math.round(value * 100) / 100).toFixed(2)
+      : (Math.round(value * 100) / 100)
+          .toFixed(3)
+          .toString()
+          .replace("0.", ".");
+  },
+
   createPageTitle(title) {
-    var html = `<div class="page-title">${title}<select name="season" id="season" onchange="changeSeason()">`;
+    var html = `<div class="page-title">${title}<select name="season" id="season" onchange="app.changeSeason()">`;
 
     league.seasons.forEach((season) => {
       html += `<option value="${season.name}">${season.name}</option>`;
@@ -112,18 +136,226 @@ const app = {
     return (html += `</select></div>`);
   },
 
+  selectTeam(team) {
+    if (teamFiltered == team) {
+      teamFiltered = null;
+    } else {
+      teamFiltered = team;
+    }
+
+    this.loadPage();
+  },
+
+  changeSeason() {
+    const urlParams = new URLSearchParams(window.location.search);
+    var page = urlParams.get("page");
+    var season = document.getElementById("season").value;
+    var url = page ? `/?page=${page}&season=${season}` : `/?season=${season}`;
+    window.location.replace(url);
+  },
+
+  createTeamFilter() {
+    pageHtml += `<div class="team-filter">`;
+
+    seasonJSON.teams.forEach((team) => {
+      pageHtml += `<img
+          onclick="app.selectTeam('${team.name.replaceAll("'", "\\'")}')"
+          title="${team.name.replaceAll("_", " ")}"
+          alt="Logo"
+          class="logo-filter ${
+            teamFiltered == team.name ? "team-selected" : ""
+          }"
+          src="./logo/${team.name.toLowerCase()}.png"
+        />`;
+    });
+
+    pageHtml += `</div>`;
+  },
+
+  async createStats() {
+    var date = new Date();
+    if (playersStats.size == 0) {
+      for (const date of seasonJSON.schedule) {
+        for (const game of date.games) {
+          await this.createStatsMap(game, date);
+        }
+      }
+    }
+
+    pageHtml = this.createPageTitle("Statistiques");
+
+    this.createTeamFilter();
+
+    pageHtml += `<div class="stats">
+      <table>
+        <tr class="header">
+          <th title="Rang" class="rank">RG</th>
+          <th>Équipe</th>
+          <th class="name">Nom</th>
+          <th></th>
+          <th title="Parties jouées">PJ</th>
+          <th title="Apparitions au bâton">AB</th>
+          <th title="Coups sûrs">CS</th>
+          <th title="Moyenne au bâton">MAB</th>
+          <th title="Présence sur les buts">PB</th>  
+          <th title="Moyenne de présence sur les buts">MDP</th>  
+          <th title="Coups de circuit">CC</th>
+          <th title="Buts sur balles">BB</th>
+          <th title="Retraits sans se rendre sur les buts">R0B</th>
+          <th title="Optionnels">OPT</th>
+          <th title="Erreurs">E</th>
+          <th title="Sacrifices">SAC</th>
+        </tr>`;
+
+    playersStats = new Map(
+      [...playersStats].sort((a, b) => b[1].CS / b[1].AB - a[1].CS / a[1].AB)
+    );
+
+    var index = 0;
+    playersStats.forEach((player) => {
+      if (!teamFiltered || teamFiltered == player.team) {
+        index++;
+        pageHtml += `<tr>
+          <td class="rank">${index}</td>
+          <td>
+            <div class="team">
+              <a href="">
+                <img
+                  title="${player.team.replaceAll("_", " ")}"
+                  alt="Logo"
+                  class="calendar-logo"
+                  src="./logo/${player.team.toLowerCase()}.png"
+                />
+                </div>
+              </a>
+            </div>
+          </td>
+          <td class="name">${player.name}${
+          player.captain ? `<span class="captain">C</span>` : ""
+        }</td>
+          <td class="rating">${player.rating}</td>
+          <td>${player.gamesPlayed}</td>
+          <td>${player.AB}</td>
+          <td>${player.CS}</td>
+          <th>${this.formatDecimal(player.CS / player.AB)}</th>
+          <td>${player.PB}</td>
+          <td>${this.formatDecimal(player.PB / (player.AB + player.BB))}</td>
+          <td>${player.CC}</td>
+          <td>${player.BB}</td>
+          <td>${player.RB}</td>
+          <td>${player.OPT}</td>
+          <td>${player.ERR}</td>
+          <td>${player.SAC}</td>
+        <tr>`;
+      }
+    });
+
+    pageHtml += `</table></div>`;
+    pageHtml += `<div class="legend">
+        <div class="legend-title">Légende</div>
+        <div>
+          <span class="captain">C</span> = Capitaine
+          <span class="">RG</span> = Rang
+          <span class="">PJ</span> = Parties jouées
+          <span class="">AB</span> = Apparitions au bâton
+          <span class="">CS</span> = Coups sûrs
+          <span class="">MAB</span> = Moyenne au bâton
+          <span class="">PB</span> = Présence sur les buts
+          <span class="">MDP</span> = Moyenne de présence sur les buts
+          <span class="">CC</span> = Coups de circuit
+          <span class="">BB</span> = Buts sur balles
+          <span class="">R0B</span> = Retraits sans se rendre sur les buts
+          <span class="">OPT</span> = Optionnels
+          <span class="">E</span> = Erreurs
+          <span class="">SAC</span> = Sacrifices
+        </div>
+        
+      </div>`;
+
+    this.setPageHtml(pageHtml);
+    console.log("Create Stats Delay: " + (new Date() - date));
+  },
+
+  async createStatsMap(game, date) {
+    const games = await this.readGame(game, date);
+    const homeStatsJson = games[0];
+    const awayStatsJson = games[1];
+
+    for (const inning of homeStatsJson.innings) {
+      for (const hitter of inning.hitters) {
+        await this.setPlayerMap(game, hitter, true);
+      }
+    }
+
+    for (const inning of awayStatsJson.innings) {
+      for (const hitter of inning.hitters) {
+        await this.setPlayerMap(game, hitter, false);
+      }
+    }
+  },
+
+  async setPlayerMap(game, hitter, isHome) {
+    var teamName = isHome ? game.home : game.away;
+    if (!this.getTeamPlayers(teamName).includes(hitter.id)) {
+      hitter.id = 0;
+      teamName = "ligueDuMercredi_logo";
+    }
+    var hitterMap = playersStats.get(hitter.id);
+
+    if (hitterMap) {
+      if (!hitter.BB) hitterMap.AB += 1;
+      if (hitter.bags == "4B") hitterMap.P += 1;
+      if (hitter.bags != "0B") hitterMap.PB += 1;
+      if (hitter.CS) hitterMap.CS += 1;
+      if (hitter.R) hitterMap.R += 1;
+      if (hitter.CC) hitterMap.CC += 1;
+      if (hitter.BB) hitterMap.BB += 1;
+      if (hitter.bags == "0B" && hitter.R) hitterMap.RB += 1;
+      if (hitter.OPT) hitterMap.OPT += 1;
+      if (hitter.ERR) hitterMap.ERR += 1;
+      if (hitter.SAC) hitterMap.SAC += 1;
+      playersStats.set(hitter.id, hitterMap);
+    } else {
+      var info = await this.getPlayerInfo(hitter.id);
+      const stats = {
+        name: this.getPlayerName(hitter.id),
+        rating: info.rating,
+        captain: info.captain,
+        team: teamName,
+        gamesPlayed: 0,
+        AB: hitter.BB ? 0 : 1,
+        P: hitter.bags == "4B" ? 1 : 0,
+        PB: hitter.bags != "0B" ? 1 : 0,
+        CS: hitter.CS ? 1 : 0,
+        R: hitter.R ? 1 : 0,
+        CC: hitter.CC ? 1 : 0,
+        BB: hitter.BB ? 1 : 0,
+        RB: hitter.bags == "0B" && hitter.R ? 1 : 0,
+        OPT: hitter.OPT ? 1 : 0,
+        ERR: hitter.ERR ? 1 : 0,
+        SAC: hitter.SAC ? 1 : 0,
+      };
+      playersStats.set(hitter.id, stats);
+    }
+  },
+
   createRanking() {
     pageHtml = this.createPageTitle("Classement");
 
     pageHtml += `<div class="ranking">
       <table>
         <tr class="header">
+          <th title="Rang" class="rank">RG</th>
           <th>Équipe</th>
-          <th>PJ</th>
-          <th>V</th>
-          <th>D</th>
-          <th>N</th>
-          <th>PTS</th>
+          <th title="Parties jouées">PJ</th>
+          <th title="Victoires">V</th>
+          <th title="Défaites">D</th>
+          <th title="Partie Nulle">N</th>     
+          <th title="Pourcentage de victoire">%V</th>
+          <th title="Points">PTS</th>
+          <th title="Points marqués" >PM</th>
+          <th title="Points alloués">PA</th>
+          <th title="Différentiel">Diff.</th>
         </tr>`;
 
     seasonJSON.teams.sort((a, b) => {
@@ -144,18 +376,30 @@ const app = {
         return 1;
       }
 
+      const diffA = a.ptsFor - a.ptsAgainst;
+      const diffB = b.ptsFor - b.ptsAgainst;
+
+      if (diffA > diffB) {
+        return -1;
+      }
+      if (diffA < diffB) {
+        return 1;
+      }
+
       return 0;
     });
 
-    seasonJSON.teams.forEach((team) => {
+    seasonJSON.teams.forEach((team, index) => {
       pageHtml += `<tr>
+          <td class="rank">${index + 1}</td>
           <td>
             <div class="team">
               <a href="">
                 <img
+                  title="${team.name.replaceAll("_", " ")}"
                   alt="Logo"
                   class="calendar-logo"
-                  src="./logo/${team.name}.png"
+                  src="./logo/${team.name.toLowerCase()}.png"
                 />
                 <div>
                   <div class="team-name">${team.name.replaceAll("_", " ")}</div>
@@ -163,27 +407,57 @@ const app = {
               </a>
             </div>
           </td>`;
+
       var score = team.record.split("-");
-      pageHtml += `<td>${
-        parseInt(score[0], 10) + parseInt(score[1], 10) + parseInt(score[2], 10)
-      }</td>
+      const diff = team.ptsFor - team.ptsAgainst;
+      const v = parseInt(score[0], 10);
+      const d = parseInt(score[1], 10);
+      const n = parseInt(score[2], 10);
+      const pj = v + d + n;
+      const pourcentageV = v / pj;
+
+      pageHtml += `<td>${pj}</td>
           <td>${score[0]}</td>
           <td>${score[1]}</td>
           <td>${score[2]}</td>
+          <td>${this.formatDecimal(pourcentageV)}</td>
           <th>${
             parseInt(score[0], 10) * PTS_BY_WIN +
             parseInt(score[2], 10) * PTS_BY_TIE
-          }</th>`;
+          }</th>
+          <td>${team.ptsFor ? team.ptsFor : "-"}</td>
+          <td>${team.ptsAgainst ? team.ptsAgainst : "-"}</td>
+          <td class="${diff > 0 ? "positive" : diff < 0 ? "negative" : ""}">${
+        diff ? diff : "-"
+      }</td>`;
       pageHtml += `</tr>`;
     });
 
     pageHtml += `</table></div>`;
+    pageHtml += `<div class="legend">
+        <div class="legend-title">Légende</div>
+        <div>
+          <span class="">RG</span> = Rang
+          <span class="">PJ</span> = Parties jouées
+          <span class="">V</span> = Victoires
+          <span class="">D</span> = Défaites
+          <span class="">N</span> = Partie Nulle
+          <span class="">%V</span> = Pourcentage de victoire
+          <span class="">PTS</span> = Points
+          <span class="">PM</span> = Points marqués
+          <span class="">PA</span> = Points alloué
+          <span class="">Diff.</span> = Différentiel
+        </div>
+        
+      </div>`;
 
     this.setPageHtml(pageHtml);
   },
 
   async createCalendar() {
     pageHtml = this.createPageTitle("Calendrier");
+
+    this.createTeamFilter();
 
     for (const date of seasonJSON.schedule) {
       const gameDate = new Date(date.date + "T00:00");
@@ -194,7 +468,13 @@ const app = {
         <div class="card-container">`;
 
       for (const game of date.games) {
-        await this.createGame(game, date);
+        if (
+          !teamFiltered ||
+          teamFiltered == game.home ||
+          teamFiltered == game.away
+        ) {
+          await this.createGame(game, date);
+        }
       }
 
       pageHtml += `</div></div>`;
@@ -203,29 +483,39 @@ const app = {
     this.setPageHtml(pageHtml);
   },
 
-  async createGame(game, date) {
+  async readGame(game, date) {
     var homeStatsJson = defaultGame;
     var awayStatsJson = defaultGame;
 
-    const homeStats = await fetch(
-      `./data/${seasonSelected}/${game.home}/${date.date}_${game.time}.json`
-    );
-    if (!homeStats.ok) {
-      const message = `An error has occured: ${homeStats.status}`;
-      console.log(message);
-    } else {
-      homeStatsJson = await homeStats.json();
+    if (new Date(date.date + "T00:00") <= new Date()) {
+      const homeStats = await fetch(
+        `./data/${seasonSelected}/${game.home}/${date.date}_${game.time}.json`
+      );
+      if (!homeStats.ok) {
+        const message = `An error has occured: ${homeStats.status}`;
+        console.log(message);
+      } else {
+        homeStatsJson = await homeStats.json();
+      }
+
+      const awayStats = await fetch(
+        `./data/${seasonSelected}/${game.away}/${date.date}_${game.time}.json`
+      );
+      if (!awayStats.ok) {
+        const message = `An error has occured: ${awayStats.status}`;
+        console.log(message);
+      } else {
+        awayStatsJson = await awayStats.json();
+      }
     }
 
-    const awayStats = await fetch(
-      `./data/${seasonSelected}/${game.away}/${date.date}_${game.time}.json`
-    );
-    if (!awayStats.ok) {
-      const message = `An error has occured: ${awayStats.status}`;
-      console.log(message);
-    } else {
-      awayStatsJson = await awayStats.json();
-    }
+    return [homeStatsJson, awayStatsJson];
+  },
+
+  async createGame(game, date) {
+    const games = await this.readGame(game, date);
+    const homeStatsJson = games[0];
+    const awayStatsJson = games[1];
 
     var homePoints = 0;
     var homeHits = 0;

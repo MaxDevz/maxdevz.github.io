@@ -1,223 +1,228 @@
 {
-  "palyers": [
+  "players": [
+    {
+      "id": 0,
+      "rating": 0,
+      "captain": false
+    },
     {
       "id": 1,
-      "cote": 25,
+      "rating": 25,
       "captain": true
     },
     {
       "id": 2,
-      "cote": 25,
+      "rating": 25,
       "captain": true
     },
     {
       "id": 3,
-      "cote": 25,
+      "rating": 25,
       "captain": true
     },
     {
       "id": 4,
-      "cote": 25,
+      "rating": 25,
       "captain": false
     },
     {
       "id": 5,
-      "cote": 25,
+      "rating": 25,
       "captain": true
     },
     {
       "id": 6,
-      "cote": 25,
+      "rating": 25,
       "captain": true
     },
     {
       "id": 7,
-      "cote": 25,
+      "rating": 25,
       "captain": false
     },
     {
       "id": 8,
-      "cote": 25,
+      "rating": 25,
       "captain": false
     },
     {
       "id": 9,
-      "cote": 24,
+      "rating": 24,
       "captain": true
     },
     {
       "id": 10,
-      "cote": 24,
+      "rating": 24,
       "captain": true
     },
     {
       "id": 11,
-      "cote": 24,
+      "rating": 24,
       "captain": false
     },
     {
       "id": 12,
-      "cote": 24,
+      "rating": 24,
       "captain": false
     },
     {
       "id": 13,
-      "cote": 23,
+      "rating": 23,
       "captain": true
     },
     {
       "id": 14,
-      "cote": 23,
+      "rating": 23,
       "captain": false
     },
     {
       "id": 15,
-      "cote": 23,
+      "rating": 23,
       "captain": false
     },
     {
       "id": 16,
-      "cote": 23,
+      "rating": 23,
       "captain": false
     },
     {
       "id": 17,
-      "cote": 23,
+      "rating": 23,
       "captain": false
     },
     {
       "id": 18,
-      "cote": 23,
+      "rating": 23,
       "captain": false
     },
     {
       "id": 19,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 20,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 21,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 22,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 23,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 24,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 25,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 26,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 27,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 28,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 29,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 30,
-      "cote": 22,
+      "rating": 22,
       "captain": false
     },
     {
       "id": 31,
-      "cote": 21,
+      "rating": 21,
       "captain": false
     },
     {
       "id": 32,
-      "cote": 21,
+      "rating": 21,
       "captain": false
     },
     {
       "id": 33,
-      "cote": 21,
+      "rating": 21,
       "captain": false
     },
     {
       "id": 34,
-      "cote": 21,
+      "rating": 21,
       "captain": false
     },
     {
       "id": 35,
-      "cote": 20,
+      "rating": 20,
       "captain": false
     },
     {
       "id": 36,
-      "cote": 20,
+      "rating": 20,
       "captain": false
     },
     {
       "id": 37,
-      "cote": 20,
+      "rating": 20,
       "captain": false
     },
     {
       "id": 38,
-      "cote": 20,
+      "rating": 20,
       "captain": false
     },
     {
       "id": 39,
-      "cote": 20,
+      "rating": 20,
       "captain": false
     },
     {
       "id": 40,
-      "cote": 19,
+      "rating": 19,
       "captain": false
     },
     {
       "id": 41,
-      "cote": 19,
+      "rating": 19,
       "captain": false
     },
     {
       "id": 42,
-      "cote": 19,
+      "rating": 19,
       "captain": false
     },
     {
       "id": 43,
-      "cote": 19,
+      "rating": 19,
       "captain": false
     },
     {
       "id": 44,
-      "cote": 19,
+      "rating": 19,
       "captain": false
     }
   ]
