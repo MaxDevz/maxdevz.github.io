@@ -1,7 +1,3 @@
-import players from "./data/players.json" assert { type: "json" };
-import league from "./data/league.json" assert { type: "json" };
-import defaultGame from "./data/default_game.json" assert { type: "json" };
-
 var pageHtml = "";
 var seasonSelected = "";
 var seasonJSON = "";
@@ -9,23 +5,34 @@ var playersInfo = null;
 var playersStats = new Map();
 var teamFiltered = "";
 
+var players;
+var league;
+var defaultGame;
+
 const PTS_BY_WIN = 2;
 const PTS_BY_TIE = 1;
 
 export const app = {
-  init: () => {
-    if(document.readyState !== 'loading') {
+  async init() {
+    var response = await fetch("./data/players.json");
+    players = await response.json();
+
+    response = await fetch("./data/league.json");
+    league = await response.json();
+
+    response = await fetch("./data/default_game.json");
+    defaultGame = await response.json();
+
+    if (document.readyState !== "loading") {
       app.load();
-    }
-    else {
+    } else {
       document.addEventListener("DOMContentLoaded", app.load);
     }
   },
 
   load: () => {
     window.app = app;
-    console.log(players);
-    console.log(league);
+
     app.getSeason();
     app.getTeamFiltered();
     app.getSeasonJSON();
