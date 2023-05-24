@@ -14,8 +14,12 @@ const PTS_BY_TIE = 1;
 
 export const app = {
   init: () => {
-    document.addEventListener("DOMContentLoaded", app.load);
-    console.log("HTML loaded");
+    if(document.readyState !== 'loading') {
+      app.load;
+    }
+    else {
+      document.addEventListener("DOMContentLoaded", app.load);
+    }
   },
 
   load: () => {
