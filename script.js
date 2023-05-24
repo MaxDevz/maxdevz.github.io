@@ -241,10 +241,15 @@ export const app = {
     );
 
     var index = 0;
-    playersStats.forEach((player) => {
-      if (!teamFiltered || teamFiltered == player.team) {
-        index++;
-        pageHtml += `<tr>
+    if (playersStats.size == 0) {
+      pageHtml += `<tr>
+          <td colspan = "16">Aucune statistique pour cette saison</td>
+        <tr>`;
+    } else {
+      playersStats.forEach((player) => {
+        if (!teamFiltered || teamFiltered == player.team) {
+          index++;
+          pageHtml += `<tr>
           <td class="rank">${index}</td>
           <td>
             <div class="team">
@@ -263,8 +268,8 @@ export const app = {
             </div>
           </td>
           <td class="name">${player.name}${
-          player.captain ? `<span class="captain">C</span>` : ""
-        }</td>
+            player.captain ? `<span class="captain">C</span>` : ""
+          }</td>
           <td class="rating">${player.rating}</td>
           <td>${player.gamesPlayed}</td>
           <td>${player.AB}</td>
@@ -279,8 +284,9 @@ export const app = {
           <td>${player.ERR}</td>
           <td>${player.SAC}</td>
         <tr>`;
-      }
-    });
+        }
+      });
+    }
 
     pageHtml += `</table></div>`;
     pageHtml += `<div class="legend">
@@ -507,25 +513,29 @@ export const app = {
 
     this.createTeamFilter();
 
-    for (const date of seasonJSON.schedule) {
-      const gameDate = new Date(date.date + "T00:00");
-      const options = { year: "numeric", month: "long", day: "numeric" };
+    if (seasonJSON.schedule.length == 0) {
+      pageHtml += `<div>Aucune horaire pour cette saison</div>`;
+    } else {
+      for (const date of seasonJSON.schedule) {
+        const gameDate = new Date(date.date + "T00:00");
+        const options = { year: "numeric", month: "long", day: "numeric" };
 
-      pageHtml += `<div class="date-card">
+        pageHtml += `<div class="date-card">
         <div class="date">${gameDate.toLocaleDateString("fr-CA", options)}</div>
         <div class="card-container">`;
 
-      for (const game of date.games) {
-        if (
-          !teamFiltered ||
-          teamFiltered == game.home ||
-          teamFiltered == game.away
-        ) {
-          await this.createGame(game, date);
+        for (const game of date.games) {
+          if (
+            !teamFiltered ||
+            teamFiltered == game.home ||
+            teamFiltered == game.away
+          ) {
+            await this.createGame(game, date);
+          }
         }
-      }
 
-      pageHtml += `</div></div>`;
+        pageHtml += `</div></div>`;
+      }
     }
 
     this.setPageHtml(pageHtml);
