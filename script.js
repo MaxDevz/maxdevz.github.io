@@ -292,6 +292,20 @@ export const app = {
         await this.setPlayerMap(game, hitter, false);
       }
     }
+
+    homeStatsJson.lineup.forEach((playerId) => {
+      if (this.getTeamPlayers(game.home).includes(playerId)) {
+        var hitterMap = playersStats.get(playerId);
+        hitterMap.gamesPlayed += 1;
+      }
+    });
+
+    awayStatsJson.lineup.forEach((playerId) => {
+      if (this.getTeamPlayers(game.away).includes(playerId)) {
+        var hitterMap = playersStats.get(playerId);
+        hitterMap.gamesPlayed += 1;
+      }
+    });
   },
 
   async setPlayerMap(game, hitter, isHome) {
