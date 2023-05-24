@@ -23,6 +23,7 @@ export const app = {
     console.log(players);
     console.log(league);
     app.getSeason();
+    app.getTeamFiltered();
     app.getSeasonJSON();
     app.loadPage();
   },
@@ -113,6 +114,11 @@ export const app = {
     console.log("Season selected: " + seasonSelected);
   },
 
+  getTeamFiltered() {
+    const urlParams = new URLSearchParams(window.location.search);
+    teamFiltered = urlParams.get("team");
+  },
+
   getSeasonJSON() {
     seasonJSON = league.seasons.find((season) => season.name == seasonSelected);
   },
@@ -137,11 +143,23 @@ export const app = {
   },
 
   selectTeam(team) {
+    const urlParams = new URLSearchParams(window.location.search);
+    var page = urlParams.get("page");
+    var url = "/?";
+
+    if (page) {
+      url += `page=${page}&`;
+    }
+    url += `season=${seasonSelected}`;
+
     if (teamFiltered == team) {
       teamFiltered = null;
     } else {
       teamFiltered = team;
+      url += `&team=${team}`;
     }
+
+    window.history.replaceState("", "", url);
 
     this.loadPage();
   },
@@ -219,7 +237,10 @@ export const app = {
           <td class="rank">${index}</td>
           <td>
             <div class="team">
-              <a href="">
+            <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
+              "'",
+              "\\'"
+            )}')">
                 <img
                   title="${player.team.replaceAll("_", " ")}"
                   alt="Logo"
@@ -227,7 +248,7 @@ export const app = {
                   src="./logo/${player.team.toLowerCase()}.png"
                 />
                 </div>
-              </a>
+              </div>
             </div>
           </td>
           <td class="name">${player.name}${
@@ -408,7 +429,9 @@ export const app = {
           <td class="rank">${index + 1}</td>
           <td>
             <div class="team">
-              <a href="">
+              <a class="team-link" href="?page=stats&season=${seasonSelected}&team=${
+        team.name
+      }">
                 <img
                   title="${team.name.replaceAll("_", " ")}"
                   alt="Logo"
@@ -579,6 +602,9 @@ export const app = {
                   : "loser"
               }">
                 <div class="team-group">
+                  <a class="team-link" href="?page=stats&season=${seasonSelected}&team=${
+      game.away
+    }">
                   <img
                     alt="Logo"
                     class="calendar-logo"
@@ -590,6 +616,7 @@ export const app = {
                     game.away
                   )}</div>
                   </div>
+                  </a>
                 </div>
               </div>
               <div class="team ${
@@ -600,6 +627,9 @@ export const app = {
                   : "loser"
               }">
                 <div class="team-group">
+                  <a class="team-link" href="?page=stats&season=${seasonSelected}&team=${
+      game.home
+    }">
                   <img
                     alt="Logo"
                     class="calendar-logo"
@@ -611,6 +641,7 @@ export const app = {
                     game.home
                   )}</div>
                   </div>
+                  </a>
                 </div>
               </div>
             </div>`;

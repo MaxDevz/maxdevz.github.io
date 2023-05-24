@@ -233,16 +233,16 @@ table .header th {
   font-weight: bold;
 }
 
-.team a:hover .team-name {
+.team .team-link:hover .team-name {
   color: #ff7500;
 }
 
-.team a:hover img {
+.team .team-link:hover img {
   border: 0.25rem solid #ff7500;
   box-shadow: 0 10px 17px rgba(255, 117, 0, 0.35);
 }
 
-.team a,
+.team .team-link,
 .team .team-group {
   display: flex;
   align-items: center;
