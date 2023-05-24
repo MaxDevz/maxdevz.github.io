@@ -303,7 +303,6 @@ svg.material-icons:not(:last-child) {
   flex-wrap: wrap;
   justify-content: center;
   margin-bottom: 16px;
-  width: min-content;
 }
 
 .card {
@@ -429,9 +428,5 @@ svg#logo {
 
   .confrontation {
     min-width: 0px;
-  }
-
-  .card-container {
-    width: auto;
   }
 }
