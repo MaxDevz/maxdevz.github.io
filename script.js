@@ -455,11 +455,11 @@ export const app = {
           <span class="">PJ</span> = Parties jouées
           <span class="">V</span> = Victoires
           <span class="">D</span> = Défaites
-          <span class="">N</span> = Partie Nulle
+          <span class="">N</span> = Parties Nulles
           <span class="">%V</span> = Pourcentage de victoire
           <span class="">PTS</span> = Points
           <span class="">PM</span> = Points marqués
-          <span class="">PA</span> = Points alloué
+          <span class="">PA</span> = Points alloués
           <span class="">Diff.</span> = Différentiel
         </div>
         
