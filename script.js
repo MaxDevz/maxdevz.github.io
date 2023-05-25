@@ -531,7 +531,7 @@ export const app = {
     var teamName = isHome ? game.home : game.away;
     if (!this.getTeamPlayers(teamName).includes(hitter.id)) {
       hitter.id = 0;
-      teamName = "ligueDuMercredi_logo";
+      teamName = "liguedumercredi_logo";
     }
     var hitterMap = playersStats.get(hitter.id);
 
