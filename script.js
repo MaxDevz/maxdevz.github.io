@@ -460,7 +460,7 @@ export const app = {
 
     pageHtml +=
       seasonSelected == 2023
-        ? `<div>*La première partie de la saison n'est pas inclut dans le TDB et la MDP ainsi que les PP</div>`
+        ? `<div class="note">*La première partie de la saison n'est pas inclut dans le TDB et la MDP ainsi que les PP</div>`
         : "";
 
     pageHtml += `<div class="legend">

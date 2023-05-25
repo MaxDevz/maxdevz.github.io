@@ -120,6 +120,10 @@ table .header th {
   margin: 0px 10px;
 }
 
+.note {
+  margin: 0px 20px;
+}
+
 .team-name {
   padding: 0px 10px;
   text-transform: capitalize;
