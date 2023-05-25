@@ -4,10 +4,12 @@ var seasonJSON = "";
 var playersInfo = null;
 var playersStats = new Map();
 var teamFiltered = "";
+var sortedColumn = "";
 
 var players;
 var league;
 var defaultGame;
+var columns;
 
 const PTS_BY_WIN = 2;
 const PTS_BY_TIE = 1;
@@ -22,6 +24,9 @@ export const app = {
 
     response = await fetch("./data/default_game.json");
     defaultGame = await response.json();
+
+    response = await fetch("./data/columns.json");
+    columns = await response.json();
 
     if (document.readyState !== "loading") {
       app.load();
@@ -183,6 +188,22 @@ export const app = {
     window.location.replace(url);
   },
 
+  sortByWithSelect() {
+    var column = document.getElementById("select-column").value;
+    if (sortedColumn != column) {
+      sortedColumn = column;
+      this.loadPage();
+    }
+  },
+
+  sortBy(column) {
+    document.getElementById("select-column").value = column;
+    if (sortedColumn != column) {
+      sortedColumn = column;
+      this.loadPage();
+    }
+  },
+
   createTeamFilter() {
     pageHtml += `<div class="team-filter">`;
 
@@ -201,12 +222,100 @@ export const app = {
     pageHtml += `</div>`;
   },
 
+  sortByColumn(a, b) {
+    if (a[1].rating == 0) {
+      return 1;
+    }
+
+    if (b[1].rating == 0) {
+      return -1;
+    }
+
+    const fristGame2023CCA = a[1].fristGame2023CC ? a[1].fristGame2023CC : 0;
+    const fristGame2023ABA = a[1].fristGame2023AB ? a[1].fristGame2023AB : 0;
+    const tdbA =
+      a[1].S +
+      a[1].double * 2 +
+      a[1].triple * 3 +
+      (seasonSelected == 2023 ? a[1].CC - fristGame2023CCA : a[1].CC) * 4;
+
+    const fristGame2023CCB = b[1].fristGame2023CC ? b[1].fristGame2023CC : 0;
+    const fristGame2023ABB = b[1].fristGame2023AB ? b[1].fristGame2023AB : 0;
+    const tdbB =
+      b[1].S +
+      b[1].double * 2 +
+      b[1].triple * 3 +
+      (seasonSelected == 2023 ? b[1].CC - fristGame2023CCB : b[1].CC) * 4;
+
+    const pmdpA = a[1].PB / (a[1].AB + a[1].BB);
+    const pmdpB = b[1].PB / (b[1].AB + b[1].BB);
+
+    var mdpA =
+      seasonSelected == 2023
+        ? tdbA / (a[1].AB - fristGame2023ABA)
+        : tdbA / a[1].AB;
+
+    var mdpB =
+      seasonSelected == 2023
+        ? tdbB / (b[1].AB - fristGame2023ABB)
+        : tdbB / b[1].AB;
+    mdpA = mdpA ? mdpA : 0;
+    mdpB = mdpB ? mdpB : 0;
+
+    switch (sortedColumn) {
+      case "PJ":
+        return b[1].PJ - a[1].PJ;
+      case "AB":
+        return b[1].AB - a[1].AB;
+      case "P":
+        return b[1].P - a[1].P;
+      case "CS":
+        return b[1].CS - a[1].CS;
+      case "PB":
+        return b[1].PB - a[1].PB;
+      case "%MDP":
+        return pmdpB - pmdpA;
+      case "S":
+        return b[1].S - a[1].S;
+      case "2B":
+        return b[1].double - a[1].double;
+      case "3B":
+        return b[1].triple - a[1].triple;
+      case "CC":
+        return b[1].CC - a[1].CC;
+      case "GC":
+        return b[1].GC - a[1].GC;
+      case "TDB":
+        return tdbB - tdbA;
+      case "MDP":
+        return mdpB - mdpA;
+      case "PPP":
+        return pmdpB + mdpB - (pmdpA + mdpA);
+      case "PP":
+        return b[1].PP - a[1].PP;
+      case "BB":
+        return b[1].BB - a[1].BB;
+      case "R0B":
+        return b[1].RB - a[1].RB;
+      case "OPT":
+        return b[1].OPT - a[1].OPT;
+      case "E":
+        return b[1].ERR - a[1].ERR;
+      case "SAC":
+        return b[1].SAC - a[1].SAC;
+      default:
+        return b[1].CS / b[1].AB - a[1].CS / a[1].AB;
+    }
+  },
+
   async createStats() {
     var date = new Date();
     if (playersStats.size == 0) {
       for (const date of seasonJSON.schedule) {
-        for (const game of date.games) {
-          await this.createStatsMap(game, date);
+        if (new Date(date.date + "T00:00") <= new Date()) {
+          for (const game of date.games) {
+            await this.createStatsMap(game, date);
+          }
         }
       }
     }
@@ -215,103 +324,167 @@ export const app = {
 
     this.createTeamFilter();
 
-    pageHtml += `<div class="stats">
-      <table>
+    pageHtml += `
+    <div class="sort-by">Trié par : 
+      <select name="select-column" id="select-column" onchange="app.sortByWithSelect()">`;
+
+    columns.forEach((column) => {
+      if (column.sortable) {
+        pageHtml += `<option value="${column.short}" ${
+          sortedColumn == column.short ||
+          (column.short == "MAB" && !sortedColumn)
+            ? "selected"
+            : ""
+        }>${column.short}</option>`;
+      }
+    });
+
+    playersStats = new Map(
+      [...playersStats].sort((a, b) => this.sortByColumn(a, b))
+    );
+
+    console.log(playersStats);
+
+    pageHtml += `</select></div>`;
+
+    pageHtml += `<div class="stats">`;
+
+    if (playersStats.size == 0) {
+      pageHtml += `<div>Aucune statistique pour cette saison</div>`;
+    } else {
+      pageHtml += `<div class="unsortable-columns"><table>
         <tr class="header">
           <th title="Rang" class="rank">RG</th>
           <th>Équipe</th>
           <th class="name">Nom</th>
           <th></th>
-          <th title="Parties jouées">PJ</th>
-          <th title="Apparitions au bâton">AB</th>
-          <th title="Coups sûrs">CS</th>
-          <th title="Moyenne au bâton">MAB</th>
-          <th title="Présence sur les buts">PB</th>  
-          <th title="Moyenne de présence sur les buts">MDP</th>  
-          <th title="Coups de circuit">CC</th>
-          <th title="Buts sur balles">BB</th>
-          <th title="Retraits sans se rendre sur les buts">R0B</th>
-          <th title="Optionnels">OPT</th>
-          <th title="Erreurs">E</th>
-          <th title="Sacrifices">SAC</th>
         </tr>`;
 
-    playersStats = new Map(
-      [...playersStats].sort((a, b) => b[1].CS / b[1].AB - a[1].CS / a[1].AB)
-    );
+      var index = 0;
 
-    var index = 0;
-    if (playersStats.size == 0) {
-      pageHtml += `<tr>
-          <td colspan = "16">Aucune statistique pour cette saison</td>
-        <tr>`;
-    } else {
       playersStats.forEach((player) => {
         if (!teamFiltered || teamFiltered == player.team) {
           index++;
+
           pageHtml += `<tr>
-          <td class="rank">${index}</td>
-          <td>
-            <div class="team">
-            <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
-              "'",
-              "\\'"
-            )}')">
-                <img
-                  title="${player.team.replaceAll("_", " ")}"
-                  alt="Logo"
-                  class="calendar-logo"
-                  src="./logo/${player.team.toLowerCase()}.png"
-                />
+            <td class="rank">${index}</td>
+            <td>
+              <div class="team">
+              <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
+                "'",
+                "\\'"
+              )}')">
+                  <img
+                    title="${player.team.replaceAll("_", " ")}"
+                    alt="Logo"
+                    class="calendar-logo"
+                    src="./logo/${player.team.toLowerCase()}.png"
+                  />
+                  </div>
                 </div>
               </div>
-            </div>
-          </td>
-          <td class="name">${player.name}${
+            </td>
+            <td class="name">${player.name}${
             player.captain ? `<span class="captain">C</span>` : ""
           }</td>
-          <td class="rating">${player.rating}</td>
-          <td>${player.gamesPlayed}</td>
-          <td>${player.AB}</td>
-          <td>${player.CS}</td>
-          <th>${this.formatDecimal(player.CS / player.AB)}</th>
-          <td>${player.PB}</td>
-          <td>${this.formatDecimal(player.PB / (player.AB + player.BB))}</td>
-          <td>${player.CC}</td>
-          <td>${player.BB}</td>
-          <td>${player.RB}</td>
-          <td>${player.OPT}</td>
-          <td>${player.ERR}</td>
-          <td>${player.SAC}</td>
+            <td class="rating">${player.rating}</td>
+          <tr>`;
+        }
+      });
+
+      pageHtml += `</table></div><div class="sortable-columns"><table>
+        <tr class="header">`;
+
+      columns.forEach((column) => {
+        if (column.sortable) {
+          pageHtml += `<th title="${column.description}" ${this.isSorted(
+            column.short
+          )} onclick="app.sortBy('${column.short}')">${column.short}</th>`;
+        }
+      });
+
+      pageHtml += `</tr>`;
+
+      playersStats.forEach((player) => {
+        if (!teamFiltered || teamFiltered == player.team) {
+          const fristGame2023CC = player.fristGame2023CC
+            ? player.fristGame2023CC
+            : 0;
+          const fristGame2023AB = player.fristGame2023AB
+            ? player.fristGame2023AB
+            : 0;
+          const tdb =
+            player.S +
+            player.double * 2 +
+            player.triple * 3 +
+            (seasonSelected == 2023 ? player.CC - fristGame2023CC : player.CC) *
+              4;
+          const pmdp = player.PB / (player.AB + player.BB);
+          var mdp =
+            seasonSelected == 2023
+              ? tdb / (player.AB - fristGame2023AB)
+              : tdb / player.AB;
+          mdp = mdp ? mdp : 0;
+
+          pageHtml += `<tr>
+          <td ${this.isSorted("PJ")}>${player.PJ}</td>
+          <td ${this.isSorted("AB")}>${player.AB}</td>
+          <td ${this.isSorted("P")}>${player.P}</td>
+          <td ${this.isSorted("CS")}>${player.CS}</td>
+          <td ${this.isSorted("MAB")}>${this.formatDecimal(
+            player.CS / player.AB
+          )}</td>
+          <td ${this.isSorted("PB")}>${player.PB}</td>
+          <td ${this.isSorted("%MDP")}>${this.formatDecimal(pmdp)}</td>
+          <td ${this.isSorted("S")}>${player.S}</td>
+          <td ${this.isSorted("2B")}>${player.double}</td>
+          <td ${this.isSorted("3B")}>${player.triple}</td>
+          <td ${this.isSorted("CC")}>${player.CC}</td>
+          <td ${this.isSorted("GC")}>${player.GC}</td>
+          <td ${this.isSorted("TDB")}>${tdb}</td>
+          <td ${this.isSorted("MDP")}>${this.formatDecimal(mdp)}</td>
+          <td ${this.isSorted("PPP")}>${this.formatDecimal(pmdp + mdp)}</td>
+          <td ${this.isSorted("PP")}>${player.PP}</td>
+          <td ${this.isSorted("BB")}>${player.BB}</td>
+          <td ${this.isSorted("R0B")}>${player.RB}</td>
+          <td ${this.isSorted("OPT")}>${player.OPT}</td>
+          <td ${this.isSorted("E")}>${player.ERR}</td>
+          <td ${this.isSorted("SAC")}>${player.SAC}</td>
         <tr>`;
         }
       });
+      pageHtml += `</table></div>`;
     }
 
-    pageHtml += `</table></div>`;
+    pageHtml += `</div>`;
+
+    pageHtml +=
+      seasonSelected == 2023
+        ? `<div>*La première partie de la saison n'est pas inclut dans le TDB et la MDP ainsi que les PP</div>`
+        : "";
+
     pageHtml += `<div class="legend">
         <div class="legend-title">Légende</div>
         <div>
           <span class="captain">C</span> = Capitaine
-          <span class="">RG</span> = Rang
-          <span class="">PJ</span> = Parties jouées
-          <span class="">AB</span> = Apparitions au bâton
-          <span class="">CS</span> = Coups sûrs
-          <span class="">MAB</span> = Moyenne au bâton
-          <span class="">PB</span> = Présence sur les buts
-          <span class="">MDP</span> = Moyenne de présence sur les buts
-          <span class="">CC</span> = Coups de circuit
-          <span class="">BB</span> = Buts sur balles
-          <span class="">R0B</span> = Retraits sans se rendre sur les buts
-          <span class="">OPT</span> = Optionnels
-          <span class="">E</span> = Erreurs
-          <span class="">SAC</span> = Sacrifices
-        </div>
-        
-      </div>`;
+          <span class="">RG</span> = Rang`;
+
+    columns.forEach((column) => {
+      if (column.sortable) {
+        pageHtml += `<span class="">${column.short}</span> = ${column.description}`;
+      }
+    });
+
+    pageHtml += `</div></div>`;
 
     this.setPageHtml(pageHtml);
     console.log("Create Stats Delay: " + (new Date() - date));
+  },
+
+  isSorted(column) {
+    return sortedColumn == column || (column == "MAB" && !sortedColumn)
+      ? 'class="sorted"'
+      : "";
   },
 
   async createStatsMap(game, date) {
@@ -332,16 +505,24 @@ export const app = {
     }
 
     homeStatsJson.lineup.forEach((playerId) => {
-      if (this.getTeamPlayers(game.home).includes(playerId)) {
-        var hitterMap = playersStats.get(playerId);
-        hitterMap.gamesPlayed += 1;
+      var hitterMap = playersStats.get(
+        this.getTeamPlayers(game.home).includes(playerId) ? playerId : 0
+      );
+      hitterMap.PJ += 1;
+      if (date.date == "2023-05-17") {
+        hitterMap.fristGame2023AB = hitterMap.AB;
+        hitterMap.fristGame2023CC = hitterMap.CC;
       }
     });
 
     awayStatsJson.lineup.forEach((playerId) => {
-      if (this.getTeamPlayers(game.away).includes(playerId)) {
-        var hitterMap = playersStats.get(playerId);
-        hitterMap.gamesPlayed += 1;
+      var hitterMap = playersStats.get(
+        this.getTeamPlayers(game.away).includes(playerId) ? playerId : 0
+      );
+      hitterMap.PJ += 1;
+      if (date.date == "2023-05-17") {
+        hitterMap.fristGame2023AB = hitterMap.AB;
+        hitterMap.fristGame2023CC = hitterMap.CC;
       }
     });
   },
@@ -359,8 +540,13 @@ export const app = {
       if (hitter.bags == "4B") hitterMap.P += 1;
       if (hitter.bags != "0B") hitterMap.PB += 1;
       if (hitter.CS) hitterMap.CS += 1;
+      if (hitter.S) hitterMap.S += 1;
+      if (hitter.double) hitterMap.double += 1;
+      if (hitter.triple) hitterMap.triple += 1;
       if (hitter.R) hitterMap.R += 1;
       if (hitter.CC) hitterMap.CC += 1;
+      if ((hitter.PP == 4) & hitter.CC) hitterMap.GC += 1;
+      hitterMap.PP += hitter.PP ? hitter.PP : 0;
       if (hitter.BB) hitterMap.BB += 1;
       if (hitter.bags == "0B" && hitter.R) hitterMap.RB += 1;
       if (hitter.OPT) hitterMap.OPT += 1;
@@ -374,13 +560,18 @@ export const app = {
         rating: info.rating,
         captain: info.captain,
         team: teamName,
-        gamesPlayed: 0,
+        PJ: 0,
         AB: hitter.BB ? 0 : 1,
         P: hitter.bags == "4B" ? 1 : 0,
         PB: hitter.bags != "0B" ? 1 : 0,
         CS: hitter.CS ? 1 : 0,
-        R: hitter.R ? 1 : 0,
+        S: hitter.S ? 1 : 0,
+        double: hitter.double ? 1 : 0,
+        triple: hitter.triple ? 1 : 0,
         CC: hitter.CC ? 1 : 0,
+        GC: (hitter.PP == 4) & hitter.CC ? 1 : 0,
+        PP: hitter.PP ? hitter.PP : 0,
+        R: hitter.R ? 1 : 0,
         BB: hitter.BB ? 1 : 0,
         RB: hitter.bags == "0B" && hitter.R ? 1 : 0,
         OPT: hitter.OPT ? 1 : 0,

@@ -1,0 +1,152 @@
+[
+  {
+    "value": "",
+    "short": "RG",
+    "description": "Rang",
+    "sortable": false
+  },
+  {
+    "value": "team",
+    "short": "Équipe",
+    "description": "",
+    "sortable": false
+  },
+  {
+    "value": "name",
+    "short": "Nom",
+    "description": "",
+    "sortable": false
+  },
+  {
+    "value": "rating",
+    "short": "",
+    "description": "",
+    "sortable": false
+  },
+  {
+    "value": "PJ",
+    "short": "PJ",
+    "description": "Parties jouées",
+    "sortable": true
+  },
+  {
+    "value": "AB",
+    "short": "AB",
+    "description": "Apparitions au bâton",
+    "sortable": true
+  },
+  {
+    "value": "P",
+    "short": "P",
+    "description": "Points",
+    "sortable": true
+  },
+  {
+    "value": "CS",
+    "short": "CS",
+    "description": "Coups sûrs",
+    "sortable": true
+  },
+  {
+    "value": "",
+    "short": "MAB",
+    "description": "Moyenne au bâton",
+    "sortable": true
+  },
+  {
+    "value": "PB",
+    "short": "PB",
+    "description": "Présences sur les buts",
+    "sortable": true
+  },
+  {
+    "value": "",
+    "short": "%MDP",
+    "description": "Moyenne de présence sur les buts",
+    "sortable": true
+  },
+  {
+    "value": "S",
+    "short": "S",
+    "description": "Simples",
+    "sortable": true
+  },
+  {
+    "value": "2B",
+    "short": "2B",
+    "description": "Doubles",
+    "sortable": true
+  },
+  {
+    "value": "3B",
+    "short": "3B",
+    "description": "Triples",
+    "sortable": true
+  },
+  {
+    "value": "CC",
+    "short": "CC",
+    "description": "Coups de circuit",
+    "sortable": true
+  },
+  {
+    "value": "GC",
+    "short": "GC",
+    "description": "Grand chelem",
+    "sortable": true
+  },
+  {
+    "value": "",
+    "short": "TDB",
+    "description": "Total de buts",
+    "sortable": true
+  },
+  {
+    "value": "",
+    "short": "MDP",
+    "description": "Moyenne de puissance",
+    "sortable": true
+  },
+  {
+    "value": "",
+    "short": "PPP",
+    "description": "Présences plus puissance",
+    "sortable": true
+  },
+  {
+    "value": "PP",
+    "short": "PP",
+    "description": "Points produits",
+    "sortable": true
+  },
+  {
+    "value": "BB",
+    "short": "BB",
+    "description": "Buts sur balles",
+    "sortable": true
+  },
+  {
+    "value": "RB",
+    "short": "R0B",
+    "description": "Retraits sans se rendre sur les buts",
+    "sortable": true
+  },
+  {
+    "value": "OPT",
+    "short": "OPT",
+    "description": "Optionnels",
+    "sortable": true
+  },
+  {
+    "value": "ERR",
+    "short": "E",
+    "description": "Erreurs",
+    "sortable": true
+  },
+  {
+    "value": "SAC",
+    "short": "SAC",
+    "description": "Sacrifices",
+    "sortable": true
+  }
+]
