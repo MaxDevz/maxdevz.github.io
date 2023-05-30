@@ -407,6 +407,8 @@ export const app = {
       for (const date of seasonJSON.schedule) {
         if (new Date(date.date + "T00:00") <= new Date()) {
           for (const game of date.games) {
+            homeStatsJson = null;
+            awayStatsJson = null;
             await this.createStatsMap(game, date.date);
           }
         }
