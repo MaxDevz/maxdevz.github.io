@@ -94,9 +94,100 @@ table .header th {
   border-radius: 50px;
 }
 
+.no-border-radius-top {
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  box-shadow: 0 20px 17px rgba(0, 0, 0, 0.35) !important;
+  border-top: none !important;
+}
+
+.side-name {
+  font-weight: normal;
+  font-style: italic;
+  color: #888;
+}
+
+.team-selection {
+  width: 100%;
+  padding: 0 10px;
+}
+
+.team-selection button {
+  font-weight: bold;
+  width: 50%;
+  padding: 5px;
+  border: none;
+  box-shadow: inset 0 10px 10px rgba(0, 0, 0, 0.15);
+  text-transform: capitalize;
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.team-selection button:not(.activated):hover {
+  color: #ff7500;
+  background-color: #ffebd9;
+  box-shadow: inset 0 10px 10px rgba(0, 0, 0, 0.15);
+}
+
+.team-selection button:first-child {
+  border-top-left-radius: 15px;
+}
+
+.team-selection button:last-child {
+  border-top-right-radius: 15px;
+}
+
+.team-selection .activated {
+  background-color: #fafafa;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
+}
+
+.team-selection .activated .side-name {
+  color: #ff7500;
+}
+
+.summary-selection {
+  padding: 0 10px;
+  margin-bottom: 30px;
+  display: flex;
+}
+
+.summary-selection button {
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  box-shadow: inset 0 10px 10px rgba(0, 0, 0, 0.15);
+  text-transform: capitalize;
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.summary-selection button:not(.activated):hover {
+  color: #ff7500;
+  background-color: #ffebd9;
+}
+
+.summary-selection button:first-child {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.summary-selection button:last-child {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.summary-selection .activated {
+  color: #ff7500;
+  background-color: #fafafa;
+  box-shadow: 0 0 17px rgba(0, 0, 0, 0.35);
+}
+
 .legend {
   padding: 10px;
   text-align: center;
+  max-width: 500px;
+  display: none;
 }
 
 .legend-title {
@@ -150,6 +241,87 @@ table .header th {
   align-items: center;
   justify-content: space-between;
   min-width: 370px;
+  cursor: pointer;
+}
+
+.attendance-summary {
+  background-color: #eee;
+  width: 100px;
+  height: 90px;
+  position: relative;
+}
+
+.attendance {
+  width: 80px;
+  text-align: center;
+  position: absolute;
+  top: 60%;
+  left: 0;
+  right: 0;
+  margin: auto;
+  transform: translateY(-50%);
+}
+
+.out-error {
+  text-align: center;
+  font-weight: bold;
+  position: absolute;
+  bottom: 0;
+  right: 7%;
+  margin: auto;
+  color: #ccc;
+  width: min-content;
+}
+
+.base {
+  width: max-content;
+  color: #888;
+  position: absolute;
+  top: 12%;
+  font-weight: bold;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  margin: auto;
+}
+
+.opt-sac {
+  text-align: center;
+  font-weight: bold;
+  position: absolute;
+  bottom: 0;
+  left: 2%;
+  margin: auto;
+  color: #ccc;
+  width: min-content;
+}
+
+.base span.activated,
+.out-error span.activated,
+.opt-sac span.activated,
+.points.activated {
+  display: initial;
+  color: #333;
+}
+
+.base span,
+.out-error span,
+.opt-sac span,
+.points {
+  color: #ccc;
+  font-size: 0.85rem;
+}
+
+.points {
+  display: none;
+  font-weight: bold;
+  text-align: center;
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  margin: auto;
+  transform: translateY(-50%);
 }
 
 .score {
@@ -169,7 +341,6 @@ table .header th {
   margin-bottom: 20px;
   font-size: 1.5rem;
   font-weight: bold;
-  text-transform: uppercase;
 }
 
 select {
@@ -183,15 +354,22 @@ select {
   flex: 1;
 }
 
-.stats .name {
+.stats .name,
+.summary .name {
   text-align: left;
 }
 
-.stats img {
+.summary .name {
+  width: 85px;
+}
+
+.stats .calendar-logo,
+.summary .calendar-logo {
   width: 35px;
 }
 
-.stats {
+.stats,
+.summary {
   display: flex;
   border-radius: 15px;
   border: 1px solid #eee;
@@ -203,6 +381,7 @@ select {
 
 .sortable-columns {
   overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .sortable-columns td {
@@ -225,6 +404,15 @@ select {
 .stats table td,
 .stats table tr {
   padding: 0 8px;
+}
+
+.summary .unsortable-columns td {
+  height: 94px;
+  padding: 0 8px;
+}
+
+.summary .sortable-columns {
+  display: flex;
 }
 
 .ranking {
@@ -392,8 +580,8 @@ svg#logo {
 }
 
 .loader {
-  border: 5px solid #ddd; /* Light grey */
-  border-top: 5px solid #ff7500; /* Blue */
+  border: 5px solid #ddd;
+  border-top: 5px solid #ff7500;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -415,8 +603,8 @@ svg#logo {
     width: 95vw;
   }
 
-  .stats {
-    width: 95vw;
+  .stats,
+  .summary {
     padding: 20px 10px;
   }
 
@@ -457,7 +645,12 @@ svg#logo {
 }
 
 @media screen and (max-width: 1000px) {
-  .stats {
+  .legend {
+    display: initial;
+  }
+
+  .stats,
+  .summary {
     width: 95vw;
   }
 
