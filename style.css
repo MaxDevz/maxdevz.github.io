@@ -232,6 +232,7 @@ table .header th {
 }
 
 .confrontation {
+  position: relative;
   display: flex;
   border-radius: 15px;
   border: 1px solid #ff7500;
@@ -242,6 +243,32 @@ table .header th {
   justify-content: space-between;
   min-width: 370px;
   cursor: pointer;
+  overflow: hidden;
+}
+
+.confrontation.reported {
+  border: 1px solid #888;
+  background-color: #d3d3d3;
+  cursor: auto;
+}
+
+.confrontation.reported .reported {
+  display: initial;
+  position: absolute;
+  font-size: 2rem;
+  min-width: 400px;
+  top: 35%;
+  left: -5%;
+  color: white;
+  text-align: center;
+  background-color: rgb(255 115 0 / 86%);
+  -webkit-transform: rotate(-17deg);
+  -ms-transform: rotate(-17deg);
+  transform: rotate(-17deg);
+}
+
+.confrontation .reported {
+  display: none;
 }
 
 .attendance-summary {
@@ -552,7 +579,7 @@ svg.material-icons:not(:last-child) {
 }
 
 .card-container .card:hover,
-.card-container .confrontation:hover {
+.card-container .confrontation:not(.reported):hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 17px rgba(0, 0, 0, 0.35);
 }

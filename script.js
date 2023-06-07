@@ -153,9 +153,14 @@ export const app = {
 
     pageHtml += `<div class="game">
           <div class="time">${game.time}</div>
-          <div id="confrontation" class="confrontation" onclick="app.selectGame('${
-            date + "_" + game.time
-          }')">
+          <div id="confrontation" class="confrontation ${
+            game.reported ? "reported" : ""
+          }" ${
+      game.reported
+        ? ""
+        : "onclick=\"app.selectGame('" + date + "_" + game.time + "')\""
+    }>
+            <div class="reported">Partie reportée : ${game.reported}</div>
             <div id="teams">
               <div class="team ${
                 awayPoints == homePoints
