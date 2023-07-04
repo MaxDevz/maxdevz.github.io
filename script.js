@@ -601,6 +601,11 @@ export const app = {
 
     if (playersStats.size == 0) {
       await this.createStatsMap(game, dateSelected);
+      sortedColumn = "RANG";
+
+      playersStats = new Map(
+        [...playersStats].sort((a, b) => this.sortByColumn(a, b))
+      );
     }
 
     const gameDate = new Date(date.date + "T00:00");
@@ -692,7 +697,6 @@ export const app = {
     pageHtml += `</table></div>`;
 
     const stats = teamFiltered == game.home ? homeStatsJson : awayStatsJson;
-    console.log(stats);
 
     pageHtml += `<div class="sortable-columns">`;
     for (const inning of stats.innings) {
@@ -705,7 +709,7 @@ export const app = {
           <th>${inning.value}</th>
         </tr>`;
 
-      for (let i = 0; i < 11; i++) {
+      for (let i = 0; i < stats.lineup.length; i++) {
         pageHtml += `<tr><td>`;
         const playerId = stats.lineup.at(i);
         const hitter = inning.hitters.find((hitter) => hitter.id == playerId);
@@ -985,6 +989,8 @@ export const app = {
         return b[1].ERR - a[1].ERR;
       case "SAC":
         return b[1].SAC - a[1].SAC;
+      case "RANG":
+        return a[1].order - b[1].order;
       default:
         return b[1].CS / b[1].AB - a[1].CS / a[1].AB;
     }
@@ -1013,13 +1019,19 @@ export const app = {
 
     for (const inning of homeStatsJson.innings) {
       for (const hitter of inning.hitters) {
-        await this.setPlayerMap(game, hitter, true);
+        var index = homeStatsJson.lineup.findIndex(
+          (player) => player == hitter.id
+        );
+        await this.setPlayerMap(game, hitter, true, index);
       }
     }
 
     for (const inning of awayStatsJson.innings) {
       for (const hitter of inning.hitters) {
-        await this.setPlayerMap(game, hitter, false);
+        var index = awayStatsJson.lineup.findIndex(
+          (player) => player.id == hitter.id
+        );
+        await this.setPlayerMap(game, hitter, false, index);
       }
     }
 
@@ -1050,7 +1062,7 @@ export const app = {
     });
   },
 
-  async setPlayerMap(game, hitter, isHome) {
+  async setPlayerMap(game, hitter, isHome, order) {
     var teamName = isHome ? game.home : game.away;
 
     var isSubstitute = false;
@@ -1086,6 +1098,7 @@ export const app = {
       var info = await this.getPlayerInfo(hitter.id);
       const stats = {
         name: this.getPlayerName(hitter.id),
+        order: order,
         rating: info.rating,
         captain: info.captain,
         team: teamName,
