@@ -9,6 +9,7 @@ var teamFiltered = "";
 var sortedColumn = "";
 var gameDateTime = "";
 var gameSummary = true;
+var subStats = false;
 
 var players;
 var league;
@@ -426,6 +427,8 @@ export const app = {
 
     this.createSortBy();
 
+    this.createSubStatsFilter();
+
     this.createStatsTable(
       seasonSelected == 2023
         ? "*La première partie de la saison n'est pas inclut dans le TDB et la MDP ainsi que les PP"
@@ -462,7 +465,11 @@ export const app = {
       var index = 0;
 
       playersStats.forEach((player) => {
-        if (!teamFiltered || teamFiltered == player.team) {
+        if (
+          (!teamFiltered && subStats == true) ||
+          (!teamFiltered && subStats == false && !player.isSubstitute) ||
+          teamFiltered == player.team
+        ) {
           index++;
 
           var imgName = player.team.toLowerCase();
@@ -511,7 +518,11 @@ export const app = {
       pageHtml += `</tr>`;
 
       playersStats.forEach((player) => {
-        if (!teamFiltered || teamFiltered == player.team) {
+        if (
+          (!teamFiltered && subStats == true) ||
+          (!teamFiltered && subStats == false && !player.isSubstitute) ||
+          teamFiltered == player.team
+        ) {
           const fristGame2023CC = player.fristGame2023CC
             ? player.fristGame2023CC
             : 0;
@@ -796,6 +807,14 @@ export const app = {
     window.location.replace(url);
   },
 
+  updateSubs() {
+    var subStatsValue = document.getElementById("sub-stats").checked;
+    if (subStats != subStatsValue) {
+      subStats = subStatsValue;
+      this.loadPage();
+    }
+  },
+
   sortByWithSelect() {
     var column = document.getElementById("select-column").value;
     if (sortedColumn != column) {
@@ -845,6 +864,17 @@ export const app = {
     }
 
     return (html += `</div>`);
+  },
+
+  createSubStatsFilter() {
+    pageHtml += `
+    <div class="sort-by">
+    <input type="checkbox" id="sub-stats" name="sub-stats" onchange="app.updateSubs()" ${
+      subStats ? "checked" : ""
+    }>
+    Stats Substituts`;
+
+    pageHtml += `</div>`;
   },
 
   createSortBy() {
@@ -909,14 +939,6 @@ export const app = {
   },
 
   sortByColumn(a, b) {
-    if (a[1].rating == 0) {
-      return 1;
-    }
-
-    if (b[1].rating == 0) {
-      return -1;
-    }
-
     const fristGame2023CCA = a[1].fristGame2023CC ? a[1].fristGame2023CC : 0;
     const fristGame2023ABA = a[1].fristGame2023AB ? a[1].fristGame2023AB : 0;
     const tdbA =
@@ -1037,7 +1059,9 @@ export const app = {
 
     homeStatsJson.lineup.forEach((playerId) => {
       var hitterMap = playersStats.get(
-        this.getTeamPlayers(game.home).includes(playerId) ? playerId : 0
+        this.getTeamPlayers(game.home).includes(playerId)
+          ? playerId
+          : playerId + "_S"
       );
       if (!this.isGamePage()) {
         hitterMap.PJ += 1;
@@ -1050,7 +1074,9 @@ export const app = {
 
     awayStatsJson.lineup.forEach((playerId) => {
       var hitterMap = playersStats.get(
-        this.getTeamPlayers(game.away).includes(playerId) ? playerId : 0
+        this.getTeamPlayers(game.away).includes(playerId)
+          ? playerId
+          : playerId + "_S"
       );
       if (!this.isGamePage()) {
         hitterMap.PJ += 1;
@@ -1066,11 +1092,11 @@ export const app = {
     var teamName = isHome ? game.home : game.away;
 
     var isSubstitute = false;
+    var originalId = hitter.id;
     if (!this.getTeamPlayers(teamName).includes(hitter.id)) {
-      if (this.isGamePage()) {
-        isSubstitute = true;
-      } else {
-        hitter.id = 0;
+      isSubstitute = true;
+      if (!this.isGamePage()) {
+        hitter.id = hitter.id + "_S";
         teamName = "liguedumercredi_logo";
       }
     }
@@ -1095,12 +1121,14 @@ export const app = {
       if (hitter.SAC) hitterMap.SAC += 1;
       playersStats.set(hitter.id, hitterMap);
     } else {
-      var info = await this.getPlayerInfo(hitter.id);
+      var info = await this.getPlayerInfo(originalId);
       const stats = {
-        name: this.getPlayerName(hitter.id),
+        name:
+          this.getPlayerName(originalId) +
+          (isSubstitute ? "<span class='rank'>  Sub</span>" : ""),
         order: order,
         rating: info.rating,
-        captain: info.captain,
+        captain: isSubstitute ? false : info.captain,
         team: teamName,
         PJ: 0,
         AB: hitter.BB ? 0 : 1,
