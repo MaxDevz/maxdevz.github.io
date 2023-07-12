@@ -153,7 +153,18 @@ export const app = {
     });
 
     pageHtml += `<div class="game">
-          <div class="time">${game.time}</div>
+          <div class="time">${game.time}`;
+
+    if (game.rescheduled) {
+      const gameRescheduled = new Date(game.rescheduled + "T00:00");
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      pageHtml += `<span class="rescheduled">(Reprise du ${gameRescheduled.toLocaleDateString(
+        "fr-CA",
+        options
+      )})</span>`;
+    }
+
+    pageHtml += `</div>
           <div id="confrontation" class="confrontation ${
             game.reported ? "reported" : ""
           }" ${

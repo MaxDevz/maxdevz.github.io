@@ -252,6 +252,11 @@ table .header th {
   cursor: auto;
 }
 
+.rescheduled {
+  color: #999;
+  padding: 10px;
+}
+
 .confrontation.reported .reported {
   display: initial;
   position: absolute;

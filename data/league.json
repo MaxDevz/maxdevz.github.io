@@ -186,6 +186,23 @@
           ]
         },
         {
+          "date": "2023-07-26",
+          "games": [
+            {
+              "time": "19h00",
+              "home": "la_bouchée_d'or",
+              "away": "centrale_auto_SM",
+              "rescheduled": "2023-06-07"
+            },
+            {
+              "time": "20h30",
+              "home": "bar_le_cocotier",
+              "away": "buffet_frédéric",
+              "rescheduled": "2023-06-07"
+            }
+          ]
+        },
+        {
           "date": "2023-08-02",
           "games": [
             {
@@ -430,12 +447,14 @@
             {
               "time": "19h00",
               "home": "buffet_frédéric",
-              "away": "la_bouchée_d'or"
+              "away": "la_bouchée_d'or",
+              "rescheduled": "2022-06-29"
             },
             {
               "time": "20h30",
               "home": "centrale_auto_SM",
-              "away": "bar_le_cocotier"
+              "away": "bar_le_cocotier",
+              "rescheduled": "2022-06-29"
             }
           ]
         }
