@@ -224,6 +224,11 @@
       "id": 44,
       "rating": 19,
       "captain": false
+    },
+    {
+      "id": 45,
+      "rating": 24,
+      "captain": false
     }
   ]
 }
