@@ -387,7 +387,8 @@ select {
 }
 
 .stats .name,
-.summary .name {
+.summary .name,
+.lineup .name {
   text-align: left;
 }
 
@@ -396,12 +397,14 @@ select {
 }
 
 .stats .calendar-logo,
-.summary .calendar-logo {
+.summary .calendar-logo,
+.lineup .calendar-logo {
   width: 35px;
 }
 
 .stats,
-.summary {
+.summary,
+.lineup {
   display: flex;
   border-radius: 15px;
   border: 1px solid #eee;
@@ -448,7 +451,12 @@ select {
   padding: 0 8px;
 }
 
-.summary .sortable-columns {
+.lineup td {
+  padding: 0 8px;
+}
+
+.summary .sortable-columns,
+.lineup .sortable-columns {
   display: flex;
 }
 
@@ -586,6 +594,7 @@ svg.material-icons:not(:last-child) {
 
 .card-container .card {
   cursor: pointer;
+  padding: 0 10px;
 }
 
 .card-container .card:hover,
@@ -641,7 +650,8 @@ svg#logo {
   }
 
   .stats,
-  .summary {
+  .summary,
+  .lineup {
     padding: 20px 10px;
   }
 
@@ -650,9 +660,9 @@ svg#logo {
   }
 
   .card {
-    padding: 8px;
+    padding: 8px !important;
     height: 16px;
-    margin: 0 5px;
+    margin: 5px;
   }
 
   .ranking table td,
@@ -687,7 +697,8 @@ svg#logo {
   }
 
   .stats,
-  .summary {
+  .summary,
+  .lineup {
     width: 95vw;
   }
 

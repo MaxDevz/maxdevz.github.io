@@ -10,6 +10,7 @@ var sortedColumn = "";
 var gameDateTime = "";
 var gameSummary = true;
 var subStats = false;
+var randomLineup = false;
 
 var players;
 var league;
@@ -65,6 +66,9 @@ export const app = {
         break;
       case "game":
         this.createGame();
+        break;
+      case "lineup":
+        this.createLineup();
         break;
       default:
         this.createCalendar();
@@ -779,6 +783,86 @@ export const app = {
   },
 
   // ****************************
+  // LINEUP
+  // ****************************
+
+  async createLineup() {
+    pageHtml = this.createPageTitle("LINEUP", true);
+
+    this.createTeamFilter();
+
+    if (!teamFiltered) {
+      pageHtml += "Veuillez choisir une équipe!";
+    } else {
+      if (playersStats.size == 0) {
+        for (const date of seasonJSON.schedule) {
+          if (new Date(date.date + "T00:00") <= new Date()) {
+            for (const game of date.games) {
+              homeStatsJson = null;
+              awayStatsJson = null;
+              await this.createStatsMap(game, date.date);
+            }
+          }
+        }
+      }
+      pageHtml += `<div class="card-container"><button class="card" onclick="app.shuffleLineup()"> <i class="fas fa-question"></i>Génération aléatoire</button></div>`;
+
+      pageHtml += `<div class="lineup">`;
+      pageHtml += `<div><table>
+      <tr class="header">
+        <th title="Rang" class="rank">RG</th>
+        <th>Équipe</th>
+        <th class="name">Nom</th>
+      </tr>`;
+
+      if (randomLineup) {
+        playersStats = new Map(this.shuffle([...playersStats]));
+      }
+      var index = 0;
+
+      playersStats.forEach((player) => {
+        if (!teamFiltered || teamFiltered == player.team) {
+          index++;
+
+          var imgName = player.team.toLowerCase();
+          var imgTitle = player.team.replaceAll("_", " ");
+          if (player.isSubstitute) {
+            imgName = "liguedumercredi_logo";
+            imgTitle = "Substitut";
+          }
+
+          pageHtml += `<tr>
+            <td class="rank">${index}</td>
+            <td>
+              <div class="team">
+              <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
+                "'",
+                "\\'"
+              )}')">
+                  <img
+                    title="${imgTitle}"
+                    alt="Logo"
+                    class="calendar-logo"
+                    src="./logo/${imgName}.png"
+                  />
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="name">${player.name}${
+            player.captain ? `<span class="captain">C</span>` : ""
+          }</td>
+          <tr>`;
+        }
+      });
+
+      pageHtml += `</table></div></div>`;
+    }
+
+    this.setPageHtml(pageHtml);
+  },
+
+  // ****************************
   // EVENT FUNCTION
   // ****************************
 
@@ -809,6 +893,11 @@ export const app = {
       window.history.replaceState("", "", url);
     }
 
+    this.loadPage();
+  },
+
+  shuffleLineup() {
+    randomLineup = true;
     this.loadPage();
   },
 
@@ -853,6 +942,26 @@ export const app = {
   // ****************************
   // UTILS
   // ****************************
+
+  shuffle(array) {
+    let currentIndex = array.length,
+      randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
+    }
+
+    return array;
+  },
 
   formatDecimal(value) {
     return value >= 1
