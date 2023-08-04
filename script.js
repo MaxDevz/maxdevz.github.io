@@ -458,12 +458,14 @@ export const app = {
       );
     }
 
-    pageHtml += `<div class="stats ${
+    pageHtml += `<div class="stats-container"><div class="stats ${
       !asBorderTop ? "no-border-radius-top" : ""
     }">`;
 
     if (playersStats.size == 0) {
-      pageHtml += `<div>Aucune statistique pour cette saison</div>`;
+      pageHtml += `<div>Aucune statistique pour cette ${
+        this.isGamePage() ? "partie" : "saison"
+      }</div>`;
     } else {
       pageHtml += `<div class="unsortable-columns"><table>
         <tr class="header">
@@ -585,7 +587,7 @@ export const app = {
       pageHtml += `</table></div>`;
     }
 
-    pageHtml += `</div>`;
+    pageHtml += `</div></div>`;
 
     pageHtml += note ? `<div class="note">${note}</div>` : "";
 
