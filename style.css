@@ -95,8 +95,8 @@ table .header th {
 .champions {
   margin-top: 20px;
   color: #ff7500;
-  font-size: xx-large;
-  font-family: Impact;
+  font-size: 1.9rem;
+  font-weight: bold;
 }
 
 .year {
@@ -363,7 +363,7 @@ table .header th {
 }
 
 .position {
-  color: #999;
+  color: #444;
   padding: 0px 10px;
   font-weight: 100;
   font-style: italic;
