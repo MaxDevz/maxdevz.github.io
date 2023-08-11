@@ -54,6 +54,7 @@ export const app = {
   loadPage() {
     const urlParams = new URLSearchParams(window.location.search);
     var page = urlParams.get("page");
+    var seasonParam = urlParams.get("season");
 
     this.setLoadingSpinner("Chargement...");
 
@@ -70,8 +71,15 @@ export const app = {
       case "lineup":
         this.createLineup();
         break;
+      case "playoffs":
+        this.createPlayoffs();
+        break;
       default:
-        this.createCalendar();
+        if (seasonJSON.playoffs && !seasonParam) {
+          this.createPlayoffs();
+        } else {
+          this.createCalendar();
+        }
     }
   },
 
@@ -106,6 +114,10 @@ export const app = {
         }
 
         pageHtml += `</div></div>`;
+      }
+
+      if (seasonJSON.playoffs) {
+        await this.createPlayoffsCalendar();
       }
     }
 
@@ -159,20 +171,29 @@ export const app = {
     pageHtml += `<div class="game">
           <div class="time">${game.time}`;
 
-    if (game.rescheduled) {
-      const gameRescheduled = new Date(game.rescheduled + "T00:00");
-      const options = { year: "numeric", month: "long", day: "numeric" };
-      pageHtml += `<span class="rescheduled">(Reprise du ${gameRescheduled.toLocaleDateString(
-        "fr-CA",
-        options
-      )})</span>`;
+    if (game.rescheduled || game.game_number) {
+      var note = `Partie ${game.game_number} de 3`;
+      if (game.game_number == 3) {
+        note += ` (Si Nécessaire)`;
+      }
+
+      if (game.rescheduled) {
+        const gameRescheduled = new Date(game.rescheduled + "T00:00");
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        note = `(Reprise du ${gameRescheduled.toLocaleDateString(
+          "fr-CA",
+          options
+        )})`;
+      }
+
+      pageHtml += `<span class="game-note">${note}</span>`;
     }
 
     pageHtml += `</div>
           <div id="confrontation" class="confrontation ${
             game.reported ? "reported" : ""
           }" ${
-      game.reported
+      game.reported || game.home == "TBD" || game.away == "TBD"
         ? ""
         : "onclick=\"app.selectGame('" + date + "_" + game.time + "')\""
     }>
@@ -186,9 +207,11 @@ export const app = {
                   : "loser"
               }">
                 <div class="team-group">
-                  <a class="team-link" href="?page=stats&season=${seasonSelected}&team=${
-      game.away
-    }">
+                <a class="team-link" ${
+                  game.away != "TBD"
+                    ? `href="?page=stats&season=${seasonSelected}&team=${game.away}"`
+                    : ""
+                }>
                   <img
                     alt="Logo"
                     class="calendar-logo"
@@ -198,7 +221,7 @@ export const app = {
                   <div class="team-name">${game.away.replaceAll("_", " ")}</div>
                   <div class="team-record">${this.getTeamRecord(
                     game.away
-                  )}</div>
+                  )} ${this.formatPosition(game.away_position)}</div>
                   </div>
                   </a>
                 </div>
@@ -211,9 +234,11 @@ export const app = {
                   : "loser"
               }">
                 <div class="team-group">
-                  <a class="team-link" href="?page=stats&season=${seasonSelected}&team=${
-      game.home
-    }">
+                  <a class="team-link" ${
+                    game.home != "TBD"
+                      ? ` href="?page=stats&season=${seasonSelected}&team=${game.home}"`
+                      : ""
+                  }>
                   <img
                     alt="Logo"
                     class="calendar-logo"
@@ -223,7 +248,7 @@ export const app = {
                   <div class="team-name">${game.home.replaceAll("_", " ")}</div>
                   <div class="team-record">${this.getTeamRecord(
                     game.home
-                  )}</div>
+                  )} ${this.formatPosition(game.home_position)}</div>
                   </div>
                   </a>
                 </div>
@@ -621,7 +646,11 @@ export const app = {
     const dateSelected = gameDateTimeSplit[0];
     const timeSelected = gameDateTimeSplit[1];
 
-    const date = seasonJSON.schedule.find((date) => date.date == dateSelected);
+    var date = seasonJSON.schedule.find((date) => date.date == dateSelected);
+    if (!date) {
+      date = seasonJSON.playoffs.find((date) => date.date == dateSelected);
+    }
+
     const game = date.games.find((game) => game.time == timeSelected);
     this.setSeasonJSON(date.date.split("-")[0]);
 
@@ -863,6 +892,149 @@ export const app = {
   },
 
   // ****************************
+  // PLAYOFFS
+  // ****************************
+
+  async createPlayoffs() {
+    pageHtml = this.createPageTitle("PLAYOFFS", true);
+
+    if (seasonJSON.playoffs) {
+      await this.createPlayoffsBanner();
+      await this.createPlayoffsTree();
+      await this.createPlayoffsCalendar();
+    }
+    this.setPageHtml(pageHtml);
+  },
+
+  async createPlayoffsCalendar() {
+    if (seasonJSON.playoffs.length == 0) {
+      pageHtml += `<div>Aucune horaire pour cette saison</div>`;
+    } else {
+      for (const date of seasonJSON.playoffs) {
+        const gameDate = new Date(date.date + "T00:00");
+        const options = { year: "numeric", month: "long", day: "numeric" };
+
+        pageHtml += `<div class="date-card">
+        <div class="date">${gameDate.toLocaleDateString("fr-CA", options)}</div>
+        <div class="card-container">`;
+
+        for (const game of date.games) {
+          if (
+            !teamFiltered ||
+            teamFiltered == game.home ||
+            teamFiltered == game.away
+          ) {
+            await this.createGameCalendar(game, date.date);
+          }
+        }
+
+        pageHtml += `</div></div>`;
+      }
+    }
+  },
+
+  async createPlayoffsBanner() {
+    pageHtml += `<div class="banner">
+      <div class="banner-content">
+        <div class="champions">CHAMPIONS</div>
+        <img
+          alt="Logo"
+          class="winner-logo"
+          src="./logo/${seasonJSON.winner.toLowerCase()}.png"
+        />
+        <div class="year">${seasonSelected}</div>
+        <img
+          alt="Logo"
+          class="league-logo"
+          src="./logo/tbd.png"
+        />
+      </div>
+    </div><div class="arrow-down"></div>`;
+  },
+
+  async createPlayoffsTree() {
+    pageHtml += `<div class="bracket">
+                  <div class="round">
+                    <div class="semi-final">${this.createTeams(
+                      seasonJSON.playoffs[0].games[0],
+                      false
+                    )}</div>
+                    <div class="semi-final">${this.createTeams(
+                      seasonJSON.playoffs[0].games[1],
+                      false
+                    )}</div>
+                  </div>
+                  <div class="bracket-connector">
+                    <img
+                    class="connector"
+                    src="./logo/bracket-connector.png"
+                    />
+                  </div>
+                  <div class="round">
+                    <div class="final">${this.createTeams(
+                      seasonJSON.playoffs[3].games[0],
+                      true
+                    )}</div>
+                  </div>
+                </div>`;
+  },
+
+  createTeams(game, final) {
+    return `<div id="teams">
+              <div class="team">
+                <div class="team-group">
+                  <div class="position">${game.home_position}</div>
+                  <img
+                    alt="Logo"
+                    class="calendar-logo"
+                    src="./logo/${game.home.toLowerCase()}.png"
+                  />
+                  <div>
+                    <div class="team-name">${game.home.replaceAll(
+                      "_",
+                      " "
+                    )}</div>
+                    <div class="team-record">${this.getTeamRecord(game.home)}
+                    </div>
+                  </div>
+                  ${this.createPlayoffsRecord(game.home, final)}
+                </div>
+              </div>
+              <div class="team">
+                <div class="team-group">
+                  <div class="position">${game.away_position}</div>
+                  <img
+                    alt="Logo"
+                    class="calendar-logo "
+                    src="./logo/${game.away.toLowerCase()}.png"
+                  />
+                  <div>
+                    <div class="team-name">${game.away.replaceAll(
+                      "_",
+                      " "
+                    )}</div>
+                    <div class="team-record">${this.getTeamRecord(game.away)}
+                    </div>
+                  </div>
+                  ${this.createPlayoffsRecord(game.away, final)}
+                </div>
+              </div>
+            </div>`;
+  },
+
+  createPlayoffsRecord(team, final) {
+    var record = this.getSemiFinalRecord(team);
+    if (final) {
+      record = record = this.getFinalRecord(team);
+    }
+
+    return `<div class="playoffs-record">
+              <div class="point ${record > 0 ? "active" : ""}"></div>
+              <div class="point ${record > 1 ? "active" : ""}"></div>
+            </div>`;
+  },
+
+  // ****************************
   // EVENT FUNCTION
   // ****************************
 
@@ -970,6 +1142,23 @@ export const app = {
           .toFixed(3)
           .toString()
           .replace("0.", ".");
+  },
+
+  formatPosition(value) {
+    var position;
+    switch (value) {
+      case 1:
+        position = `(${value}er)`;
+        break;
+      case 2:
+      case 3:
+      case 4:
+        position = `(${value}e)`;
+        break;
+      default:
+        position = "";
+    }
+    return position;
   },
 
   createPageTitle(title, addSelect) {
@@ -1219,7 +1408,7 @@ export const app = {
       isSubstitute = true;
       if (!this.isGamePage()) {
         hitter.id = hitter.id + "_S";
-        teamName = "liguedumercredi_logo";
+        teamName = "tbd";
       }
     }
     var hitterMap = playersStats.get(hitter.id);
@@ -1327,7 +1516,18 @@ export const app = {
   },
 
   getTeamRecord(teamName) {
-    return seasonJSON.teams.find((team) => team.name == teamName).record;
+    var team = seasonJSON.teams.find((team) => team.name == teamName);
+    return team ? team.record : "0-0-0";
+  },
+
+  getSemiFinalRecord(teamName) {
+    var team = seasonJSON.teams.find((team) => team.name == teamName);
+    return team ? team.semiFinal : 0;
+  },
+
+  getFinalRecord(teamName) {
+    var team = seasonJSON.teams.find((team) => team.name == teamName);
+    return team ? team.final : 0;
   },
 
   getTeamPlayers(teamName) {
