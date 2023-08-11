@@ -1436,7 +1436,7 @@ export const app = {
       const stats = {
         name:
           this.getPlayerName(originalId) +
-          (isSubstitute ? "<span class='rank'>  Sub</span>" : ""),
+          (isSubstitute ? "<span class='sub rank'>  Sub</span>" : ""),
         order: order,
         rating: info.rating,
         captain: isSubstitute ? false : info.captain,

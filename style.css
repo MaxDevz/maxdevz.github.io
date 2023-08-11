@@ -536,6 +536,10 @@ select {
   text-align: left;
 }
 
+td.name:has(.sub) {
+  height: 45px;
+}
+
 .summary .name {
   width: 85px;
 }
