@@ -9,6 +9,7 @@ var teamFiltered = "";
 var sortedColumn = "";
 var gameDateTime = "";
 var gameSummary = true;
+var isPlayoffs = false;
 var subStats = false;
 var randomLineup = false;
 
@@ -449,13 +450,18 @@ export const app = {
 
   async createStats() {
     var dateStart = new Date();
+    console.log(isPlayoffs);
+    var schedule = isPlayoffs ? seasonJSON.playoffs : seasonJSON.schedule;
+    console.log(schedule);
     if (playersStats.size == 0) {
-      for (const date of seasonJSON.schedule) {
-        if (new Date(date.date + "T00:00") <= new Date()) {
-          for (const game of date.games) {
-            homeStatsJson = null;
-            awayStatsJson = null;
-            await this.createStatsMap(game, date.date);
+      if (schedule) {
+        for (const date of schedule) {
+          if (new Date(date.date + "T00:00") <= new Date()) {
+            for (const game of date.games) {
+              homeStatsJson = null;
+              awayStatsJson = null;
+              await this.createStatsMap(game, date.date);
+            }
           }
         }
       }
@@ -468,6 +474,10 @@ export const app = {
     this.createSortBy();
 
     this.createSubStatsFilter();
+
+    this.createRegularSeasonPlayoffsSwitch();
+
+    console.log(playersStats);
 
     this.createStatsTable(
       seasonSelected == 2023
@@ -1089,6 +1099,16 @@ export const app = {
     }
   },
 
+  updateSeason() {
+    var seasonPlayoffsValue =
+      document.getElementById("season-playoffs").checked;
+    if (isPlayoffs != seasonPlayoffsValue) {
+      isPlayoffs = seasonPlayoffsValue;
+      playersStats = new Map();
+      this.loadPage();
+    }
+  },
+
   sortByWithSelect() {
     var column = document.getElementById("select-column").value;
     if (sortedColumn != column) {
@@ -1186,6 +1206,20 @@ export const app = {
     Stats Substituts`;
 
     pageHtml += `</div>`;
+  },
+
+  createRegularSeasonPlayoffsSwitch() {
+    pageHtml += `
+    <div class="season-playoffs">
+      <span>Saison Régulière<span>
+      <label class="switch">
+        <input type="checkbox" id="season-playoffs" name="season-playoffs" onchange="app.updateSeason()" ${
+          isPlayoffs ? "checked" : ""
+        }>
+        <span class="slider round"></span>
+      </label>
+      <span>Playoffs<span>
+    </div>`;
   },
 
   createSortBy() {
