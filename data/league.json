@@ -19,7 +19,7 @@
           "ptsFor": 119,
           "ptsAgainst": 132,
           "players": [9, 10, 7, 12, 17, 18, 30, 38, 39, 43, 44],
-          "semiFinal": 1,
+          "semiFinal": 2,
           "final": 0
         },
         {
@@ -37,7 +37,7 @@
           "ptsFor": 113,
           "ptsAgainst": 145,
           "players": [3, 8, 13, 16, 19, 27, 28, 29, 37, 41, 42],
-          "semiFinal": 0,
+          "semiFinal": 1,
           "final": 0
         }
       ],
@@ -270,18 +270,18 @@
             {
               "game_number": 2,
               "time": "19h00",
-              "home": "bar_le_cocotier",
-              "home_position": 2,
-              "away": "la_bouchée_d'or",
-              "away_position": 3
+              "home": "la_bouchée_d'or",
+              "home_position": 3,
+              "away": "bar_le_cocotier",
+              "away_position": 2
             },
             {
               "game_number": 2,
               "time": "20h30",
-              "home": "buffet_frédéric",
-              "home_position": 1,
-              "away": "centrale_auto_SM",
-              "away_position": 4
+              "home": "centrale_auto_SM",
+              "home_position": 4,
+              "away": "buffet_frédéric",
+              "away_position": 1
             }
           ]
         },
@@ -297,12 +297,12 @@
               "away_position": 4
             },
             {
-              "game_number": 3,
+              "game_number": 1,
               "time": "20h30",
-              "home": "bar_le_cocotier",
-              "home_position": 2,
-              "away": "la_bouchée_d'or",
-              "away_position": 3
+              "home": "la_bouchée_d'or",
+              "home_position": 3,
+              "away": "TBD",
+              "away_position": 0
             }
           ]
         },
@@ -310,31 +310,18 @@
           "date": "2023-09-06",
           "games": [
             {
-              "game_number": 1,
-              "time": "19h00",
-              "home": "TBD",
-              "home_position": 0,
-              "away": "TBD",
-              "away_position": 0
-            }
-          ]
-        },
-        {
-          "date": "2023-09-13",
-          "games": [
-            {
               "game_number": 2,
               "time": "19h00",
               "home": "TBD",
               "home_position": 0,
-              "away": "TBD",
-              "away_position": 0
+              "away": "la_bouchée_d'or",
+              "away_position": 3
             },
             {
               "game_number": 3,
               "time": "20h30",
-              "home": "TBD",
-              "home_position": 0,
+              "home": "la_bouchée_d'or",
+              "home_position": 3,
               "away": "TBD",
               "away_position": 0
             }
