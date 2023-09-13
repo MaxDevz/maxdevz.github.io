@@ -1589,7 +1589,10 @@ export const app = {
     seasonSelected = urlParams.get("season");
 
     if (!seasonSelected) {
-      seasonSelected = urlParams.get("game").split("-")[0];
+      const gameDate = urlParams.get("game");
+      if (gameDate) {
+        seasonSelected = gameDate.split("-")[0];
+      }
     }
 
     if (seasons.findIndex((season) => season == seasonSelected) == -1) {
