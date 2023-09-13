@@ -4,21 +4,29 @@
     {
       "name": "bar_le_cocotier",
       "record": "6-6-0",
+      "ptsFor": 162,
+      "ptsAgainst": 155,
       "players": [6, 9, 7, 24, 26, 10, 34, 14, 38, 30, 51]
     },
     {
       "name": "la_bouchée_d'or",
       "record": "5-7-0",
+      "ptsFor": 144,
+      "ptsAgainst": 170,
       "players": [46, 8, 11, 19, 23, 27, 20, 33, 42, 22, 35]
     },
     {
       "name": "buffet_frédéric",
       "record": "5-7-0",
+      "ptsFor": 159,
+      "ptsAgainst": 161,
       "players": [5, 25, 47, 1, 17, 48, 2, 37, 18, 39, 40]
     },
     {
       "name": "centrale_auto_SM",
       "record": "8-4-0",
+      "ptsFor": 182,
+      "ptsAgainst": 161,
       "players": [3, 4, 21, 16, 12, 13, 27, 41, 49, 50, 43]
     }
   ],
@@ -29,12 +37,16 @@
         {
           "time": "19h00",
           "home": "buffet_frédéric",
-          "away": "la_bouchée_d'or"
+          "away": "la_bouchée_d'or",
+          "homePoints": 7,
+          "awayPoints": 14
         },
         {
           "time": "20h30",
           "home": "centrale_auto_SM",
-          "away": "bar_le_cocotier"
+          "away": "bar_le_cocotier",
+          "homePoints": 11,
+          "awayPoints": 17
         }
       ]
     },
@@ -44,12 +56,16 @@
         {
           "time": "19h00",
           "home": "centrale_auto_SM",
-          "away": "buffet_frédéric"
+          "away": "buffet_frédéric",
+          "homePoints": 7,
+          "awayPoints": 11
         },
         {
           "time": "20h30",
           "home": "la_bouchée_d'or",
-          "away": "bar_le_cocotier"
+          "away": "bar_le_cocotier",
+          "homePoints": 11,
+          "awayPoints": 12
         }
       ]
     },
@@ -59,12 +75,16 @@
         {
           "time": "19h00",
           "home": "buffet_frédéric",
-          "away": "bar_le_cocotier"
+          "away": "bar_le_cocotier",
+          "homePoints": 15,
+          "awayPoints": 9
         },
         {
           "time": "20h30",
           "home": "centrale_auto_SM",
-          "away": "la_bouchée_d'or"
+          "away": "la_bouchée_d'or",
+          "homePoints": 21,
+          "awayPoints": 11
         }
       ]
     },
@@ -74,12 +94,16 @@
         {
           "time": "19h00",
           "home": "bar_le_cocotier",
-          "away": "centrale_auto_SM"
+          "away": "centrale_auto_SM",
+          "homePoints": 8,
+          "awayPoints": 15
         },
         {
           "time": "20h30",
           "home": "la_bouchée_d'or",
-          "away": "buffet_frédéric"
+          "away": "buffet_frédéric",
+          "homePoints": 12,
+          "awayPoints": 11
         }
       ]
     },
@@ -89,12 +113,16 @@
         {
           "time": "19h00",
           "home": "bar_le_cocotier",
-          "away": "la_bouchée_d'or"
+          "away": "la_bouchée_d'or",
+          "homePoints": 16,
+          "awayPoints": 7
         },
         {
           "time": "20h30",
           "home": "buffet_frédéric",
-          "away": "centrale_auto_SM"
+          "away": "centrale_auto_SM",
+          "homePoints": 17,
+          "awayPoints": 19
         }
       ]
     },
@@ -104,12 +132,16 @@
         {
           "time": "19h00",
           "home": "la_bouchée_d'or",
-          "away": "centrale_auto_SM"
+          "away": "centrale_auto_SM",
+          "homePoints": 10,
+          "awayPoints": 22
         },
         {
           "time": "20h30",
           "home": "bar_le_cocotier",
-          "away": "buffet_frédéric"
+          "away": "buffet_frédéric",
+          "homePoints": 20,
+          "awayPoints": 12
         }
       ]
     },
@@ -136,12 +168,16 @@
         {
           "time": "19h00",
           "home": "centrale_auto_SM",
-          "away": "buffet_frédéric"
+          "away": "buffet_frédéric",
+          "homePoints": 10,
+          "awayPoints": 9
         },
         {
           "time": "20h30",
           "home": "la_bouchée_d'or",
-          "away": "bar_le_cocotier"
+          "away": "bar_le_cocotier",
+          "homePoints": 11,
+          "awayPoints": 10
         }
       ]
     },
@@ -151,12 +187,16 @@
         {
           "time": "19h00",
           "home": "buffet_frédéric",
-          "away": "bar_le_cocotier"
+          "away": "bar_le_cocotier",
+          "homePoints": 12,
+          "awayPoints": 7
         },
         {
           "time": "20h30",
           "home": "centrale_auto_SM",
-          "away": "la_bouchée_d'or"
+          "away": "la_bouchée_d'or",
+          "homePoints": 18,
+          "awayPoints": 15
         }
       ]
     },
@@ -166,12 +206,16 @@
         {
           "time": "19h00",
           "home": "bar_le_cocotier",
-          "away": "centrale_auto_SM"
+          "away": "centrale_auto_SM",
+          "homePoints": 14,
+          "awayPoints": 17
         },
         {
           "time": "20h30",
           "home": "la_bouchée_d'or",
-          "away": "buffet_frédéric"
+          "away": "buffet_frédéric",
+          "homePoints": 17,
+          "awayPoints": 19
         }
       ]
     },
@@ -181,12 +225,16 @@
         {
           "time": "19h00",
           "home": "bar_le_cocotier",
-          "away": "la_bouchée_d'or"
+          "away": "la_bouchée_d'or",
+          "homePoints": 14,
+          "awayPoints": 10
         },
         {
           "time": "20h30",
           "home": "buffet_frédéric",
-          "away": "centrale_auto_SM"
+          "away": "centrale_auto_SM",
+          "homePoints": 15,
+          "awayPoints": 19
         }
       ]
     },
@@ -196,12 +244,16 @@
         {
           "time": "19h00",
           "home": "la_bouchée_d'or",
-          "away": "centrale_auto_SM"
+          "away": "centrale_auto_SM",
+          "homePoints": 15,
+          "awayPoints": 10
         },
         {
           "time": "20h30",
           "home": "bar_le_cocotier",
-          "away": "buffet_frédéric"
+          "away": "buffet_frédéric",
+          "homePoints": 16,
+          "awayPoints": 21
         }
       ]
     },
@@ -212,13 +264,17 @@
           "time": "19h00",
           "home": "buffet_frédéric",
           "away": "la_bouchée_d'or",
-          "rescheduled": "2022-06-29"
+          "rescheduled": "2022-06-29",
+          "homePoints": 10,
+          "awayPoints": 11
         },
         {
           "time": "20h30",
           "home": "centrale_auto_SM",
           "away": "bar_le_cocotier",
-          "rescheduled": "2022-06-29"
+          "rescheduled": "2022-06-29",
+          "homePoints": 13,
+          "awayPoints": 19
         }
       ]
     }

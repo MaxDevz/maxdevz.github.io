@@ -127,13 +127,6 @@ export const app = {
   },
 
   async createGameCalendar(game, date) {
-    if (!homeStatsJson) {
-      homeStatsJson = await this.readGame(game, date, true);
-    }
-    if (!awayStatsJson) {
-      awayStatsJson = await this.readGame(game, date, false);
-    }
-
     var homePoints = 0;
     var homeHits = 0;
     var homeErrors = 0;
@@ -141,6 +134,13 @@ export const app = {
     var awayPoints = 0;
     var awayHits = 0;
     var awayErrors = 0;
+
+    if (!homeStatsJson) {
+      homeStatsJson = await this.readGame(game, date, true);
+    }
+    if (!awayStatsJson) {
+      awayStatsJson = await this.readGame(game, date, false);
+    }
 
     homeStatsJson.innings.forEach((inning) => {
       inning.hitters.forEach((hitter) => {
@@ -169,6 +169,11 @@ export const app = {
         }
       });
     });
+
+    if (game.homePoints && game.awayPoints) {
+      homePoints = game.homePoints;
+      awayPoints = game.awayPoints;
+    }
 
     pageHtml += `<div class="game">
           <div class="time">${game.time}`;
@@ -1497,7 +1502,12 @@ export const app = {
   async readGame(game, date, isHome) {
     var statsJson = defaultGame;
 
-    if (new Date(date + "T00:00") <= new Date() && !game.reported) {
+    if (
+      new Date(date + "T00:00") <= new Date() &&
+      !game.reported &&
+      !game.homePoints &&
+      !game.awayPoints
+    ) {
       const stats = await fetch(
         `./data/${seasonSelected}/${isHome ? game.home : game.away}/${date}_${
           game.time
