@@ -1,0 +1,234 @@
+{
+  "players": [
+    {
+      "id": 0,
+      "rating": 0,
+      "captain": false
+    },
+    {
+      "id": 1,
+      "rating": 25,
+      "captain": true
+    },
+    {
+      "id": 2,
+      "rating": 25,
+      "captain": true
+    },
+    {
+      "id": 3,
+      "rating": 25,
+      "captain": true
+    },
+    {
+      "id": 4,
+      "rating": 25,
+      "captain": false
+    },
+    {
+      "id": 5,
+      "rating": 25,
+      "captain": true
+    },
+    {
+      "id": 6,
+      "rating": 25,
+      "captain": true
+    },
+    {
+      "id": 7,
+      "rating": 25,
+      "captain": false
+    },
+    {
+      "id": 8,
+      "rating": 25,
+      "captain": false
+    },
+    {
+      "id": 9,
+      "rating": 24,
+      "captain": true
+    },
+    {
+      "id": 10,
+      "rating": 24,
+      "captain": true
+    },
+    {
+      "id": 11,
+      "rating": 24,
+      "captain": false
+    },
+    {
+      "id": 12,
+      "rating": 24,
+      "captain": false
+    },
+    {
+      "id": 13,
+      "rating": 23,
+      "captain": true
+    },
+    {
+      "id": 14,
+      "rating": 23,
+      "captain": false
+    },
+    {
+      "id": 15,
+      "rating": 23,
+      "captain": false
+    },
+    {
+      "id": 16,
+      "rating": 23,
+      "captain": false
+    },
+    {
+      "id": 17,
+      "rating": 23,
+      "captain": false
+    },
+    {
+      "id": 18,
+      "rating": 23,
+      "captain": false
+    },
+    {
+      "id": 19,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 20,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 21,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 22,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 23,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 24,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 25,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 26,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 27,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 28,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 29,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 30,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 31,
+      "rating": 21,
+      "captain": false
+    },
+    {
+      "id": 32,
+      "rating": 21,
+      "captain": false
+    },
+    {
+      "id": 33,
+      "rating": 21,
+      "captain": false
+    },
+    {
+      "id": 34,
+      "rating": 21,
+      "captain": false
+    },
+    {
+      "id": 35,
+      "rating": 20,
+      "captain": false
+    },
+    {
+      "id": 36,
+      "rating": 20,
+      "captain": false
+    },
+    {
+      "id": 37,
+      "rating": 20,
+      "captain": false
+    },
+    {
+      "id": 38,
+      "rating": 20,
+      "captain": false
+    },
+    {
+      "id": 39,
+      "rating": 20,
+      "captain": false
+    },
+    {
+      "id": 40,
+      "rating": 19,
+      "captain": false
+    },
+    {
+      "id": 41,
+      "rating": 19,
+      "captain": false
+    },
+    {
+      "id": 42,
+      "rating": 19,
+      "captain": false
+    },
+    {
+      "id": 43,
+      "rating": 19,
+      "captain": false
+    },
+    {
+      "id": 44,
+      "rating": 19,
+      "captain": false
+    },
+    {
+      "id": 45,
+      "rating": 24,
+      "captain": false
+    }
+  ]
+}

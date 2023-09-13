@@ -14,7 +14,7 @@ var subStats = false;
 var randomLineup = false;
 
 var players;
-var league;
+var seasons;
 var defaultGame;
 var columns;
 
@@ -26,14 +26,17 @@ export const app = {
     var response = await fetch("./data/players.json");
     players = await response.json();
 
-    response = await fetch("./data/league.json");
-    league = await response.json();
+    response = await fetch("./data/seasons.json");
+    seasons = await response.json();
 
     response = await fetch("./data/default_game.json");
     defaultGame = await response.json();
 
     response = await fetch("./data/columns.json");
     columns = await response.json();
+
+    app.setSeason();
+    await app.setSeasonJSON(seasonSelected);
 
     if (document.readyState !== "loading") {
       app.load();
@@ -45,10 +48,8 @@ export const app = {
   load: () => {
     window.app = app;
 
-    app.setSeason();
     app.setTeamFiltered();
     app.setGameDateTime();
-    app.setSeasonJSON(seasonSelected);
     app.loadPage();
   },
 
@@ -450,9 +451,7 @@ export const app = {
 
   async createStats() {
     var dateStart = new Date();
-    console.log(isPlayoffs);
     var schedule = isPlayoffs ? seasonJSON.playoffs : seasonJSON.schedule;
-    console.log(schedule);
     if (playersStats.size == 0) {
       if (schedule) {
         for (const date of schedule) {
@@ -476,8 +475,6 @@ export const app = {
     this.createSubStatsFilter();
 
     this.createRegularSeasonPlayoffsSwitch();
-
-    console.log(playersStats);
 
     this.createStatsTable(
       seasonSelected == 2023
@@ -662,7 +659,6 @@ export const app = {
     }
 
     const game = date.games.find((game) => game.time == timeSelected);
-    this.setSeasonJSON(date.date.split("-")[0]);
 
     teamFiltered = teamFiltered ? teamFiltered : game.home;
 
@@ -1187,8 +1183,8 @@ export const app = {
     if (addSelect) {
       html += `<select name="season" id="season" onchange="app.changeSeason()">`;
 
-      league.seasons.forEach((season) => {
-        html += `<option value="${season.name}">${season.name}</option>`;
+      seasons.forEach((season) => {
+        html += `<option value="${season}">${season}</option>`;
       });
 
       html += `</select>`;
@@ -1501,7 +1497,7 @@ export const app = {
   async readGame(game, date, isHome) {
     var statsJson = defaultGame;
 
-    if (new Date(date + "T00:00") <= new Date()) {
+    if (new Date(date + "T00:00") <= new Date() && !game.reported) {
       const stats = await fetch(
         `./data/${seasonSelected}/${isHome ? game.home : game.away}/${date}_${
           game.time
@@ -1591,12 +1587,15 @@ export const app = {
   setSeason() {
     const urlParams = new URLSearchParams(window.location.search);
     seasonSelected = urlParams.get("season");
-    if (
-      league.seasons.findIndex((season) => season.name == seasonSelected) == -1
-    ) {
-      const newDate = new Date();
-      seasonSelected = newDate.getFullYear();
+
+    if (!seasonSelected) {
+      seasonSelected = urlParams.get("game").split("-")[0];
     }
+
+    if (seasons.findIndex((season) => season == seasonSelected) == -1) {
+      seasonSelected = seasons[0];
+    }
+
     console.log("Season selected: " + seasonSelected);
   },
 
@@ -1605,8 +1604,18 @@ export const app = {
     teamFiltered = urlParams.get("team");
   },
 
-  setSeasonJSON(seasonToLoad) {
-    seasonJSON = league.seasons.find((season) => season.name == seasonToLoad);
+  async setSeasonJSON(seasonToLoad) {
+    if (!seasonJSON || seasonJSON.name != seasonToLoad) {
+      const seasonInfo = await fetch(
+        `./data/${seasonToLoad}/season_${seasonToLoad}.json`
+      );
+      if (!seasonInfo.ok) {
+        const message = `An error has occured: ${seasonInfo.status}`;
+        console.log(message);
+      } else {
+        seasonJSON = await seasonInfo.json();
+      }
+    }
   },
 
   setGameDateTime() {
