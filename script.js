@@ -77,7 +77,7 @@ export const app = {
         this.createPlayoffs();
         break;
       default:
-        if (seasonJSON.playoffs && !seasonParam) {
+        if (seasonJSON.playoffs.length > 0 && !seasonParam) {
           this.createPlayoffs();
         } else {
           this.createCalendar();
@@ -222,7 +222,7 @@ export const app = {
                   <img
                     alt="Logo"
                     class="calendar-logo"
-                    src="./logo/${game.away.toLowerCase()}.png"
+                    src="./img/logo/${game.away.toLowerCase()}.png"
                   />
                   <div>
                   <div class="team-name">${game.away.replaceAll("_", " ")}</div>
@@ -249,7 +249,7 @@ export const app = {
                   <img
                     alt="Logo"
                     class="calendar-logo"
-                    src="./logo/${game.home.toLowerCase()}.png"
+                    src="./img/logo/${game.home.toLowerCase()}.png"
                   />
                   <div>
                   <div class="team-name">${game.home.replaceAll("_", " ")}</div>
@@ -395,7 +395,7 @@ export const app = {
                   title="${team.name.replaceAll("_", " ")}"
                   alt="Logo"
                   class="calendar-logo"
-                  src="./logo/${team.name.toLowerCase()}.png"
+                  src="./img/logo/${team.name.toLowerCase()}.png"
                 />
                 <div>
                   <div class="team-name">${team.name.replaceAll("_", " ")}</div>
@@ -545,7 +545,7 @@ export const app = {
                     title="${imgTitle}"
                     alt="Logo"
                     class="calendar-logo"
-                    src="./logo/${imgName}.png"
+                    src="./img/logo/${imgName}.png"
                   />
                   </div>
                 </div>
@@ -749,7 +749,7 @@ export const app = {
                 title="${imgTitle}"
                 alt="Logo"
                 class="calendar-logo"
-                src="./logo/${imgName}.png"
+                src="./img/logo/${imgName}.png"
               />
               </div>
             </div>
@@ -829,74 +829,48 @@ export const app = {
   async createLineup() {
     pageHtml = this.createPageTitle("LINEUP", true);
 
-    this.createTeamFilter();
-
-    if (!teamFiltered) {
-      pageHtml += "Veuillez choisir une équipe!";
-    } else {
-      if (playersStats.size == 0) {
-        for (const date of seasonJSON.schedule) {
-          if (new Date(date.date + "T00:00") <= new Date()) {
-            for (const game of date.games) {
-              homeStatsJson = null;
-              awayStatsJson = null;
-              await this.createStatsMap(game, date.date);
-            }
+    if (playersStats.size == 0) {
+      for (const date of seasonJSON.schedule) {
+        if (new Date(date.date + "T00:00") <= new Date()) {
+          for (const game of date.games) {
+            homeStatsJson = null;
+            awayStatsJson = null;
+            await this.createStatsMap(game, date.date);
           }
         }
       }
-      pageHtml += `<div class="card-container"><button class="card" onclick="app.shuffleLineup()"> <i class="fas fa-question"></i>Génération aléatoire</button></div>`;
+    }
 
-      pageHtml += `<div class="lineup">`;
-      pageHtml += `<div><table>
-      <tr class="header">
-        <th title="Rang" class="rank">RG</th>
-        <th>Équipe</th>
-        <th class="name">Nom</th>
-      </tr>`;
+    var lineupMap = new Map();
 
-      if (randomLineup) {
-        playersStats = new Map(this.shuffle([...playersStats]));
+    playersStats.forEach((player) => {
+      var teamList = lineupMap.get(player.team);
+      if (teamList) {
+        teamList.push(player);
+      } else {
+        lineupMap.set(player.team, [player]);
       }
-      var index = 0;
+    });
 
-      playersStats.forEach((player) => {
-        if (!teamFiltered || teamFiltered == player.team) {
-          index++;
+    if (playersStats.size > 0) {
+      this.createTeamFilter();
+      if (!teamFiltered) {
+        pageHtml += `<div class="card-container">`;
+        seasonJSON.teams.forEach((team) => {
+          this.createLineupCard(
+            this.generateBestLineup(lineupMap.get(team.name)),
+            false
+          );
+        });
+        pageHtml += `</div>`;
+      } else {
+        pageHtml += `<div class="card-container"><button class="card" onclick="app.shuffleLineup()"> <i class="fas fa-question"></i>Génération aléatoire</button></div>`;
 
-          var imgName = player.team.toLowerCase();
-          var imgTitle = player.team.replaceAll("_", " ");
-          if (player.isSubstitute) {
-            imgName = "liguedumercredi_logo";
-            imgTitle = "Substitut";
-          }
-
-          pageHtml += `<tr>
-            <td class="rank">${index}</td>
-            <td>
-              <div class="team">
-              <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
-                "'",
-                "\\'"
-              )}')">
-                  <img
-                    title="${imgTitle}"
-                    alt="Logo"
-                    class="calendar-logo"
-                    src="./logo/${imgName}.png"
-                  />
-                  </div>
-                </div>
-              </div>
-            </td>
-            <td class="name">${player.name}${
-            player.captain ? `<span class="captain">C</span>` : ""
-          }</td>
-          <tr>`;
-        }
-      });
-
-      pageHtml += `</table></div></div>`;
+        this.createLineupCard(
+          this.generateBestLineup(lineupMap.get(teamFiltered)),
+          randomLineup
+        );
+      }
     }
 
     this.setPageHtml(pageHtml);
@@ -911,7 +885,10 @@ export const app = {
 
     if (seasonJSON.playoffs) {
       await this.createPlayoffsBanner();
-      await this.createPlayoffsTree();
+      console.log(seasonJSON.playoffs);
+      if (seasonJSON.playoffs.length > 0) {
+        await this.createPlayoffsTree();
+      }
       await this.createPlayoffsCalendar();
     }
     this.setPageHtml(pageHtml);
@@ -919,7 +896,7 @@ export const app = {
 
   async createPlayoffsCalendar() {
     if (seasonJSON.playoffs.length == 0) {
-      pageHtml += `<div>Aucune horaire pour cette saison</div>`;
+      pageHtml += `<div>Aucune horaire pour les playoffs</div>`;
     } else {
       for (const date of seasonJSON.playoffs) {
         const gameDate = new Date(date.date + "T00:00");
@@ -951,13 +928,13 @@ export const app = {
         <img
           alt="Logo"
           class="winner-logo"
-          src="./logo/${seasonJSON.winner.toLowerCase()}.png"
+          src="./img/logo/${seasonJSON.winner.toLowerCase()}.png"
         />
         <div class="year">${seasonSelected}</div>
         <img
           alt="Logo"
           class="league-logo"
-          src="./logo/tbd.png"
+          src="./img/logo/tbd.png"
         />
       </div>
     </div><div class="arrow-down"></div>`;
@@ -978,7 +955,7 @@ export const app = {
                   <div class="bracket-connector">
                     <img
                     class="connector"
-                    src="./logo/bracket-connector.png"
+                    src="./img/bracket-connector.png"
                     />
                   </div>
                   <div class="round">
@@ -998,7 +975,7 @@ export const app = {
                   <img
                     alt="Logo"
                     class="calendar-logo"
-                    src="./logo/${game.home.toLowerCase()}.png"
+                    src="./img/logo/${game.home.toLowerCase()}.png"
                   />
                   <div>
                     <div class="team-name">${game.home.replaceAll(
@@ -1017,7 +994,7 @@ export const app = {
                   <img
                     alt="Logo"
                     class="calendar-logo "
-                    src="./logo/${game.away.toLowerCase()}.png"
+                    src="./img/logo/${game.away.toLowerCase()}.png"
                   />
                   <div>
                     <div class="team-name">${game.away.replaceAll(
@@ -1082,6 +1059,7 @@ export const app = {
   shuffleLineup() {
     randomLineup = true;
     this.loadPage();
+    randomLineup = false;
   },
 
   changeSeason() {
@@ -1253,11 +1231,113 @@ export const app = {
           class="logo-filter ${
             teamFiltered == team.name ? "team-selected" : ""
           }"
-          src="./logo/${team.name.toLowerCase()}.png"
+          src="./img/logo/${team.name.toLowerCase()}.png"
         />`;
     });
 
     pageHtml += `</div>`;
+  },
+
+  createLineupCard(teamLineup, random) {
+    pageHtml += `<div class="lineup">`;
+    pageHtml += `<div><table>
+      <tr class="header">
+        <th title="Rang" class="rank">RG</th>
+        <th>Équipe</th>
+        <th class="name">Nom</th>
+        <th class="rank">MAB</th>
+        <th class="rank">PPP</th>
+      </tr>`;
+
+    if (random) {
+      teamLineup = this.shuffle([...teamLineup]);
+    }
+
+    var index = 0;
+    teamLineup.forEach((player) => {
+      index++;
+
+      var imgName = player.team.toLowerCase();
+      var imgTitle = player.team.replaceAll("_", " ");
+      if (player.isSubstitute) {
+        imgName = "liguedumercredi_logo";
+        imgTitle = "Substitut";
+      }
+
+      const fristGame2023CC = player.fristGame2023CC
+        ? player.fristGame2023CC
+        : 0;
+      const fristGame2023AB = player.fristGame2023AB
+        ? player.fristGame2023AB
+        : 0;
+      const tdb =
+        player.S +
+        player.double * 2 +
+        player.triple * 3 +
+        (seasonSelected == 2023 ? player.CC - fristGame2023CC : player.CC) * 4;
+      const pmdp = player.PB / (player.AB + player.BB);
+      var mdp =
+        seasonSelected == 2023
+          ? tdb / (player.AB - fristGame2023AB)
+          : tdb / player.AB;
+      mdp = mdp ? mdp : 0;
+
+      pageHtml += `<tr>
+            <td class="rank">${index}</td>
+            <td>
+              <div class="team">
+              <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
+                "'",
+                "\\'"
+              )}')">
+                  <img
+                    title="${imgTitle}"
+                    alt="Logo"
+                    class="calendar-logo"
+                    src="./img/logo/${imgName}.png"
+                  />
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="name">${player.name}${
+        player.captain ? `<span class="captain">C</span>` : ""
+      }</td>
+          <td class="rank">${this.formatDecimal(player.CS / player.AB)}</td>
+          <td class="rank">${this.formatDecimal(pmdp + mdp)}</td>
+          <tr>`;
+    });
+
+    pageHtml += `</table></div></div>`;
+  },
+
+  generateBestLineup(teamLineup) {
+    var bestLineup = teamLineup;
+
+    sortedColumn = "PPP";
+    teamLineup = [...teamLineup].sort((a, b) =>
+      this.sortByColumn([0, a], [0, b])
+    );
+
+    bestLineup[3] = teamLineup.shift();
+    bestLineup[2] = teamLineup.shift();
+
+    sortedColumn = "MAB";
+    teamLineup = [...teamLineup].sort((a, b) =>
+      this.sortByColumn([0, a], [0, b])
+    );
+
+    bestLineup[0] = teamLineup.shift();
+    bestLineup[1] = teamLineup.shift();
+    bestLineup[4] = teamLineup.shift();
+    bestLineup[5] = teamLineup.shift();
+    bestLineup[6] = teamLineup.shift();
+    bestLineup[7] = teamLineup.shift();
+    bestLineup[8] = teamLineup.shift();
+    bestLineup[9] = teamLineup.shift();
+    bestLineup[10] = teamLineup.shift();
+
+    return bestLineup;
   },
 
   createGameButton(game) {
@@ -1397,7 +1477,7 @@ export const app = {
     for (const inning of awayStatsJson.innings) {
       for (const hitter of inning.hitters) {
         var index = awayStatsJson.lineup.findIndex(
-          (player) => player.id == hitter.id
+          (player) => player == hitter.id
         );
         await this.setPlayerMap(game, hitter, false, index);
       }
@@ -1542,6 +1622,12 @@ export const app = {
 
     var stats = document.getElementById("stats");
     stats.href = `/?page=stats&season=${seasonSelected}`;
+
+    var lineup = document.getElementById("lineup");
+    lineup.href = `/?page=lineup&season=${seasonSelected}`;
+
+    var playoffs = document.getElementById("playoffs");
+    playoffs.href = `/?page=playoffs&season=${seasonSelected}`;
   },
 
   setPageHtml(html) {

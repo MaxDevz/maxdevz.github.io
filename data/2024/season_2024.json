@@ -1,0 +1,217 @@
+{
+  "name": "2024",
+  "winner": "placeholder-winner",
+  "teams": [
+    {
+      "name": "bar_le_cocotier",
+      "record": "0-0-0",
+      "ptsFor": 0,
+      "ptsAgainst": 0,
+      "players": []
+    },
+    {
+      "name": "la_bouchée_d'or",
+      "record": "0-0-0",
+      "ptsFor": 0,
+      "ptsAgainst": 0,
+      "players": []
+    },
+    {
+      "name": "buffet_frédéric",
+      "record": "0-0-0",
+      "ptsFor": 0,
+      "ptsAgainst": 0,
+      "players": []
+    },
+    {
+      "name": "centrale_auto_SM",
+      "record": "0-0-0",
+      "ptsFor": 0,
+      "ptsAgainst": 0,
+      "players": []
+    }
+  ],
+  "schedule": [
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "buffet_frédéric",
+          "away": "bar_le_cocotier"
+        },
+        {
+          "time": "20h30",
+          "home": "centrale_auto_SM",
+          "away": "la_bouchée_d'or"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "centrale_auto_SM",
+          "away": "buffet_frédéric"
+        },
+        {
+          "time": "20h30",
+          "home": "bar_le_cocotier",
+          "away": "la_bouchée_d'or"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "buffet_frédéric",
+          "away": "la_bouchée_d'or"
+        },
+        {
+          "time": "20h30",
+          "home": "centrale_auto_SM",
+          "away": "bar_le_cocotier"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "la_bouchée_d'or",
+          "away": "centrale_auto_SM"
+        },
+        {
+          "time": "20h30",
+          "home": "bar_le_cocotier",
+          "away": "buffet_frédéric"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "la_bouchée_d'or",
+          "away": "bar_le_cocotier"
+        },
+        {
+          "time": "20h30",
+          "home": "buffet_frédéric",
+          "away": "centrale_auto_SM"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "bar_le_cocotier",
+          "away": "centrale_auto_SM"
+        },
+        {
+          "time": "20h30",
+          "home": "la_bouchée_d'or",
+          "away": "buffet_frédéric"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "buffet_frédéric",
+          "away": "bar_le_cocotier"
+        },
+        {
+          "time": "20h30",
+          "home": "centrale_auto_SM",
+          "away": "la_bouchée_d'or"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "centrale_auto_SM",
+          "away": "buffet_frédéric"
+        },
+        {
+          "time": "20h30",
+          "home": "bar_le_cocotier",
+          "away": "la_bouchée_d'or"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "buffet_frédéric",
+          "away": "la_bouchée_d'or"
+        },
+        {
+          "time": "20h30",
+          "home": "centrale_auto_SM",
+          "away": "bar_le_cocotier"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "la_bouchée_d'or",
+          "away": "centrale_auto_SM"
+        },
+        {
+          "time": "20h30",
+          "home": "bar_le_cocotier",
+          "away": "buffet_frédéric"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "la_bouchée_d'or",
+          "away": "bar_le_cocotier"
+        },
+        {
+          "time": "20h30",
+          "home": "buffet_frédéric",
+          "away": "centrale_auto_SM"
+        }
+      ]
+    },
+    {
+      "date": "",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "bar_le_cocotier",
+          "away": "centrale_auto_SM"
+        },
+        {
+          "time": "20h30",
+          "home": "la_bouchée_d'or",
+          "away": "buffet_frédéric"
+        }
+      ]
+    }
+  ],
+  "playoffs": []
+}

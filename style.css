@@ -298,7 +298,6 @@ table .header th {
 .legend {
   padding: 10px;
   text-align: center;
-  max-width: 500px;
   display: none;
 }
 
@@ -685,7 +684,6 @@ td.name:has(.sub) {
   display: flex;
   margin: 110px auto 32px;
   padding: 0 16px;
-  max-width: 1000px;
   flex-direction: column;
   align-items: center;
 }
