@@ -7,28 +7,28 @@
       "record": "0-0-0",
       "ptsFor": 0,
       "ptsAgainst": 0,
-      "players": []
+      "players": [3, 7, 35, 52, 43, 6, 49, 13, 19, 47, 34]
     },
     {
       "name": "la_bouchée_d'or",
       "record": "0-0-0",
       "ptsFor": 0,
       "ptsAgainst": 0,
-      "players": []
+      "players": [9, 10, 8, 36, 17, 21, 14, 30, 28, 44, 22]
     },
     {
       "name": "buffet_frédéric",
       "record": "0-0-0",
       "ptsFor": 0,
       "ptsAgainst": 0,
-      "players": []
+      "players": [1, 2, 41, 4, 37, 27, 29, 57, 58, 32, 24]
     },
     {
       "name": "centrale_auto_SM",
       "record": "0-0-0",
       "ptsFor": 0,
       "ptsAgainst": 0,
-      "players": []
+      "players": [16, 20, 5, 11, 53, 54, 39, 23, 55, 56, 31]
     }
   ],
   "schedule": [
@@ -198,7 +198,7 @@
       ]
     },
     {
-      "date": "2024-08-07",
+      "date": "2024-07-31",
       "games": [
         {
           "time": "19h00",
