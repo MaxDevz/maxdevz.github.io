@@ -1256,56 +1256,58 @@ export const app = {
     var index = 0;
     teamLineup.forEach((player) => {
       index++;
+      if (player) {
+        var imgName = player.team.toLowerCase();
+        var imgTitle = player.team.replaceAll("_", " ");
+        if (player.isSubstitute) {
+          imgName = "liguedumercredi_logo";
+          imgTitle = "Substitut";
+        }
 
-      var imgName = player.team.toLowerCase();
-      var imgTitle = player.team.replaceAll("_", " ");
-      if (player.isSubstitute) {
-        imgName = "liguedumercredi_logo";
-        imgTitle = "Substitut";
-      }
+        const fristGame2023CC = player.fristGame2023CC
+          ? player.fristGame2023CC
+          : 0;
+        const fristGame2023AB = player.fristGame2023AB
+          ? player.fristGame2023AB
+          : 0;
+        const tdb =
+          player.S +
+          player.double * 2 +
+          player.triple * 3 +
+          (seasonSelected == 2023 ? player.CC - fristGame2023CC : player.CC) *
+            4;
+        const pmdp = player.PB / (player.AB + player.BB);
+        var mdp =
+          seasonSelected == 2023
+            ? tdb / (player.AB - fristGame2023AB)
+            : tdb / player.AB;
+        mdp = mdp ? mdp : 0;
 
-      const fristGame2023CC = player.fristGame2023CC
-        ? player.fristGame2023CC
-        : 0;
-      const fristGame2023AB = player.fristGame2023AB
-        ? player.fristGame2023AB
-        : 0;
-      const tdb =
-        player.S +
-        player.double * 2 +
-        player.triple * 3 +
-        (seasonSelected == 2023 ? player.CC - fristGame2023CC : player.CC) * 4;
-      const pmdp = player.PB / (player.AB + player.BB);
-      var mdp =
-        seasonSelected == 2023
-          ? tdb / (player.AB - fristGame2023AB)
-          : tdb / player.AB;
-      mdp = mdp ? mdp : 0;
-
-      pageHtml += `<tr>
-            <td class="rank">${index}</td>
-            <td>
-              <div class="team">
-              <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
-                "'",
-                "\\'"
-              )}')">
-                  <img
-                    title="${imgTitle}"
-                    alt="Logo"
-                    class="calendar-logo"
-                    src="./img/logo/${imgName}.png"
-                  />
+        pageHtml += `<tr>
+              <td class="rank">${index}</td>
+              <td>
+                <div class="team">
+                <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
+                  "'",
+                  "\\'"
+                )}')">
+                    <img
+                      title="${imgTitle}"
+                      alt="Logo"
+                      class="calendar-logo"
+                      src="./img/logo/${imgName}.png"
+                    />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
-            <td class="name">${player.name}${
-        player.captain ? `<span class="captain">C</span>` : ""
-      }</td>
-          <td class="rank">${this.formatDecimal(player.CS / player.AB)}</td>
-          <td class="rank">${this.formatDecimal(pmdp + mdp)}</td>
-          <tr>`;
+              </td>
+              <td class="name">${player.name}${
+          player.captain ? `<span class="captain">C</span>` : ""
+        }</td>
+            <td class="rank">${this.formatDecimal(player.CS / player.AB)}</td>
+            <td class="rank">${this.formatDecimal(pmdp + mdp)}</td>
+            <tr>`;
+      }
     });
 
     pageHtml += `</table></div></div>`;
