@@ -18,16 +18,16 @@
     },
     {
       "name": "buffet_frédéric",
-      "record": "0-1-0",
-      "ptsFor": 10,
-      "ptsAgainst": 21,
-      "players": [1, 2, 41, 4, 37, 27, 29, 57, 58, 32, 24]
+      "record": "1-1-0",
+      "ptsFor": 27,
+      "ptsAgainst": 32,
+      "players": [1, 2, 41, 4, 37, 27, 29, 57, 58, 59, 24]
     },
     {
       "name": "centrale_auto_SM",
-      "record": "0-1-0",
-      "ptsFor": 9,
-      "ptsAgainst": 14,
+      "record": "0-2-0",
+      "ptsFor": 20,
+      "ptsAgainst": 31,
       "players": [16, 20, 5, 11, 53, 54, 39, 23, 55, 56, 31]
     }
   ],
@@ -58,7 +58,8 @@
         {
           "time": "20h30",
           "home": "bar_le_cocotier",
-          "away": "la_bouchée_d'or"
+          "away": "la_bouchée_d'or",
+          "reported": "Pluie"
         }
       ]
     },
