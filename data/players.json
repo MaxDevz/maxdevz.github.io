@@ -10,7 +10,8 @@
     },
     {
       "id": 2,
-      "name": "Maxime Hébert"
+      "name": "Maxime Hébert",
+      "nickname": "Soloman"
     },
     {
       "id": 3,
@@ -18,11 +19,13 @@
     },
     {
       "id": 4,
-      "name": "Jonathan Desmarais"
+      "name": "Jonathan Desmarais",
+      "nickname": "BigJo"
     },
     {
       "id": 5,
-      "name": "Éric Lefebvre"
+      "name": "Éric Lefebvre",
+      "nickname": "La Bine"
     },
     {
       "id": 6,
@@ -30,7 +33,8 @@
     },
     {
       "id": 7,
-      "name": "Steven Lefebvre"
+      "name": "Steven Lefebvre",
+      "nickname": "Steevo"
     },
     {
       "id": 8,
@@ -38,11 +42,13 @@
     },
     {
       "id": 9,
-      "name": "Brian Coutu"
+      "name": "Brian Coutu",
+      "nickname": "La Chenille"
     },
     {
       "id": 10,
-      "name": "Marc-André Bouthot"
+      "name": "Marc-André Bouthot",
+      "nickname": "Roux"
     },
     {
       "id": 11,
@@ -58,7 +64,8 @@
     },
     {
       "id": 14,
-      "name": "Charles Emond"
+      "name": "Charles Emond",
+      "nickname": "Chuck"
     },
     {
       "id": 15,
@@ -126,7 +133,8 @@
     },
     {
       "id": 31,
-      "name": "Éric Bisaillon"
+      "name": "Éric Bisaillon",
+      "nickname": "Bizz"
     },
     {
       "id": 32,
@@ -138,11 +146,13 @@
     },
     {
       "id": 34,
-      "name": "Alex Pelletier"
+      "name": "Alex Pelletier",
+      "nickname": "Ti-Rouge"
     },
     {
       "id": 35,
-      "name": "François Grondin"
+      "name": "François Grondin",
+      "nickname": "Léo"
     },
     {
       "id": 36,
