@@ -76,6 +76,9 @@ export const app = {
       case "playoffs":
         this.createPlayoffs();
         break;
+      case "player":
+        this.createPlayerPage();
+        break;
       default:
         if (
           seasonJSON.playoffs &&
@@ -463,7 +466,7 @@ export const app = {
     await this.createStatsSeasonOrPlayoffsMap();
 
     // Uncomment Export JSON in logs
-    var statsArrayJson = [];
+    /*var statsArrayJson = [];
     playersStats.forEach((value, key) => {
       var statsJson = {
         id: key,
@@ -472,7 +475,7 @@ export const app = {
       statsArrayJson.push(statsJson);
     });
 
-    console.log(JSON.stringify(statsArrayJson));
+    console.log(JSON.stringify(statsArrayJson));*/
 
     pageHtml = this.createPageTitle("STATISTIQUES", true);
 
@@ -523,7 +526,10 @@ export const app = {
 
       var index = 0;
 
-      playersStats.forEach((player) => {
+      console.log(playersStats);
+
+      playersStats.forEach((player, id) => {
+        console.log(id);
         if (
           (!teamFiltered && subStats == true) ||
           (!teamFiltered && subStats == false && !player.isSubstitute) ||
@@ -556,9 +562,15 @@ export const app = {
                 </div>
               </div>
             </td>
-            <td class="name">${player.name}${
+            <td class="name">
+              <a class="team-link" href="?page=player&id=${
+                isNaN(id) ? id.replace("_S", "") : id
+              }">
+                ${player.name}${
             player.captain ? `<span class="captain">C</span>` : ""
-          }</td>
+          }
+              </a>
+            </td>
             <td class="rating">${player.rating}</td>
           <tr>`;
         }
@@ -703,6 +715,7 @@ export const app = {
 
     this.createGameButton(game);
 
+    pageHtml += `<div class="team-selection">`;
     if (gameSummary) {
       await this.createGameSummary(game, date.date);
     } else {
@@ -713,6 +726,8 @@ export const app = {
         false
       );
     }
+
+    pageHtml += `</div>`;
 
     this.setPageHtml(pageHtml);
     console.log("Create Game Stats Delay: " + (new Date() - dateStart));
@@ -731,7 +746,7 @@ export const app = {
 
     var index = 0;
 
-    playersStats.forEach((player) => {
+    playersStats.forEach((player, id) => {
       if (!teamFiltered || teamFiltered == player.team) {
         index++;
 
@@ -760,9 +775,15 @@ export const app = {
             </div>
           </div>
         </td>
-        <td class="name">${player.name}${
+        <td class="name">
+        <a class="team-link" href="?page=player&id=${
+          isNaN(id) ? id.replace("_S", "") : id
+        }">
+                    ${player.name}${
           player.captain ? `<span class="captain">C</span>` : ""
-        }</td>
+        }
+              </a>
+        </td>
       <tr>`;
       }
     });
@@ -838,8 +859,9 @@ export const app = {
 
     var lineupMap = new Map();
 
-    playersStats.forEach((player) => {
+    playersStats.forEach((player, id) => {
       var teamList = lineupMap.get(player.team);
+      player.id = id;
       if (teamList) {
         teamList.push(player);
       } else {
@@ -1014,6 +1036,30 @@ export const app = {
               <div class="point ${record > 0 ? "active" : ""}"></div>
               <div class="point ${record > 1 ? "active" : ""}"></div>
             </div>`;
+  },
+
+  // ****************************
+  // PLAYERS
+  // ****************************
+
+  async createPlayerPage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    var id = urlParams.get("id");
+
+    var info = await this.getPlayerInfo(id);
+    var playerGeneralInfo = this.getPlayerGeneralInfo(id);
+
+    var name = playerGeneralInfo.name;
+    if (playerGeneralInfo.nickname && name.includes(" ")) {
+      var splitName = name.split(" ");
+      name = `${splitName[0]} "${playerGeneralInfo.nickname}" ${splitName[1]}`;
+    }
+
+    pageHtml = this.createPageTitle(name, false);
+
+    pageHtml += `À Venir!`;
+
+    this.setPageHtml(pageHtml);
   },
 
   // ****************************
@@ -1295,9 +1341,15 @@ export const app = {
                   </div>
                 </div>
               </td>
-              <td class="name">${player.name}${
+              <td class="name">
+              <a class="team-link" href="?page=player&id=${
+                isNaN(player.id) ? player.id.replace("_S", "") : player.id
+              }">
+                    ${player.name}${
           player.captain ? `<span class="captain">C</span>` : ""
-        }</td>
+        }
+              </a>
+            </td>
             <td class="rank">${this.formatDecimal(player.CS / player.AB)}</td>
             <td class="rank">${this.formatDecimal(pmdp + mdp)}</td>
             <tr>`;
@@ -1709,6 +1761,10 @@ export const app = {
 
   getPlayerName(id) {
     return players.players.find((player) => player.id == id).name;
+  },
+
+  getPlayerGeneralInfo(id) {
+    return players.players.find((player) => player.id == id);
   },
 
   async getPlayerInfo(id) {

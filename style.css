@@ -249,7 +249,7 @@ table .header th {
   border-top-right-radius: 15px;
 }
 
-.team-selection .activated {
+.team-selection button.activated {
   background-color: #fafafa;
   box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
 }
@@ -554,12 +554,14 @@ td.name:has(.sub) {
 .lineup {
   display: flex;
   border-radius: 15px;
-  border: 1px solid #eee;
   background-color: #fafafa;
   padding: 20px;
-  margin: 0 10px 20px;
   box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
   justify-content: center;
+}
+
+.lineup {
+  margin: 0 10px 20px;
 }
 
 .stats-container {
@@ -648,6 +650,7 @@ td.name:has(.sub) {
 }
 
 .team .team-link:hover img {
+  cursor: pointer;
   border: 0.25rem solid #ff7500;
   box-shadow: 0 10px 17px rgba(255, 117, 0, 0.35);
 }
@@ -758,7 +761,6 @@ svg.material-icons:not(:last-child) {
 a,
 a:visited,
 a:hover {
-  color: #1976d2;
   text-decoration: none;
 }
 
