@@ -77,7 +77,11 @@ export const app = {
         this.createPlayoffs();
         break;
       default:
-        if (seasonJSON.playoffs.length > 0 && !seasonParam) {
+        if (
+          seasonJSON.playoffs &&
+          seasonJSON.playoffs.length > 0 &&
+          !seasonParam
+        ) {
           this.createPlayoffs();
         } else {
           this.createCalendar();
@@ -456,20 +460,19 @@ export const app = {
 
   async createStats() {
     var dateStart = new Date();
-    var schedule = isPlayoffs ? seasonJSON.playoffs : seasonJSON.schedule;
-    if (playersStats.size == 0) {
-      if (schedule) {
-        for (const date of schedule) {
-          if (new Date(date.date + "T00:00") <= new Date()) {
-            for (const game of date.games) {
-              homeStatsJson = null;
-              awayStatsJson = null;
-              await this.createStatsMap(game, date.date);
-            }
-          }
-        }
-      }
-    }
+    await this.createStatsSeasonOrPlayoffsMap();
+
+    // Uncomment Export JSON in logs
+    var statsArrayJson = [];
+    playersStats.forEach((value, key) => {
+      var statsJson = {
+        id: key,
+        stats: value,
+      };
+      statsArrayJson.push(statsJson);
+    });
+
+    console.log(JSON.stringify(statsArrayJson));
 
     pageHtml = this.createPageTitle("STATISTIQUES", true);
 
@@ -477,7 +480,9 @@ export const app = {
 
     this.createSortBy();
 
-    this.createSubStatsFilter();
+    if (this.hasSubstitute()) {
+      this.createSubStatsFilter();
+    }
 
     this.createRegularSeasonPlayoffsSwitch();
 
@@ -829,17 +834,7 @@ export const app = {
   async createLineup() {
     pageHtml = this.createPageTitle("LINEUP", true);
 
-    if (playersStats.size == 0) {
-      for (const date of seasonJSON.schedule) {
-        if (new Date(date.date + "T00:00") <= new Date()) {
-          for (const game of date.games) {
-            homeStatsJson = null;
-            awayStatsJson = null;
-            await this.createStatsMap(game, date.date);
-          }
-        }
-      }
-    }
+    await this.createStatsSeasonOrPlayoffsMap();
 
     var lineupMap = new Map();
 
@@ -885,7 +880,6 @@ export const app = {
 
     if (seasonJSON.playoffs) {
       await this.createPlayoffsBanner();
-      console.log(seasonJSON.playoffs);
       if (seasonJSON.playoffs.length > 0) {
         await this.createPlayoffsTree();
       }
@@ -1137,7 +1131,7 @@ export const app = {
   formatDecimal(value) {
     return value >= 1
       ? (Math.round(value * 100) / 100).toFixed(2)
-      : (Math.round(value * 100) / 100)
+      : (Math.round(value * 1000) / 1000)
           .toFixed(3)
           .toString()
           .replace("0.", ".");
@@ -1313,6 +1307,30 @@ export const app = {
     pageHtml += `</table></div></div>`;
   },
 
+  async createStatsSeasonOrPlayoffsMap() {
+    if (playersStats.size == 0) {
+      var seasonPlayoffsStat = await this.readSeasonPlayoffsStats();
+      if (seasonPlayoffsStat === undefined || seasonPlayoffsStat.size == 0) {
+        var schedule = isPlayoffs ? seasonJSON.playoffs : seasonJSON.schedule;
+        if (schedule) {
+          for (const date of schedule) {
+            if (new Date(date.date + "T00:00") <= new Date()) {
+              for (const game of date.games) {
+                homeStatsJson = null;
+                awayStatsJson = null;
+                await this.createStatsMap(game, date.date);
+              }
+            }
+          }
+        }
+      } else {
+        seasonPlayoffsStat.forEach((player) => {
+          playersStats.set(player.id, player.stats);
+        });
+      }
+    }
+  },
+
   generateBestLineup(teamLineup) {
     var bestLineup = teamLineup;
 
@@ -1458,6 +1476,15 @@ export const app = {
     return page == "game";
   },
 
+  hasSubstitute() {
+    for (let [key, value] of playersStats) {
+      if (value.isSubstitute) {
+        return true;
+      }
+    }
+    return false;
+  },
+
   async createStatsMap(game, date) {
     if (!homeStatsJson) {
       homeStatsJson = await this.readGame(game, date, true);
@@ -1601,6 +1628,24 @@ export const app = {
       } else {
         statsJson = await stats.json();
       }
+    }
+
+    return statsJson;
+  },
+
+  async readSeasonPlayoffsStats() {
+    var statsJson;
+    const stats = await fetch(
+      `./data/${seasonSelected}/stats_${
+        isPlayoffs ? "playoff" : "season"
+      }_${seasonSelected}.json`
+    );
+
+    if (!stats.ok) {
+      const message = `An error has occured: ${stats.status}`;
+      console.log(message);
+    } else {
+      statsJson = await stats.json();
     }
 
     return statsJson;

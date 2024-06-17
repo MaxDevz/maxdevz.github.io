@@ -331,7 +331,14 @@
     },
     {
       "id": 60,
-      "rating": 22,
+      "rating": 23,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 61,
+      "rating": 21,
       "captain": false,
       "number": 0,
       "pos": ""
