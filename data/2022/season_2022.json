@@ -1,5 +1,6 @@
 {
   "name": "2022",
+  "winner": "placeholder-winner",
   "teams": [
     {
       "name": "bar_le_cocotier",
@@ -275,6 +276,105 @@
           "rescheduled": "2022-06-29",
           "homePoints": 13,
           "awayPoints": 19
+        }
+      ]
+    }
+  ],
+  "playoffs": [
+    {
+      "date": "2022-08-10",
+      "games": [
+        {
+          "game_number": 1,
+          "time": "19h00",
+          "home": "centrale_auto_SM",
+          "home_position": 1,
+          "away": "buffet_frédéric",
+          "away_position": 4
+        },
+        {
+          "game_number": 1,
+          "time": "20h30",
+          "home": "bar_le_cocotier",
+          "home_position": 2,
+          "away": "la_bouchée_d'or",
+          "away_position": 3
+        }
+      ]
+    },
+    {
+      "date": "2022-08-17",
+      "games": [
+        {
+          "game_number": 2,
+          "time": "19h00",
+          "home": "la_bouchée_d'or",
+          "home_position": 3,
+          "away": "bar_le_cocotier",
+          "away_position": 2
+        },
+        {
+          "game_number": 2,
+          "time": "20h30",
+          "home": "buffet_frédéric",
+          "home_position": 4,
+          "away": "centrale_auto_SM",
+          "away_position": 1
+        }
+      ]
+    },
+    {
+      "date": "2022-08-24",
+      "games": [
+        {
+          "game_number": 3,
+          "time": "19h00",
+          "home": "centrale_auto_SM",
+          "home_position": 1,
+          "away": "buffet_frédéric",
+          "away_position": 4
+        },
+        {
+          "game_number": 3,
+          "time": "20h30",
+          "home": "bar_le_cocotier",
+          "home_position": 2,
+          "away": "la_bouchée_d'or",
+          "away_position": 3
+        }
+      ]
+    },
+    {
+      "date": "2022-08-31",
+      "games": [
+        {
+          "game_number": 1,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0
+        }
+      ]
+    },
+    {
+      "date": "2022-09-07",
+      "games": [
+        {
+          "game_number": 2,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0
+        },
+        {
+          "game_number": 3,
+          "time": "20h30",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0
         }
       ]
     }

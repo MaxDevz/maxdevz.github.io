@@ -214,5 +214,103 @@
       ]
     }
   ],
-  "playoffs": []
+  "playoffs": [
+    {
+      "date": "2024-08-07",
+      "games": [
+        {
+          "game_number": 1,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 1,
+          "away": "TBD",
+          "away_position": 4
+        },
+        {
+          "game_number": 1,
+          "time": "20h30",
+          "home": "TBD",
+          "home_position": 2,
+          "away": "TBD",
+          "away_position": 3
+        }
+      ]
+    },
+    {
+      "date": "2024-08-14",
+      "games": [
+        {
+          "game_number": 2,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 3,
+          "away": "TBD",
+          "away_position": 2
+        },
+        {
+          "game_number": 2,
+          "time": "20h30",
+          "home": "TBD",
+          "home_position": 4,
+          "away": "TBD",
+          "away_position": 1
+        }
+      ]
+    },
+    {
+      "date": "2024-08-21",
+      "games": [
+        {
+          "game_number": 3,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 1,
+          "away": "TBD",
+          "away_position": 4
+        },
+        {
+          "game_number": 3,
+          "time": "20h30",
+          "home": "TBD",
+          "home_position": 2,
+          "away": "TBD",
+          "away_position": 3
+        }
+      ]
+    },
+    {
+      "date": "2024-08-28",
+      "games": [
+        {
+          "game_number": 1,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0
+        }
+      ]
+    },
+    {
+      "date": "2024-09-04",
+      "games": [
+        {
+          "game_number": 2,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0
+        },
+        {
+          "game_number": 3,
+          "time": "20h30",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0
+        }
+      ]
+    }
+  ]
 }
