@@ -131,7 +131,6 @@ table .header th {
 }
 
 .bracket {
-  width: 100%;
   display: flex;
   flex-direction: row;
   z-index: 30;
@@ -172,6 +171,55 @@ table .header th {
   margin-bottom: 20px;
   box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
   width: 100%;
+}
+
+.headshot {
+  border-radius: 150px;
+  width: 200px;
+  height: 200px;
+  margin: 5px 0px;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 1);
+  border: 5px solid #eee;
+  object-fit: contain;
+}
+
+.playerHeadshot {
+  position: relative;
+}
+
+.playerTeam {
+  position: absolute;
+  width: 50px;
+  border-radius: 50px;
+  border: 2px solid #eee;
+  bottom: 10px;
+  left: 140px;
+}
+
+.fullName {
+  padding: 0px 30px;
+  line-height: 1;
+  align-content: center;
+}
+
+.firstName {
+  font-family: fantasy;
+  color: #eee;
+  font-size: 2rem;
+  font-style: italic;
+}
+
+.lastName {
+  font-family: fantasy;
+  color: #eee;
+  font-size: 3.5rem;
+}
+
+.nickname {
+  font-family: fantasy;
+  color: #ff7500;
+  font-size: 2rem;
+  font-style: italic;
 }
 
 .logo-filter {
@@ -222,6 +270,7 @@ table .header th {
 .team-selection {
   width: 100%;
   padding: 0 10px;
+  position: relative;
 }
 
 .team-selection button {
@@ -262,6 +311,7 @@ table .header th {
   padding: 0 10px;
   margin-bottom: 30px;
   display: flex;
+  justify-content: center;
 }
 
 .summary-selection button {
@@ -323,7 +373,9 @@ table .header th {
 }
 
 .note {
-  margin: 0px 20px;
+  display: flex;
+  margin: 20px;
+  justify-content: center;
 }
 
 .team-name {
@@ -551,7 +603,8 @@ td.name:has(.sub) {
 
 .stats,
 .summary,
-.lineup {
+.lineup,
+.playerHeader {
   display: flex;
   border-radius: 15px;
   background-color: #fafafa;
@@ -560,12 +613,18 @@ td.name:has(.sub) {
   justify-content: center;
 }
 
-.lineup {
-  margin: 0 10px 20px;
+.playerHeader {
+  width: 100%;
+  max-width: 900px;
+  background-image: url("./img/headshots/headshot_backgroud.jpg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-bottom: 20px;
+  justify-content: left;
 }
 
-.stats-container {
-  width: 100%;
+.lineup {
+  margin: 0 10px 20px;
 }
 
 .sortable-columns {
@@ -695,6 +754,7 @@ td.name:has(.sub) {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 }
 
 svg.material-icons {
@@ -942,5 +1002,12 @@ input:checked + .slider:before {
 
   .unsortable-columns {
     box-shadow: 20px 0px 30px -15px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .playerHeader {
+    background-image: url("./img/headshots/headshot_backgroud_cell.jpg");
+    background-size: cover;
   }
 }

@@ -83,6 +83,7 @@ export const app = {
         if (
           seasonJSON.playoffs &&
           seasonJSON.playoffs.length > 0 &&
+          seasonJSON.playoffs[0].games[0].home !== "TBD" &&
           !seasonParam
         ) {
           this.createPlayoffs();
@@ -526,8 +527,6 @@ export const app = {
 
       var index = 0;
 
-      console.log(playersStats);
-
       playersStats.forEach((player, id) => {
         console.log(id);
         if (
@@ -704,7 +703,8 @@ export const app = {
       false
     );
 
-    pageHtml += `<div class="summary-selection">
+    pageHtml += `<div>
+    <div class="summary-selection">
       <button onclick="app.selectGameSummary(true)" ${
         gameSummary ? 'class="activated"' : ""
       }>Sommaire</button>
@@ -727,7 +727,7 @@ export const app = {
       );
     }
 
-    pageHtml += `</div>`;
+    pageHtml += `</div></div>`;
 
     this.setPageHtml(pageHtml);
     console.log("Create Game Stats Delay: " + (new Date() - dateStart));
@@ -976,7 +976,9 @@ export const app = {
                   </div>
                   <div class="round">
                     <div class="final">${this.createTeams(
-                      seasonJSON.playoffs[3].games[0],
+                      seasonJSON.playoffs[3]
+                        ? seasonJSON.playoffs[3].games[0]
+                        : seasonJSON.playoffs[2].games[0],
                       true
                     )}</div>
                   </div>
@@ -1048,16 +1050,67 @@ export const app = {
 
     var info = await this.getPlayerInfo(id);
     var playerGeneralInfo = this.getPlayerGeneralInfo(id);
+    var playerSeasons = new Map();
+    var activeSeason = seasonSelected;
 
-    var name = playerGeneralInfo.name;
-    if (playerGeneralInfo.nickname && name.includes(" ")) {
-      var splitName = name.split(" ");
-      name = `${splitName[0]} "${playerGeneralInfo.nickname}" ${splitName[1]}`;
+    for (const season of seasons) {
+      playersStats = new Map();
+      seasonSelected = season;
+      await this.createStatsSeasonOrPlayoffsMap();
+
+      var seasonStats = playersStats.get(+id);
+      if (seasonStats) {
+        playerSeasons.set(season, seasonStats);
+      }
     }
 
-    pageHtml = this.createPageTitle(name, false);
+    seasonSelected = activeSeason;
 
-    pageHtml += `À Venir!`;
+    const fullName = playerGeneralInfo.name;
+    const splitName = fullName.split(" ");
+    const firstName = splitName[0];
+    const lastName = splitName[1];
+
+    var hasImage = await this.loadImage(id);
+    var imageName = hasImage ? id : "placeholder_headshot";
+
+    pageHtml = `
+    <div class="playerHeader">
+      <div class="playerHeadshot">
+          <img
+              id="headshot"
+              title="${fullName}"
+              alt="Logo"
+              class="headshot"
+              src="./img/headshots/${imageName}.jpg"
+            />
+        <img
+            alt="Logo"
+            class="playerTeam"
+            src="./img/logo/${playerSeasons.get(activeSeason).team}.png"
+          />
+      </div>  
+      <div class="fullName">
+        <div class="firstName">
+          ${firstName}
+          ${
+            playerGeneralInfo.nickname
+              ? `<span class="nickname">
+            "${playerGeneralInfo.nickname}"
+          </span>`
+              : ""
+          }
+        </div>
+        <div class="lastName">
+          ${lastName}
+        </div>
+      </div>
+    </div>`;
+
+    pageHtml += `
+    <div class="stats">
+      À Venir
+    </div>`;
 
     this.setPageHtml(pageHtml);
   },
@@ -1198,6 +1251,15 @@ export const app = {
         position = "";
     }
     return position;
+  },
+
+  async loadImage(id) {
+    return new Promise((resolve) => {
+      let img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = `./img/headshots/${id}.jpg`;
+    });
   },
 
   createPageTitle(title, addSelect) {
