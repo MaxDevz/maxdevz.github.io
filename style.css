@@ -1,6 +1,5 @@
 * {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: "Oswald", sans-serif;
   font-size: 14px;
   color: #333;
   box-sizing: border-box;
@@ -203,20 +202,20 @@ table .header th {
 }
 
 .firstName {
-  font-family: fantasy;
+  font-family: "Anton", sans-serif;
   color: #eee;
   font-size: 2rem;
   font-style: italic;
 }
 
 .lastName {
-  font-family: fantasy;
+  font-family: "Anton", sans-serif;
   color: #eee;
   font-size: 3.5rem;
 }
 
 .nickname {
-  font-family: fantasy;
+  font-family: "Anton", sans-serif;
   color: #ff7500;
   font-size: 2rem;
   font-style: italic;
