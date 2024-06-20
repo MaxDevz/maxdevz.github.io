@@ -586,8 +586,11 @@ select {
   text-align: left;
 }
 
-td.name:has(.sub) {
+td.name {
+  display: flex;
   height: 45px;
+  width: max-content;
+  align-items: center;
 }
 
 .summary .name {
@@ -597,7 +600,7 @@ td.name:has(.sub) {
 .stats .calendar-logo,
 .summary .calendar-logo,
 .lineup .calendar-logo {
-  width: 35px;
+  width: 30px;
 }
 
 .stats,
@@ -1005,6 +1008,16 @@ input:checked + .slider:before {
 }
 
 @media screen and (max-width: 600px) {
+  .stats table td,
+  .stats table tr {
+    padding: 0 5px;
+  }
+
+  .rating,
+  .rank {
+    font-size: 0.6rem;
+  }
+
   .playerHeader {
     background-image: url("./img/headshots/headshot_backgroud_cell.jpg");
     background-size: cover;
