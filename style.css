@@ -1004,6 +1004,7 @@ input:checked + .slider:before {
 
   .unsortable-columns {
     box-shadow: 20px 0px 30px -15px rgba(0, 0, 0, 0.15);
+    background-color: #fafafa;
   }
 }
 
