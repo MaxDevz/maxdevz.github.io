@@ -39,7 +39,7 @@
       "id": 5,
       "rating": 25,
       "captain": false,
-      "number": 0,
+      "number": 5,
       "pos": "CCG"
     },
     {
@@ -81,7 +81,7 @@
       "id": 11,
       "rating": 24,
       "captain": false,
-      "number": 0,
+      "number": 8,
       "pos": "CCD"
     },
     {
@@ -109,7 +109,7 @@
       "id": 16,
       "rating": 24,
       "captain": true,
-      "number": 0,
+      "number": 4,
       "pos": "SS"
     },
     {
@@ -130,7 +130,7 @@
       "id": 20,
       "rating": 23,
       "captain": true,
-      "number": 0,
+      "number": 3,
       "pos": "P, CCG"
     },
     {
@@ -151,7 +151,7 @@
       "id": 23,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 1,
       "pos": "R"
     },
     {
@@ -193,7 +193,7 @@
       "id": 31,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 14,
       "pos": "3B"
     },
     {
@@ -235,7 +235,7 @@
       "id": 39,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 27,
       "pos": "CD"
     },
     {
@@ -284,7 +284,7 @@
       "id": 53,
       "rating": 20,
       "captain": false,
-      "number": 0,
+      "number": 10,
       "pos": "C"
     },
     {
@@ -298,14 +298,14 @@
       "id": 55,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 9,
       "pos": "CG"
     },
     {
       "id": 56,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 7,
       "pos": ""
     },
     {

@@ -45,12 +45,14 @@ table .header th {
 }
 
 .winner .team-name,
-.positive {
+.positive,
+.actif {
   color: green;
 }
 
 .loser .team-name,
-.negative {
+.negative,
+.inactif {
   color: red;
 }
 
@@ -182,6 +184,11 @@ table .header th {
   object-fit: contain;
 }
 
+.nameHeadshot {
+  display: flex;
+  justify-content: center;
+}
+
 .playerHeadshot {
   position: relative;
 }
@@ -212,6 +219,8 @@ table .header th {
   font-family: "Anton", sans-serif;
   color: #eee;
   font-size: 3.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .nickname {
@@ -219,6 +228,31 @@ table .header th {
   color: #ff7500;
   font-size: 2rem;
   font-style: italic;
+}
+
+.title {
+  color: #ff7500;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.value {
+  color: #eee;
+  font-size: 1rem;
+  padding: 5px 0px;
+}
+
+.info-player {
+  padding: 10px;
+}
+
+.actif,
+.inactif {
+  padding-left: 10px;
+}
+
+.all-info {
+  display: flex;
 }
 
 .logo-filter {
@@ -250,6 +284,17 @@ table .header th {
   padding: 0 5px;
   font-weight: bold;
   color: #ff7500;
+  border-radius: 50px;
+}
+
+.captain-badge {
+  padding: 6px 8px;
+  margin-top: 10px;
+  margin-left: 8px;
+  font-weight: bold;
+  color: #eee;
+  font-size: large;
+  background-color: #ff7500;
   border-radius: 50px;
 }
 
@@ -361,7 +406,8 @@ table .header th {
 }
 
 .rating,
-.rank {
+.rank,
+.lineup-stats {
   font-style: italic;
   font-size: 0.8rem;
   color: #888;
@@ -606,7 +652,8 @@ td.name {
 .stats,
 .summary,
 .lineup,
-.playerHeader {
+.playerHeader,
+.playerInfo {
   display: flex;
   border-radius: 15px;
   background-color: #fafafa;
@@ -616,13 +663,14 @@ td.name {
 }
 
 .playerHeader {
+  display: flex;
   width: 100%;
-  max-width: 900px;
+  max-width: 700px;
   background-image: url("./img/headshots/headshot_backgroud.jpg");
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
+  background-position: center center;
   margin-bottom: 20px;
-  justify-content: left;
 }
 
 .lineup {
@@ -926,8 +974,7 @@ input:checked + .slider:before {
   }
 
   .stats,
-  .summary,
-  .lineup {
+  .summary {
     padding: 20px 10px;
   }
 
@@ -998,7 +1045,7 @@ input:checked + .slider:before {
 
   .stats,
   .summary,
-  .lineup {
+  .playerInfo {
     width: 95vw;
   }
 
@@ -1017,10 +1064,32 @@ input:checked + .slider:before {
   .rating,
   .rank {
     font-size: 0.6rem;
+    padding-right: 10px !important;
   }
 
-  .playerHeader {
-    background-image: url("./img/headshots/headshot_backgroud_cell.jpg");
-    background-size: cover;
+  .headshot {
+    width: 130px;
+    height: 130px;
+  }
+
+  .playerTeam {
+    left: 90px;
+  }
+
+  .fullName {
+    padding-left: 20px;
+    padding-right: 0px;
+  }
+
+  .lastName {
+    font-size: 3rem;
+  }
+
+  .firstName {
+    font-size: 1.5rem;
+  }
+
+  .nickname {
+    font-size: 1.5rem;
   }
 }

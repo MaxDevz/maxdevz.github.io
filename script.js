@@ -1048,10 +1048,11 @@ export const app = {
     const urlParams = new URLSearchParams(window.location.search);
     var id = urlParams.get("id");
 
-    var info = await this.getPlayerInfo(id);
+    var infoActualSeason = null;
     var playerGeneralInfo = this.getPlayerGeneralInfo(id);
     var playerSeasons = new Map();
     var activeSeason = seasonSelected;
+    var lastPlayedSeason = seasonSelected;
 
     for (const season of seasons) {
       playersStats = new Map();
@@ -1060,10 +1061,16 @@ export const app = {
 
       var seasonStats = playersStats.get(+id);
       if (seasonStats) {
+        if (infoActualSeason == null) {
+          playersInfo = null;
+          lastPlayedSeason = season;
+          infoActualSeason = await this.getPlayerInfo(id);
+        }
         playerSeasons.set(season, seasonStats);
       }
     }
 
+    console.log(infoActualSeason);
     seasonSelected = activeSeason;
 
     const fullName = playerGeneralInfo.name;
@@ -1076,33 +1083,78 @@ export const app = {
 
     pageHtml = `
     <div class="playerHeader">
-      <div class="playerHeadshot">
-          <img
-              id="headshot"
-              title="${fullName}"
+      <div class="nameHeadshot">
+        <div class="playerHeadshot">
+            <img
+                id="headshot"
+                title="${fullName}"
+                alt="Logo"
+                class="headshot"
+                src="./img/headshots/${imageName}.jpg"
+              />
+           <img
               alt="Logo"
-              class="headshot"
-              src="./img/headshots/${imageName}.jpg"
+              class="playerTeam"
+              src="./img/logo/${playerSeasons.get(lastPlayedSeason).team}.png"
             />
-        <img
-            alt="Logo"
-            class="playerTeam"
-            src="./img/logo/${playerSeasons.get(activeSeason).team}.png"
-          />
-      </div>  
-      <div class="fullName">
-        <div class="firstName">
-          ${firstName}
-          ${
-            playerGeneralInfo.nickname
-              ? `<span class="nickname">
-            "${playerGeneralInfo.nickname}"
-          </span>`
-              : ""
-          }
-        </div>
-        <div class="lastName">
-          ${lastName}
+        </div>  
+        <div class="fullName">
+          <div class="firstName">
+            ${firstName}
+            ${
+              playerGeneralInfo.nickname
+                ? `<span class="nickname">
+              "${playerGeneralInfo.nickname}"
+            </span>`
+                : ""
+            }
+          </div>
+          <div class="lastName">
+            ${lastName} ${
+      infoActualSeason.captain ? `<span class="captain-badge">C</span>` : ""
+    }
+          </div>
+          <div class="all-info">
+            <div class="info-player">
+              <div class="title">
+              No.
+              </div>
+              <div class="value">
+                ${infoActualSeason.number ? infoActualSeason.number : 0}
+              </div>
+            </div>
+            <div class="info-player">
+              <div class="title">
+              Lance
+              </div>
+              <div class="value">
+                ${playerGeneralInfo.throws}
+              </div>
+            </div>
+            <div class="info-player">
+              <div class="title">
+              Frappe
+              </div>
+              <div class="value">
+                ${playerGeneralInfo.bats}
+              </div>
+            </div>
+            <div class="info-player">
+              <div class="title">
+              Cote
+              </div>
+              <div class="value">
+                ${infoActualSeason.rating}
+              </div>
+            </div>
+          </div>
+          <div class="all-info">
+            ${
+              activeSeason == lastPlayedSeason
+                ? '<span class="actif"> Actif</span>'
+                : `<span class="inactif"> Inactif (${lastPlayedSeason})</span>`
+            }
+          </div>
         </div>
       </div>
     </div>`;
@@ -1344,11 +1396,11 @@ export const app = {
     pageHtml += `<div class="lineup">`;
     pageHtml += `<div><table>
       <tr class="header">
-        <th title="Rang" class="rank">RG</th>
+        <th title="Rang" class="lineup-stats">RG</th>
         <th>Équipe</th>
         <th class="name">Nom</th>
-        <th class="rank">MAB</th>
-        <th class="rank">PPP</th>
+        <th class="lineup-stats">MAB</th>
+        <th class="lineup-stats">PPP</th>
       </tr>`;
 
     if (random) {
@@ -1386,7 +1438,7 @@ export const app = {
         mdp = mdp ? mdp : 0;
 
         pageHtml += `<tr>
-              <td class="rank">${index}</td>
+              <td class="lineup-stats">${index}</td>
               <td>
                 <div class="team">
                 <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
@@ -1412,8 +1464,10 @@ export const app = {
         }
               </a>
             </td>
-            <td class="rank">${this.formatDecimal(player.CS / player.AB)}</td>
-            <td class="rank">${this.formatDecimal(pmdp + mdp)}</td>
+            <td class="lineup-stats">${this.formatDecimal(
+              player.CS / player.AB
+            )}</td>
+            <td class="lineup-stats">${this.formatDecimal(pmdp + mdp)}</td>
             <tr>`;
       }
     });
@@ -1749,6 +1803,7 @@ export const app = {
 
   async readSeasonPlayoffsStats() {
     var statsJson;
+    console.log(seasonSelected);
     const stats = await fetch(
       `./data/${seasonSelected}/stats_${
         isPlayoffs ? "playoff" : "season"

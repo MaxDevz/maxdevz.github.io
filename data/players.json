@@ -6,257 +6,379 @@
     },
     {
       "id": 1,
-      "name": "Kevin Lefebvre"
+      "name": "Kevin Lefebvre",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 2,
       "name": "Maxime Hébert",
-      "nickname": "Soloman"
+      "nickname": "Soloman",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 3,
-      "name": "Sébastien Hébert"
+      "name": "Sébastien Hébert",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 4,
       "name": "Jonathan Desmarais",
-      "nickname": "BigJo"
+      "nickname": "BigJo",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 5,
       "name": "Éric Lefebvre",
-      "nickname": "La Bine"
+      "nickname": "La Bine",
+      "throws": "Gauche",
+      "bats": "Gaucher"
     },
     {
       "id": 6,
-      "name": "Patrick Poudrier"
+      "name": "Patrick Poudrier",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 7,
       "name": "Steven Lefebvre",
-      "nickname": "Steevo"
+      "nickname": "Steevo",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 8,
-      "name": "Joel Poulin"
+      "name": "Joel Poulin",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 9,
       "name": "Brian Coutu",
-      "nickname": "La Chenille"
+      "nickname": "La Chenille",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 10,
       "name": "Marc-André Bouthot",
-      "nickname": "Roux"
+      "nickname": "Roux",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 11,
-      "name": "Sébastien Cotton"
+      "name": "Sébastien Cotton",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 12,
-      "name": "Jonathan St-Pierre"
+      "name": "Jonathan St-Pierre",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 13,
-      "name": "Kristopher Hamel"
+      "name": "Kristopher Hamel",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 14,
       "name": "Charles Emond",
-      "nickname": "Chuck"
+      "nickname": "Chuck",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 15,
-      "name": "Stéphane St-Onge"
+      "name": "Stéphane St-Onge",
+      "throws": "Droite",
+      "bats": "N/A"
     },
     {
       "id": 16,
-      "name": "David Lefebvre"
+      "name": "David Lefebvre",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 17,
-      "name": "Patrick Coutu"
+      "name": "Patrick Coutu",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 18,
-      "name": "Kevin Duquette"
+      "name": "Kevin Duquette",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 19,
-      "name": "Dave Duquette"
+      "name": "Dave Duquette",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 20,
-      "name": "Maxime St-Onge"
+      "name": "Maxime St-Onge",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 21,
-      "name": "François Desruisseaux"
+      "name": "François Desruisseaux",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 22,
-      "name": "Alexandre Sylvain"
+      "name": "Alexandre Sylvain",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 23,
-      "name": "Raphaël Gaudet"
+      "name": "Raphaël Gaudet",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 24,
-      "name": "Jean-Pierre Allard"
+      "name": "Jean-Pierre Allard",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 25,
-      "name": "Denis Lemay"
+      "name": "Denis Lemay",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 26,
-      "name": "Claude Arel"
+      "name": "Claude Arel",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 27,
-      "name": "Jacques Lepage"
+      "name": "Jacques Lepage",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 28,
-      "name": "Mathieu Moran"
+      "name": "Mathieu Moran",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 29,
-      "name": "Bruno Perron"
+      "name": "Bruno Perron",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 30,
-      "name": "Claude Labrie"
+      "name": "Claude Labrie",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 31,
       "name": "Éric Bisaillon",
-      "nickname": "Bizz"
+      "nickname": "Bizz",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 32,
-      "name": "Maxime Lapierre"
+      "name": "Maxime Lapierre",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 33,
-      "name": "Pierre-Luc Noel"
+      "name": "Pierre-Luc Noel",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 34,
       "name": "Alex Pelletier",
-      "nickname": "Ti-Rouge"
+      "nickname": "Ti-Rouge",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 35,
       "name": "François Grondin",
-      "nickname": "Léo"
+      "nickname": "Léo",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 36,
-      "name": "Kevin Pitre"
+      "name": "Kevin Pitre",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 37,
-      "name": "Mickael Cournoyer"
+      "name": "Mickael Cournoyer",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 38,
-      "name": "Ritchie Cairnduff"
+      "name": "Ritchie Cairnduff",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 39,
-      "name": "Steven Therrien"
+      "name": "Steven Therrien",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 40,
-      "name": "Michel Bolduc"
+      "name": "Michel Bolduc",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 41,
-      "name": "Paul Brouillard"
+      "name": "Paul Brouillard",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 42,
-      "name": "Michel Houle"
+      "name": "Michel Houle",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 43,
-      "name": "Christopher Noël-Hébert"
+      "name": "Christopher Noël-Hébert",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 44,
-      "name": "Stéphane Hébert"
+      "name": "Stéphane Hébert",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 45,
-      "name": "Dany Coutu-Simard"
+      "name": "Dany Coutu-Simard",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 46,
-      "name": "François Poulin"
+      "name": "François Poulin",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 47,
-      "name": "Gilles Houle"
+      "name": "Gilles Houle",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 48,
-      "name": "Benoit Dion"
+      "name": "Benoit Dion",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 49,
-      "name": "Max Corriveau"
+      "name": "Max Corriveau",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 50,
-      "name": "Loïc St-Pierre"
+      "name": "Loïc St-Pierre",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 51,
-      "name": "James Gallant"
+      "name": "James Gallant",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 52,
-      "name": "Sébastien Poudrier"
+      "name": "Sébastien Poudrier",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 53,
-      "name": "Jonathan Lefebvre"
+      "name": "Jonathan Lefebvre",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 54,
-      "name": "Stéphan Laguë"
+      "name": "Stéphan Laguë",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 55,
-      "name": "Yoan Gauthier"
+      "name": "Yoan Gauthier",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 56,
-      "name": "Alexandre Lemaire"
+      "name": "Alexandre Lemaire",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 57,
-      "name": "Jean-François Brun"
+      "name": "Jean-François Brun",
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 58,
-      "name": "Alexandre Gendron"
+      "name": "Alexandre Gendron",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 59,
-      "name": "Pierre-Olivier Turcotte"
+      "name": "Pierre-Olivier Turcotte",
+      "throws": "N/A",
+      "bats": "N/A"
     },
     {
       "id": 60,
-      "name": "Jean-Marc Francoeur"
+      "name": "Jean-Marc Francoeur",
+      "throws": "Droite",
+      "bats": "Droitier"
     },
     {
       "id": 61,
-      "name": "Jean-François Précourt"
+      "name": "Jean-François Précourt",
+      "throws": "Droite",
+      "bats": "Gaucher"
     }
   ]
 }
