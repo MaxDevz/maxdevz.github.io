@@ -1094,7 +1094,6 @@ input:checked + .slider:before {
 
   .rating,
   .rank {
-    font-size: 0.6rem;
     padding-right: 10px !important;
   }
 
