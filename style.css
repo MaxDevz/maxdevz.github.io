@@ -64,6 +64,14 @@ table .header th {
   background-color: white;
 }
 
+.stats-logo {
+  border-radius: 50px;
+  width: 35px;
+  margin: 5px 0px;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
+  background-color: white;
+}
+
 .winner-logo {
   border-radius: 50px;
   width: 100px;
@@ -213,6 +221,7 @@ table .header th {
   color: #eee;
   font-size: 2rem;
   font-style: italic;
+  width: max-content;
 }
 
 .lastName {
@@ -221,6 +230,8 @@ table .header th {
   font-size: 3.5rem;
   display: flex;
   align-items: center;
+  padding-bottom: 10px;
+  width: max-content;
 }
 
 .nickname {
@@ -243,12 +254,13 @@ table .header th {
 }
 
 .info-player {
-  padding: 10px;
+  padding: 0px 10px;
 }
 
 .actif,
 .inactif {
-  padding-left: 10px;
+  margin-top: auto;
+  padding: 0px 0px 5px 10px;
 }
 
 .all-info {
@@ -601,8 +613,20 @@ table .header th {
 }
 
 .innings td,
-.innings th {
+.innings th,
+.subs .team .team-name {
   color: #999;
+}
+
+.subs td,
+.subs th {
+  color: #777 !important;
+  font-size: 0.8rem;
+  height: 25px !important;
+}
+
+.subs {
+  background-color: #ddd;
 }
 
 .page-title {
@@ -665,12 +689,11 @@ td.name {
 .playerHeader {
   display: flex;
   width: 100%;
-  max-width: 700px;
   background-image: url("./img/headshots/headshot_backgroud.jpg");
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center center;
-  margin-bottom: 20px;
+  background-position: center bottom;
+  margin: 20px 0px;
 }
 
 .lineup {
@@ -771,6 +794,15 @@ td.name {
   font-weight: bold;
 }
 
+.team .team-stats {
+  display: flex;
+  align-items: center;
+}
+
+.team-stats .fas {
+  color: goldenrod;
+}
+
 .toolbar {
   position: absolute;
   top: 0;
@@ -804,7 +836,6 @@ td.name {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
 }
 
 svg.material-icons {
