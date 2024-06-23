@@ -31,11 +31,6 @@
       "captain": false
     },
     {
-      "id": 6,
-      "rating": 25,
-      "captain": false
-    },
-    {
       "id": 7,
       "rating": 25,
       "captain": false
@@ -48,16 +43,11 @@
     {
       "id": 9,
       "rating": 24,
-      "captain": true
+      "captain": false
     },
     {
       "id": 10,
       "rating": 23,
-      "captain": true
-    },
-    {
-      "id": 11,
-      "rating": 24,
       "captain": false
     },
     {
@@ -72,11 +62,6 @@
     },
     {
       "id": 14,
-      "rating": 23,
-      "captain": false
-    },
-    {
-      "id": 15,
       "rating": 23,
       "captain": false
     },
@@ -127,7 +112,7 @@
     },
     {
       "id": 25,
-      "rating": 22,
+      "rating": 23,
       "captain": false
     },
     {
@@ -141,32 +126,12 @@
       "captain": false
     },
     {
-      "id": 28,
-      "rating": 22,
-      "captain": false
-    },
-    {
       "id": 29,
-      "rating": 22,
+      "rating": 21,
       "captain": false
     },
     {
       "id": 30,
-      "rating": 22,
-      "captain": false
-    },
-    {
-      "id": 31,
-      "rating": 21,
-      "captain": false
-    },
-    {
-      "id": 32,
-      "rating": 21,
-      "captain": false
-    },
-    {
-      "id": 33,
       "rating": 22,
       "captain": false
     },
@@ -181,18 +146,8 @@
       "captain": false
     },
     {
-      "id": 36,
-      "rating": 20,
-      "captain": false
-    },
-    {
       "id": 37,
-      "rating": 20,
-      "captain": false
-    },
-    {
-      "id": 38,
-      "rating": 20,
+      "rating": 21,
       "captain": false
     },
     {
@@ -203,7 +158,7 @@
     {
       "id": 40,
       "rating": 19,
-      "captain": false
+      "captain": true
     },
     {
       "id": 41,
@@ -212,18 +167,8 @@
     },
     {
       "id": 42,
-      "rating": 19,
-      "captain": false
-    },
-    {
-      "id": 43,
-      "rating": 19,
-      "captain": false
-    },
-    {
-      "id": 44,
-      "rating": 19,
-      "captain": false
+      "rating": 20,
+      "captain": true
     },
     {
       "id": 45,
@@ -241,23 +186,43 @@
       "captain": false
     },
     {
-      "id": 48,
-      "rating": 20,
-      "captain": false
-    },
-    {
       "id": 49,
       "rating": 22,
       "captain": false
     },
     {
-      "id": 50,
-      "rating": 21,
+      "id": 62,
+      "rating": 24,
       "captain": false
     },
     {
-      "id": 51,
+      "id": 63,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 64,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 65,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 66,
       "rating": 20,
+      "captain": false
+    },
+    {
+      "id": 67,
+      "rating": 23,
+      "captain": false
+    },
+    {
+      "id": 68,
+      "rating": 21,
       "captain": false
     }
   ]

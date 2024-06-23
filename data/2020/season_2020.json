@@ -3,7 +3,7 @@
   "winner": "la_bouchée_d'or",
   "teams": [
     {
-      "name": "bar_le_cocotier",
+      "name": "bar_le_cocotier-blanc",
       "record": "5-3-1",
       "ptsFor": 0,
       "ptsAgainst": 0,
@@ -45,7 +45,7 @@
         {
           "time": "20h30",
           "home": "centrale_auto_SM",
-          "away": "bar_le_cocotier",
+          "away": "bar_le_cocotier-blanc",
           "homePoints": 0,
           "awayPoints": 0
         }
@@ -64,7 +64,7 @@
         {
           "time": "20h30",
           "home": "la_bouchée_d'or",
-          "away": "bar_le_cocotier",
+          "away": "bar_le_cocotier-blanc",
           "homePoints": 0,
           "awayPoints": 0
         }
@@ -76,7 +76,7 @@
         {
           "time": "19h00",
           "home": "buffet_frédéric",
-          "away": "bar_le_cocotier",
+          "away": "bar_le_cocotier-blanc",
           "homePoints": 0,
           "awayPoints": 0
         },
@@ -94,7 +94,7 @@
       "games": [
         {
           "time": "19h00",
-          "home": "bar_le_cocotier",
+          "home": "bar_le_cocotier-blanc",
           "away": "centrale_auto_SM",
           "homePoints": 0,
           "awayPoints": 0
@@ -113,7 +113,7 @@
       "games": [
         {
           "time": "19h00",
-          "home": "bar_le_cocotier",
+          "home": "bar_le_cocotier-blanc",
           "away": "la_bouchée_d'or",
           "homePoints": 0,
           "awayPoints": 0
@@ -139,7 +139,7 @@
         },
         {
           "time": "20h30",
-          "home": "bar_le_cocotier",
+          "home": "bar_le_cocotier-blanc",
           "away": "buffet_frédéric",
           "homePoints": 0,
           "awayPoints": 0
@@ -159,7 +159,7 @@
         {
           "time": "20h30",
           "home": "centrale_auto_SM",
-          "away": "bar_le_cocotier",
+          "away": "bar_le_cocotier-blanc",
           "homePoints": 0,
           "awayPoints": 0
         }
@@ -178,7 +178,7 @@
         {
           "time": "20h30",
           "home": "la_bouchée_d'or",
-          "away": "bar_le_cocotier",
+          "away": "bar_le_cocotier-blanc",
           "homePoints": 0,
           "awayPoints": 0
         }
@@ -190,7 +190,7 @@
         {
           "time": "19h00",
           "home": "buffet_frédéric",
-          "away": "bar_le_cocotier",
+          "away": "bar_le_cocotier-blanc",
           "homePoints": 0,
           "awayPoints": 0
         },
@@ -208,7 +208,7 @@
       "games": [
         {
           "time": "19h00",
-          "home": "bar_le_cocotier",
+          "home": "bar_le_cocotier-blanc",
           "away": "centrale_auto_SM",
           "homePoints": 0,
           "awayPoints": 0
@@ -227,7 +227,7 @@
       "games": [
         {
           "time": "19h00",
-          "home": "bar_le_cocotier",
+          "home": "bar_le_cocotier-blanc",
           "away": "la_bouchée_d'or",
           "homePoints": 0,
           "awayPoints": 0
@@ -253,7 +253,7 @@
         },
         {
           "time": "20h30",
-          "home": "bar_le_cocotier",
+          "home": "bar_le_cocotier-blanc",
           "away": "buffet_frédéric",
           "homePoints": 0,
           "awayPoints": 0
@@ -268,7 +268,7 @@
         {
           "game_number": 1,
           "time": "19h00",
-          "home": "bar_le_cocotier",
+          "home": "bar_le_cocotier-blanc",
           "home_position": 1,
           "away": "la_bouchée_d'or",
           "away_position": 4
@@ -286,7 +286,7 @@
           "time": "21h00",
           "home": "la_bouchée_d'or",
           "home_position": 4,
-          "away": "bar_le_cocotier",
+          "away": "bar_le_cocotier-blanc",
           "away_position": 1
         }
       ]
@@ -305,7 +305,7 @@
         {
           "game_number": 3,
           "time": "20h00",
-          "home": "bar_le_cocotier",
+          "home": "bar_le_cocotier-blanc",
           "home_position": 1,
           "away": "la_bouchée_d'or",
           "away_position": 4

@@ -452,7 +452,7 @@
   {
     "id": 34,
     "stats": {
-      "name": "Alex Pelletier",
+      "name": "Alexandre Pelletier",
       "order": 4,
       "rating": 21,
       "captain": false,
@@ -1322,7 +1322,7 @@
   {
     "id": "34_S",
     "stats": {
-      "name": "Alex Pelletier<span class='sub rank'>  Sub</span>",
+      "name": "Alexandre Pelletier<span class='sub rank'>  Sub</span>",
       "order": 8,
       "rating": 21,
       "captain": false,

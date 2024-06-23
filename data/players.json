@@ -212,7 +212,7 @@
     },
     {
       "id": 34,
-      "name": "Alex Pelletier",
+      "name": "Alexandre Pelletier",
       "nickname": "Ti-Rouge",
       "throws": "Droite",
       "bats": "Droitier"
@@ -379,6 +379,84 @@
       "name": "Jean-François Précourt",
       "throws": "Droite",
       "bats": "Gaucher"
+    },
+    {
+      "id": 62,
+      "name": "Kevin Cusson",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 63,
+      "name": "Alexandre Léger-Chabot",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 64,
+      "name": "Bernard Filion",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 65,
+      "name": "Yvan Houle",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 66,
+      "name": "Pierre Huet",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 67,
+      "name": "Guy Sylvain",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 68,
+      "name": "Michel Côté",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 69,
+      "name": "Marcel Brouillard",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 70,
+      "name": "Ghislain Roy",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 71,
+      "name": "Luc Noël",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 72,
+      "name": "Luc Coutu",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 73,
+      "name": "François Hamel",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 74,
+      "name": "Françis St-Germain Coderre",
+      "throws": "N/A",
+      "bats": "N/A"
     }
   ]
 }

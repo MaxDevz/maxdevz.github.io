@@ -31,11 +31,6 @@
       "captain": false
     },
     {
-      "id": 6,
-      "rating": 25,
-      "captain": false
-    },
-    {
       "id": 7,
       "rating": 25,
       "captain": false
@@ -47,7 +42,7 @@
     },
     {
       "id": 9,
-      "rating": 24,
+      "rating": 25,
       "captain": true
     },
     {
@@ -56,27 +51,17 @@
       "captain": true
     },
     {
-      "id": 11,
-      "rating": 24,
-      "captain": false
-    },
-    {
       "id": 12,
-      "rating": 24,
-      "captain": false
-    },
-    {
-      "id": 13,
-      "rating": 22,
-      "captain": true
-    },
-    {
-      "id": 14,
       "rating": 23,
       "captain": false
     },
     {
-      "id": 15,
+      "id": 13,
+      "rating": 23,
+      "captain": true
+    },
+    {
+      "id": 14,
       "rating": 23,
       "captain": false
     },
@@ -107,7 +92,7 @@
     },
     {
       "id": 21,
-      "rating": 22,
+      "rating": 21,
       "captain": false
     },
     {
@@ -122,12 +107,12 @@
     },
     {
       "id": 24,
-      "rating": 22,
+      "rating": 23,
       "captain": false
     },
     {
       "id": 25,
-      "rating": 22,
+      "rating": 23,
       "captain": false
     },
     {
@@ -141,32 +126,12 @@
       "captain": false
     },
     {
-      "id": 28,
-      "rating": 22,
-      "captain": false
-    },
-    {
       "id": 29,
-      "rating": 22,
+      "rating": 21,
       "captain": false
     },
     {
       "id": 30,
-      "rating": 22,
-      "captain": false
-    },
-    {
-      "id": 31,
-      "rating": 21,
-      "captain": false
-    },
-    {
-      "id": 32,
-      "rating": 21,
-      "captain": false
-    },
-    {
-      "id": 33,
       "rating": 22,
       "captain": false
     },
@@ -181,18 +146,8 @@
       "captain": false
     },
     {
-      "id": 36,
-      "rating": 20,
-      "captain": false
-    },
-    {
       "id": 37,
-      "rating": 20,
-      "captain": false
-    },
-    {
-      "id": 38,
-      "rating": 20,
+      "rating": 21,
       "captain": false
     },
     {
@@ -212,22 +167,7 @@
     },
     {
       "id": 42,
-      "rating": 19,
-      "captain": false
-    },
-    {
-      "id": 43,
-      "rating": 19,
-      "captain": false
-    },
-    {
-      "id": 44,
-      "rating": 19,
-      "captain": false
-    },
-    {
-      "id": 45,
-      "rating": 24,
+      "rating": 20,
       "captain": false
     },
     {
@@ -241,22 +181,47 @@
       "captain": false
     },
     {
-      "id": 48,
-      "rating": 20,
-      "captain": false
-    },
-    {
-      "id": 49,
+      "id": 64,
       "rating": 22,
       "captain": false
     },
     {
-      "id": 50,
-      "rating": 21,
+      "id": 65,
+      "rating": 23,
       "captain": false
     },
     {
-      "id": 51,
+      "id": 66,
+      "rating": 20,
+      "captain": false
+    },
+    {
+      "id": 69,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 70,
+      "rating": 25,
+      "captain": false
+    },
+    {
+      "id": 71,
+      "rating": 23,
+      "captain": false
+    },
+    {
+      "id": 72,
+      "rating": 22,
+      "captain": false
+    },
+    {
+      "id": 73,
+      "rating": 23,
+      "captain": false
+    },
+    {
+      "id": 74,
       "rating": 20,
       "captain": false
     }
