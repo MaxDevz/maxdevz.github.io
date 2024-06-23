@@ -233,7 +233,7 @@ export const app = {
                     src="./img/logo/${game.away.toLowerCase()}.png"
                   />
                   <div>
-                  <div class="team-name">${game.away.replaceAll("_", " ")}</div>
+                  <div class="team-name">${this.formatTeamName(game.away)}</div>
                   <div class="team-record">${this.getTeamRecord(
                     game.away
                   )} ${this.formatPosition(game.away_position)}</div>
@@ -260,7 +260,7 @@ export const app = {
                     src="./img/logo/${game.home.toLowerCase()}.png"
                   />
                   <div>
-                  <div class="team-name">${game.home.replaceAll("_", " ")}</div>
+                  <div class="team-name">${this.formatTeamName(game.home)}</div>
                   <div class="team-record">${this.getTeamRecord(
                     game.home
                   )} ${this.formatPosition(game.home_position)}</div>
@@ -400,13 +400,13 @@ export const app = {
         team.name
       }">
                 <img
-                  title="${team.name.replaceAll("_", " ")}"
+                  title="${this.formatTeamName(team.name)}"
                   alt="Logo"
                   class="calendar-logo"
                   src="./img/logo/${team.name.toLowerCase()}.png"
                 />
                 <div>
-                  <div class="team-name">${team.name.replaceAll("_", " ")}</div>
+                  <div class="team-name">${this.formatTeamName(team.name)}</div>
                 </div>
               </a>
             </div>
@@ -536,7 +536,7 @@ export const app = {
           index++;
 
           var imgName = player.team.toLowerCase();
-          var imgTitle = player.team.replaceAll("_", " ");
+          var imgTitle = this.formatTeamName(player.team);
           if (player.isSubstitute) {
             imgName = "liguedumercredi_logo";
             imgTitle = "Substitut";
@@ -750,7 +750,7 @@ export const app = {
         index++;
 
         var imgName = player.team.toLowerCase();
-        var imgTitle = player.team.replaceAll("_", " ");
+        var imgTitle = this.formatTeamName(player.team);
         if (player.isSubstitute) {
           imgName = "liguedumercredi_logo";
           imgTitle = "Substitut";
@@ -995,9 +995,8 @@ export const app = {
                     src="./img/logo/${game.home.toLowerCase()}.png"
                   />
                   <div>
-                    <div class="team-name">${game.home.replaceAll(
-                      "_",
-                      " "
+                    <div class="team-name">${this.formatTeamName(
+                      game.home
                     )}</div>
                     <div class="team-record">${this.getTeamRecord(game.home)}
                     </div>
@@ -1014,9 +1013,8 @@ export const app = {
                     src="./img/logo/${game.away.toLowerCase()}.png"
                   />
                   <div>
-                    <div class="team-name">${game.away.replaceAll(
-                      "_",
-                      " "
+                    <div class="team-name">${this.formatTeamName(
+                      game.away
                     )}</div>
                     <div class="team-record">${this.getTeamRecord(game.away)}
                     </div>
@@ -1104,7 +1102,9 @@ export const app = {
            <img
               alt="Logo"
               class="playerTeam"
-              src="./img/logo/${playerSeasons.get(lastPlayedSeason).team}.png"
+              src="./img/logo/${playerSeasons
+                .get(lastPlayedSeason)
+                .team.toLowerCase()}.png"
             />
         </div>  
         <div class="fullName">
@@ -1182,7 +1182,7 @@ export const app = {
 
       playerSeasons.forEach((stats, id) => {
         var imgName = stats.team.toLowerCase();
-        var imgTitle = stats.team.replaceAll("_", " ");
+        var imgTitle = this.formatTeamName(stats.team);
         if (stats.isSubstitute) {
           imgName = "liguedumercredi_logo";
           imgTitle = "Substitut";
@@ -1396,6 +1396,10 @@ export const app = {
           .replace("0.", ".");
   },
 
+  formatTeamName(value) {
+    return value.split("-")[0].replaceAll("_", " ");
+  },
+
   formatPosition(value) {
     var position;
     switch (value) {
@@ -1488,7 +1492,7 @@ export const app = {
     seasonJSON.teams.forEach((team) => {
       pageHtml += `<img
           onclick="app.selectTeam('${team.name.replaceAll("'", "\\'")}')"
-          title="${team.name.replaceAll("_", " ")}"
+          title="${this.formatTeamName(team.name)}"
           alt="Logo"
           class="logo-filter ${
             teamFiltered == team.name ? "team-selected" : ""
@@ -1520,7 +1524,7 @@ export const app = {
       index++;
       if (player) {
         var imgName = player.team.toLowerCase();
-        var imgTitle = player.team.replaceAll("_", " ");
+        var imgTitle = this.formatTeamName(player.team);
         if (player.isSubstitute) {
           imgName = "liguedumercredi_logo";
           imgTitle = "Substitut";
@@ -1643,18 +1647,16 @@ export const app = {
       "\\'"
     )}')" ${
       teamFiltered == game.home ? 'class="activated"' : ""
-    }><div class="side-name">Local</div>${game.home.replaceAll(
-      "_",
-      " "
+    }><div class="side-name">Local</div>${this.formatTeamName(
+      game.home
     )} </button>`;
     pageHtml += `<button onclick="app.selectTeam('${game.away.replaceAll(
       "'",
       "\\'"
     )}')" ${
       teamFiltered == game.away ? 'class="activated"' : ""
-    }><div class="side-name">Visiteur</div>${game.away.replaceAll(
-      "_",
-      " "
+    }><div class="side-name">Visiteur</div>${this.formatTeamName(
+      game.away
     )} </button>`;
 
     pageHtml += `</div>`;
