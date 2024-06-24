@@ -1082,7 +1082,7 @@ input:checked + .slider:before {
   }
 
   .date-card {
-    width: 100%;
+    width: 95%;
     padding: 0px;
     padding-top: 10px;
   }

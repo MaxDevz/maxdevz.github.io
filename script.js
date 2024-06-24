@@ -118,6 +118,17 @@ export const app = {
         }
       }
 
+      if (!nextGameDate) {
+        for (const date of seasonJSON.playoffs) {
+          const gameDate = new Date(date.date + "T23:59");
+          if (now <= gameDate) {
+            nextGameDate = gameDate;
+            nextGames = date;
+            break;
+          }
+        }
+      }
+
       if (nextGames && nextGameDate) {
         var time_difference =
           new Date(nextGameDate).getTime() - new Date(now).getTime();
@@ -1085,7 +1096,7 @@ export const app = {
   },
 
   createTeams(game, final) {
-    return `<div id="teams" class="teams">
+    return `<div id="teams">
               <div class="team">
                 <div class="team-group">
                   <div class="position">${game.home_position}</div>
