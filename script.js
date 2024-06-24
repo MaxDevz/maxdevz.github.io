@@ -105,9 +105,64 @@ export const app = {
     if (seasonJSON.schedule.length == 0) {
       pageHtml += `<div>Aucune horaire pour cette saison</div>`;
     } else {
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      const now = Date.now();
+      var nextGameDate = null;
+      var nextGames = null;
+      for (const date of seasonJSON.schedule) {
+        const gameDate = new Date(date.date + "T23:59");
+        if (now <= gameDate) {
+          nextGameDate = gameDate;
+          nextGames = date;
+          break;
+        }
+      }
+
+      if (nextGames && nextGameDate) {
+        var time_difference =
+          new Date(nextGameDate).getTime() - new Date(now).getTime();
+
+        //calculate days difference by dividing total milliseconds in a day
+        var days_difference = Math.round(
+          time_difference / (1000 * 60 * 60 * 24)
+        );
+        var daysLeft = "";
+        switch (days_difference) {
+          case 0:
+            daysLeft = `Aujourd'hui`;
+            break;
+          case 1:
+            daysLeft = `Demain`;
+            break;
+          default:
+            daysLeft = `${days_difference} jours restants`;
+        }
+
+        pageHtml += `<div class="date-card">
+        <div class="nextGame">
+          <div class="date nextGame">Prochain Match - ${nextGameDate.toLocaleDateString(
+            "fr-CA",
+            options
+          )}</div>
+          <span>${daysLeft}</span>
+        </div>
+        <div class="card-container">`;
+
+        for (const game of nextGames.games) {
+          if (
+            !teamFiltered ||
+            teamFiltered == game.home ||
+            teamFiltered == game.away
+          ) {
+            await this.createNextGameCalendar(game, nextGames.date);
+          }
+        }
+
+        pageHtml += `</div></div>`;
+      }
+
       for (const date of seasonJSON.schedule) {
         const gameDate = new Date(date.date + "T00:00");
-        const options = { year: "numeric", month: "long", day: "numeric" };
 
         pageHtml += `<div class="date-card">
         <div class="date">${gameDate.toLocaleDateString("fr-CA", options)}</div>
@@ -213,7 +268,7 @@ export const app = {
         : "onclick=\"app.selectGame('" + date + "_" + game.time + "')\""
     }>
             <div class="reported">Partie reportée : ${game.reported}</div>
-            <div id="teams">
+            <div id="teams" class="teams">
               <div class="team ${
                 awayPoints == homePoints
                   ? ""
@@ -335,6 +390,51 @@ export const app = {
 
     homeStatsJson = null;
     awayStatsJson = null;
+  },
+
+  async createNextGameCalendar(game, date) {
+    pageHtml += `<div class="game">
+          <div class="time">${game.time}`;
+
+    if (game.rescheduled || game.game_number) {
+      var note = `Partie ${game.game_number} de 3`;
+      if (game.game_number == 3) {
+        note += ` (Si Nécessaire)`;
+      }
+
+      if (game.rescheduled) {
+        const gameRescheduled = new Date(game.rescheduled + "T00:00");
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        note = `(Reprise du ${gameRescheduled.toLocaleDateString(
+          "fr-CA",
+          options
+        )})`;
+      }
+
+      pageHtml += `<span class="game-note">${note}</span>`;
+    }
+
+    pageHtml += `</div>
+          <div id="confrontation" class="confrontation">
+            <div class="teamNextGame">
+              <div class="team-group">
+                <img
+                  alt="Logo"
+                  class="calendar-logo"
+                  src="./img/logo/${game.away.toLowerCase()}.png"
+                />
+              </div>
+              VS
+              <div class="team-group">
+                <img
+                  alt="Logo"
+                  class="calendar-logo"
+                  src="./img/logo/${game.home.toLowerCase()}.png"
+                />
+              </div>
+            </div>`;
+
+    pageHtml += `</div></div>`;
   },
 
   // ****************************
@@ -985,7 +1085,7 @@ export const app = {
   },
 
   createTeams(game, final) {
-    return `<div id="teams">
+    return `<div id="teams" class="teams">
               <div class="team">
                 <div class="team-group">
                   <div class="position">${game.home_position}</div>

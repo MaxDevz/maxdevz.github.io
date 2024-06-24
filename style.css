@@ -492,10 +492,10 @@ table .header th {
   transition: all 0.2s ease-in-out;
   padding: 10px;
   align-items: center;
-  justify-content: space-between;
-  min-width: 370px;
+  justify-content: center;
   cursor: pointer;
   overflow: hidden;
+  width: fit-content;
 }
 
 .confrontation.reported {
@@ -762,6 +762,14 @@ td.name {
   font-weight: bold;
 }
 
+.date.nextGame {
+  color: #ff7500;
+}
+
+.nextGame {
+  text-align: center;
+}
+
 .date-card {
   border-radius: 15px;
   border: 1px solid #eee;
@@ -797,6 +805,20 @@ td.name {
 .team .team-stats {
   display: flex;
   align-items: center;
+}
+
+.teams {
+  padding-right: 20px;
+}
+
+.teamNextGame {
+  display: flex;
+  font-weight: bold;
+  align-items: center;
+}
+
+.teamNextGame .team-group {
+  padding: 0px 20px;
 }
 
 .team-stats .fas {
@@ -1000,6 +1022,14 @@ input:checked + .slider:before {
 
 /* Responsive Styles */
 @media screen and (max-width: 767px) {
+  .confrontation:has(.teamNextGame) {
+    width: min-content;
+  }
+
+  .confrontation {
+    width: 100%;
+  }
+
   .legend {
     width: 95vw;
   }
@@ -1045,6 +1075,12 @@ input:checked + .slider:before {
     width: 95%;
   }
 
+  .game:has(.teamNextGame) {
+    margin: 0px;
+    margin-bottom: 5px;
+    width: auto;
+  }
+
   .date-card {
     width: 100%;
     padding: 0px;
@@ -1053,10 +1089,6 @@ input:checked + .slider:before {
 
   .content {
     padding: 0px;
-  }
-
-  .confrontation {
-    min-width: 0px;
   }
 
   .card .menu-title {
