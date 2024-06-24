@@ -1199,7 +1199,8 @@ export const app = {
     var hasImage = await this.loadImage(id);
     var imageName = hasImage ? id : "placeholder_headshot";
 
-    pageHtml = `
+    pageHtml = `<div>`;
+    pageHtml += `
     <div class="playerHeader">
       <div class="nameHeadshot">
         <div class="playerHeadshot">
@@ -1381,7 +1382,7 @@ export const app = {
       pageHtml += `</table></div>`;
     }
 
-    pageHtml += `</div></div>`;
+    pageHtml += `</div></div></div>`;
 
     this.setPageHtml(pageHtml);
   },
