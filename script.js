@@ -633,7 +633,6 @@ export const app = {
           <th title="Rang" class="rank">RG</th>
           <th>Équipe</th>
           <th class="name">Nom</th>
-          <th></th>
         </tr>`;
 
       var index = 0;
@@ -680,7 +679,6 @@ export const app = {
           }
               </a>
             </td>
-            <td class="rating">${player.rating}</td>
           <tr>`;
         }
       });
@@ -689,7 +687,9 @@ export const app = {
 
       columns.forEach((column) => {
         if (column.sortable && !(this.isGamePage() && column.short == "PJ")) {
-          pageHtml += `<th title="${column.description}" ${this.isSorted(
+          pageHtml += `<th ${
+            column.short == "Cote" ? 'class="rating"' : ""
+          } title="${column.description}" ${this.isSorted(
             column.short
           )} onclick="app.sortBy('${column.short}')">${column.short}</th>`;
         }
@@ -722,7 +722,8 @@ export const app = {
               : tdb / player.AB;
           mdp = mdp ? mdp : 0;
 
-          pageHtml += `<tr>`;
+          pageHtml += `<tr>
+          <td class="rating" ${this.isSorted("Cote")}>${player.rating}</td>`;
           pageHtml += !this.isGamePage()
             ? `<td ${this.isSorted("PJ")}>${player.PJ}</td>`
             : "";
@@ -1289,7 +1290,6 @@ export const app = {
         <tr class="header">
           <th title="Rang" class="rank">Année</th>
           <th>Équipe</th>
-          <th></th>
         </tr>`;
 
       playerSeasons.forEach((stats, id) => {
@@ -1324,7 +1324,6 @@ export const app = {
               </div>
             </div>
           </td>
-          <td class="rating"> ${id.includes("_S") ? "" : stats.rating}</td>
         <tr>`;
       });
 
@@ -1332,7 +1331,9 @@ export const app = {
 
       columns.forEach((column) => {
         if (column.sortable) {
-          pageHtml += `<th title="${column.description}"}>${column.short}</th>`;
+          pageHtml += `<th title="${column.description}" ${
+            column.short == "Cote" ? 'class="rating"' : ""
+          }>${column.short}</th>`;
         }
       });
 
@@ -1355,9 +1356,10 @@ export const app = {
           id == 2023 ? tdb / (stats.AB - fristGame2023AB) : tdb / stats.AB;
         mdp = mdp ? mdp : 0;
 
-        pageHtml += `<tr ${id.includes("_S") ? 'class="subs"' : ""}>`;
-        pageHtml += `<td>${stats.PJ}</td>`;
-        pageHtml += `<td>${stats.AB}</td>
+        pageHtml += `<tr ${id.includes("_S") ? 'class="subs"' : ""}>
+        <td class="rating"> ${id.includes("_S") ? "" : stats.rating}</td>`;
+        pageHtml += `<td>${stats.PJ}</td>
+          <td>${stats.AB}</td>
           <td>${stats.P}</td>
           <td>${stats.CS}</td>
           <td>${this.formatDecimal(stats.CS / stats.AB)}</td>
@@ -1849,13 +1851,17 @@ export const app = {
         return b[1].SAC - a[1].SAC;
       case "RANG":
         return a[1].order - b[1].order;
+      case "Cote":
+        return b[1].rating - a[1].rating;
       default:
         return b[1].CS / b[1].AB - a[1].CS / a[1].AB;
     }
   },
 
   isSorted(column) {
-    return sortedColumn == column || (column == "MAB" && !sortedColumn)
+    return sortedColumn == column ||
+      (column == "MAB" && !sortedColumn) ||
+      (column == "MAB" && sortedColumn == "Cote")
       ? 'class="sorted"'
       : "";
   },

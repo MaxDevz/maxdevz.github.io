@@ -19,9 +19,9 @@
   },
   {
     "value": "rating",
-    "short": "",
-    "description": "",
-    "sortable": false
+    "short": "Cote",
+    "description": "Cote",
+    "sortable": true
   },
   {
     "value": "PJ",
