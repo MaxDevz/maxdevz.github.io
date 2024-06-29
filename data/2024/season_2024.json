@@ -4,30 +4,30 @@
   "teams": [
     {
       "name": "bar_le_cocotier",
-      "record": "4-1-0",
-      "ptsFor": 86,
-      "ptsAgainst": 58,
+      "record": "5-1-0",
+      "ptsFor": 106,
+      "ptsAgainst": 70,
       "players": [3, 7, 35, 52, 43, 6, 49, 13, 19, 47, 34]
     },
     {
       "name": "la_bouchée_d'or",
-      "record": "3-2-0",
-      "ptsFor": 78,
-      "ptsAgainst": 72,
+      "record": "3-3-0",
+      "ptsFor": 87,
+      "ptsAgainst": 84,
       "players": [9, 10, 8, 36, 17, 21, 14, 30, 44, 22, 60]
     },
     {
       "name": "buffet_frédéric",
-      "record": "4-2-0",
-      "ptsFor": 89,
-      "ptsAgainst": 88,
+      "record": "4-3-0",
+      "ptsFor": 101,
+      "ptsAgainst": 108,
       "players": [1, 2, 41, 4, 37, 27, 29, 57, 58, 24, 61]
     },
     {
       "name": "centrale_auto_SM",
-      "record": "0-6-0",
-      "ptsFor": 61,
-      "ptsAgainst": 96,
+      "record": "1-6-0",
+      "ptsFor": 73,
+      "ptsAgainst": 105,
       "players": [16, 20, 5, 11, 53, 54, 39, 23, 55, 56, 31]
     }
   ],
