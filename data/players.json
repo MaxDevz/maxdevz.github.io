@@ -79,8 +79,8 @@
     {
       "id": 12,
       "name": "Jonathan St-Pierre",
-      "throws": "N/A",
-      "bats": "N/A"
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 13,
@@ -99,7 +99,7 @@
       "id": 15,
       "name": "Stéphane St-Onge",
       "throws": "Droite",
-      "bats": "N/A"
+      "bats": "Droitier"
     },
     {
       "id": 16,
@@ -116,8 +116,8 @@
     {
       "id": 18,
       "name": "Kevin Duquette",
-      "throws": "N/A",
-      "bats": "N/A"
+      "throws": "Droite",
+      "bats": "Gaucher"
     },
     {
       "id": 19,

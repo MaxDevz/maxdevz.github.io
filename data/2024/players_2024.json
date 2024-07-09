@@ -18,14 +18,14 @@
       "id": 2,
       "rating": 26,
       "captain": true,
-      "number": 0,
+      "number": 4,
       "pos": "CCG"
     },
     {
       "id": 3,
       "rating": 26,
       "captain": true,
-      "number": 0,
+      "number": 16,
       "pos": "CCG"
     },
     {
@@ -46,14 +46,14 @@
       "id": 6,
       "rating": 25,
       "captain": false,
-      "number": 0,
+      "number": 27,
       "pos": "CCD"
     },
     {
       "id": 7,
       "rating": 26,
       "captain": true,
-      "number": 0,
+      "number": "00",
       "pos": "SS"
     },
     {
@@ -67,7 +67,7 @@
       "id": 9,
       "rating": 25,
       "captain": true,
-      "number": 0,
+      "number": 7,
       "pos": "SS"
     },
     {
@@ -85,10 +85,17 @@
       "pos": "CCD"
     },
     {
+      "id": 12,
+      "rating": 24,
+      "captain": false,
+      "number": 0,
+      "pos": "CCD"
+    },
+    {
       "id": 13,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 55,
       "pos": "CG"
     },
     {
@@ -123,7 +130,7 @@
       "id": 19,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 24,
       "pos": "1B"
     },
     {
@@ -158,14 +165,14 @@
       "id": 24,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 1,
       "pos": "1B"
     },
     {
       "id": 27,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 12,
       "pos": "CCD"
     },
     {
@@ -214,7 +221,7 @@
       "id": 35,
       "rating": 19,
       "captain": false,
-      "number": 0,
+      "number": 9,
       "pos": "P"
     },
     {
@@ -228,7 +235,7 @@
       "id": 37,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 5,
       "pos": "3B"
     },
     {
@@ -249,7 +256,7 @@
       "id": 43,
       "rating": 19,
       "captain": false,
-      "number": 0,
+      "number": 14,
       "pos": "R"
     },
     {
@@ -263,7 +270,7 @@
       "id": 47,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 11,
       "pos": "R"
     },
     {
@@ -312,14 +319,14 @@
       "id": 57,
       "rating": 24,
       "captain": false,
-      "number": 0,
+      "number": 14,
       "pos": "1B, 2B"
     },
     {
       "id": 58,
       "rating": 20,
       "captain": false,
-      "number": 0,
+      "number": 15,
       "pos": "C"
     },
     {
@@ -333,7 +340,7 @@
       "id": 60,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 68,
       "pos": ""
     },
     {
