@@ -159,12 +159,14 @@
         {
           "time": "19h00",
           "home": "buffet_frédéric",
-          "away": "la_bouchée_d'or"
+          "away": "la_bouchée_d'or",
+          "reported": "Pluie"
         },
         {
           "time": "20h30",
           "home": "centrale_auto_SM",
-          "away": "bar_le_cocotier"
+          "away": "bar_le_cocotier",
+          "reported": "Pluie"
         }
       ]
     },
