@@ -186,7 +186,7 @@
       "id": 29,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 11,
       "pos": "CCG"
     },
     {
@@ -346,6 +346,13 @@
     {
       "id": 61,
       "rating": 21,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 75,
+      "rating": 22,
       "captain": false,
       "number": 0,
       "pos": ""
