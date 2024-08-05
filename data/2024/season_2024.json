@@ -4,16 +4,16 @@
   "teams": [
     {
       "name": "bar_le_cocotier",
-      "record": "6-2-0",
-      "ptsFor": 140,
-      "ptsAgainst": 104,
+      "record": "6-3-0",
+      "ptsFor": 153,
+      "ptsAgainst": 122,
       "players": [3, 7, 35, 52, 43, 6, 49, 13, 19, 47, 34]
     },
     {
       "name": "la_bouchée_d'or",
-      "record": "4-4-0",
-      "ptsFor": 125,
-      "ptsAgainst": 117,
+      "record": "5-4-0",
+      "ptsFor": 143,
+      "ptsAgainst": 130,
       "players": [9, 10, 8, 36, 17, 21, 14, 30, 44, 22, 60]
     },
     {
@@ -196,7 +196,8 @@
         {
           "time": "20h30",
           "home": "buffet_frédéric",
-          "away": "centrale_auto_SM"
+          "away": "centrale_auto_SM",
+          "reported": "Pluie"
         }
       ]
     },
@@ -206,19 +207,38 @@
         {
           "time": "19h00",
           "home": "bar_le_cocotier",
-          "away": "centrale_auto_SM"
+          "away": "centrale_auto_SM",
+          "reported": "Pluie"
         },
         {
           "time": "20h30",
           "home": "la_bouchée_d'or",
-          "away": "buffet_frédéric"
+          "away": "buffet_frédéric",
+          "reported": "Pluie"
+        }
+      ]
+    },
+    {
+      "date": "2024-08-07",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "bar_le_cocotier",
+          "away": "centrale_auto_SM",
+          "rescheduled": "2024-07-31"
+        },
+        {
+          "time": "20h30",
+          "home": "la_bouchée_d'or",
+          "away": "buffet_frédéric",
+          "rescheduled": "2024-07-31"
         }
       ]
     }
   ],
   "playoffs": [
     {
-      "date": "2024-08-07",
+      "date": "2024-08-14",
       "games": [
         {
           "game_number": 1,
@@ -239,7 +259,7 @@
       ]
     },
     {
-      "date": "2024-08-14",
+      "date": "2024-08-21",
       "games": [
         {
           "game_number": 2,
@@ -260,7 +280,7 @@
       ]
     },
     {
-      "date": "2024-08-21",
+      "date": "2024-08-28",
       "games": [
         {
           "game_number": 3,
@@ -281,7 +301,7 @@
       ]
     },
     {
-      "date": "2024-08-28",
+      "date": "2024-09-04",
       "games": [
         {
           "game_number": 1,
@@ -294,7 +314,7 @@
       ]
     },
     {
-      "date": "2024-09-04",
+      "date": "2024-09-11",
       "games": [
         {
           "game_number": 2,
