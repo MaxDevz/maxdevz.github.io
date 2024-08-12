@@ -234,91 +234,74 @@
           "rescheduled": "2024-07-31"
         }
       ]
-    },
-    {
-      "date": "2024-08-14",
-      "games": [
-        {
-          "time": "19h00",
-          "home": "la_bouchée_d'or",
-          "away": "buffet_frédéric",
-          "rescheduled": "2024-07-10"
-        },
-        {
-          "time": "20h30",
-          "home": "bar_le_cocotier",
-          "away": "centrale_auto_SM",
-          "rescheduled": "2024-07-10"
-        }
-      ]
     }
   ],
   "playoffs": [
     {
-      "date": "2024-08-21",
+      "date": "2024-08-14",
       "games": [
         {
           "game_number": 1,
           "time": "19h00",
-          "home": "TBD",
+          "home": "bar_le_cocotier",
           "home_position": 1,
-          "away": "TBD",
+          "away": "centrale_auto_SM",
           "away_position": 4
         },
         {
           "game_number": 1,
           "time": "20h30",
-          "home": "TBD",
+          "home": "buffet_frédéric",
           "home_position": 2,
-          "away": "TBD",
+          "away": "la_bouchée_d'or",
           "away_position": 3
         }
       ]
     },
     {
-      "date": "2024-08-28",
+      "date": "2024-08-21",
       "games": [
         {
           "game_number": 2,
           "time": "19h00",
-          "home": "TBD",
+          "home": "la_bouchée_d'or",
           "home_position": 3,
-          "away": "TBD",
+          "away": "buffet_frédéric",
           "away_position": 2
         },
         {
           "game_number": 2,
           "time": "20h30",
-          "home": "TBD",
+          "home": "centrale_auto_SM",
           "home_position": 4,
-          "away": "TBD",
+          "away": "bar_le_cocotier",
           "away_position": 1
         }
       ]
     },
     {
-      "date": "2024-09-04",
+      "date": "2024-09-28",
       "games": [
         {
           "game_number": 3,
           "time": "19h00",
-          "home": "TBD",
+          "home": "bar_le_cocotier",
           "home_position": 1,
-          "away": "TBD",
+          "away": "centrale_auto_SM",
           "away_position": 4
         },
         {
           "game_number": 3,
           "time": "20h30",
-          "home": "TBD",
+          "home": "buffet_frédéric",
           "home_position": 2,
-          "away": "TBD",
+          "away": "la_bouchée_d'or",
           "away_position": 3
         }
       ]
     },
     {
-      "date": "2024-09-11",
+      "date": "2024-09-04",
       "games": [
         {
           "game_number": 1,
@@ -331,7 +314,7 @@
       ]
     },
     {
-      "date": "2024-09-18",
+      "date": "2024-09-11",
       "games": [
         {
           "game_number": 2,
