@@ -234,11 +234,28 @@
           "rescheduled": "2024-07-31"
         }
       ]
+    },
+    {
+      "date": "2024-08-14",
+      "games": [
+        {
+          "time": "19h00",
+          "home": "la_bouchée_d'or",
+          "away": "buffet_frédéric",
+          "rescheduled": "2024-07-10"
+        },
+        {
+          "time": "20h30",
+          "home": "bar_le_cocotier",
+          "away": "centrale_auto_SM",
+          "rescheduled": "2024-07-10"
+        }
+      ]
     }
   ],
   "playoffs": [
     {
-      "date": "2024-08-14",
+      "date": "2024-08-21",
       "games": [
         {
           "game_number": 1,
@@ -259,7 +276,7 @@
       ]
     },
     {
-      "date": "2024-08-21",
+      "date": "2024-08-28",
       "games": [
         {
           "game_number": 2,
@@ -280,7 +297,7 @@
       ]
     },
     {
-      "date": "2024-08-28",
+      "date": "2024-09-04",
       "games": [
         {
           "game_number": 3,
@@ -301,7 +318,7 @@
       ]
     },
     {
-      "date": "2024-09-04",
+      "date": "2024-09-11",
       "games": [
         {
           "game_number": 1,
@@ -314,7 +331,7 @@
       ]
     },
     {
-      "date": "2024-09-11",
+      "date": "2024-09-18",
       "games": [
         {
           "game_number": 2,
