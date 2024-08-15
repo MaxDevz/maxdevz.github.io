@@ -7,28 +7,36 @@
       "record": "7-3-0",
       "ptsFor": 165,
       "ptsAgainst": 131,
-      "players": [3, 7, 35, 52, 43, 6, 49, 13, 19, 47, 34]
+      "players": [3, 7, 35, 52, 43, 6, 49, 13, 19, 47, 34],
+      "semiFinal": 0,
+      "final": 0
     },
     {
       "name": "la_bouchée_d'or",
       "record": "5-5-0",
       "ptsFor": 153,
       "ptsAgainst": 148,
-      "players": [9, 10, 8, 36, 17, 21, 14, 30, 44, 22, 60]
+      "players": [9, 10, 8, 36, 17, 21, 14, 30, 44, 22, 60],
+      "semiFinal": 1,
+      "final": 0
     },
     {
       "name": "buffet_frédéric",
       "record": "6-4-0",
       "ptsFor": 151,
       "ptsAgainst": 153,
-      "players": [1, 2, 41, 4, 37, 27, 29, 57, 58, 24, 61]
+      "players": [1, 2, 41, 4, 37, 27, 29, 57, 58, 24, 61],
+      "semiFinal": 0,
+      "final": 0
     },
     {
       "name": "centrale_auto_SM",
       "record": "2-8-0",
       "ptsFor": 116,
       "ptsAgainst": 153,
-      "players": [16, 20, 5, 11, 53, 54, 39, 23, 55, 56, 31]
+      "players": [16, 20, 5, 11, 53, 54, 39, 23, 55, 56, 31],
+      "semiFinal": 1,
+      "final": 0
     }
   ],
   "schedule": [
