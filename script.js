@@ -17,6 +17,8 @@ var players;
 var seasons;
 var defaultGame;
 var columns;
+var rules;
+var sponsors;
 
 const PTS_BY_WIN = 2;
 const PTS_BY_TIE = 1;
@@ -34,6 +36,12 @@ export const app = {
 
     response = await fetch("./data/columns.json");
     columns = await response.json();
+
+    response = await fetch("./data/rules.json");
+    rules = await response.json();
+
+    response = await fetch("./data/sponsors.json");
+    sponsors = await response.json();
 
     app.setSeason();
     await app.setSeasonJSON(seasonSelected);
@@ -78,6 +86,12 @@ export const app = {
         break;
       case "player":
         this.createPlayerPage();
+        break;
+      case "rules":
+        this.createRules();
+        break;
+      case "sponsors":
+        this.createSponsors();
         break;
       default:
         if (
@@ -565,6 +579,48 @@ export const app = {
         </div>
         
       </div>`;
+
+    this.setPageHtml(pageHtml);
+  },
+
+  // ****************************
+  // Rules
+  // ****************************
+
+  createRules() {
+    pageHtml = this.createPageTitle("Règlements", false);
+
+    pageHtml += `<div class="rules"></div>
+    <ol>`;
+
+    rules.forEach((rule) => {
+      pageHtml += `<li> ${rule}</li>`;
+    });
+
+    pageHtml += `</ol> <div class="bold">Bonne saison à tous!</div>`;
+
+    this.setPageHtml(pageHtml);
+  },
+
+  // ****************************
+  // Sponsors
+  // ****************************
+
+  createSponsors() {
+    pageHtml = this.createPageTitle("NOS COMMANDITAIRES", false);
+
+    pageHtml += `<div class="sponsors">`;
+
+    sponsors.forEach((sponsor) => {
+      pageHtml += `<img
+                      title="${sponsor}"
+                      alt="Logo"
+                      class="sponsor-logo"
+                      src="./img/logo/${sponsor}.png"
+                    />`;
+    });
+
+    pageHtml += `</div>`;
 
     this.setPageHtml(pageHtml);
   },
