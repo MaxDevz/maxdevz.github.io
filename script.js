@@ -612,12 +612,31 @@ export const app = {
     pageHtml += `<div class="sponsors">`;
 
     sponsors.forEach((sponsor) => {
-      pageHtml += `<img
-                      title="${sponsor}"
-                      alt="Logo"
-                      class="sponsor-logo"
-                      src="./img/logo/${sponsor}.png"
-                    />`;
+      pageHtml += `<div class="sponsor">
+                      <img
+                        title="${sponsor.name}"
+                        alt="Logo"
+                        class="sponsor-logo"
+                        src="./img/logo/${sponsor.logo}.png"
+                      />
+                      <div class="rank">${sponsor.type}</div>
+                      <div class="sponsor-name">${sponsor.name}</div>
+                      <div class="address">${
+                        sponsor.address
+                      }<a target="_blank" href="https://www.google.ca/maps/place/${
+        sponsor.address
+      }"><i class="fas fa-map-marker-alt"></i></a></div>
+                      ${
+                        sponsor.site
+                          ? `<a target="_blank" href="${sponsor.site}">${sponsor.site}</a>`
+                          : ""
+                      }
+                      ${
+                        sponsor.fb
+                          ? `<div><a target="_blank" href="${sponsor.fb}"><i class="fab fa-facebook-square"></i></a></div>`
+                          : ""
+                      }
+                    </div>`;
     });
 
     pageHtml += `</div>`;

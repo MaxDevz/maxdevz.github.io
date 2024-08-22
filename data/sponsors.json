@@ -1,6 +1,35 @@
 [
-  "buffet_frédéric",
-  "centrale_auto_sm",
-  "la_bouchée_d'or",
-  "bar_le_cocotier-blanc"
+  {
+    "logo": "buffet_frédéric_logo",
+    "name": "Buffet Frédéric",
+    "type": "Traiteur",
+    "address": "880 Rue Cormier, Drummondville, QC J2C 2N6",
+    "phone": "(819) 472-4569",
+    "site": "https://buffetfrederic.com/",
+    "fb": "https://www.facebook.com/profile.php?id=100063654724902"
+  },
+  {
+    "logo": "centrale_auto_sm_logo",
+    "name": "Centrale Auto S. M.",
+    "type": "Atelier de réparation automobile",
+    "address": "4110 Bd St Joseph, Drummondville, Quebec J2B 1T5",
+    "phone": "(819) 474-2365"
+  },
+  {
+    "logo": "la_bouchée_d'or_logo",
+    "name": "Boucherie Bouchée d'Or",
+    "type": "Boucherie",
+    "address": "2490 Rue Saint-Pierre, Drummondville, QC J2C 5M5",
+    "phone": "(819) 472-1795",
+    "site": "https://www.boucheedor.com/",
+    "fb": "https://www.facebook.com/Boucheedor"
+  },
+  {
+    "logo": "bar_le_cocotier-blanc",
+    "name": "Bar Le Cocotier",
+    "type": "Bar",
+    "address": "2272 Bd Mercure, Drummondville, QC J2B 3R6",
+    "phone": "(819) 475-9713",
+    "fb": "https://www.facebook.com/profile.php?id=100054371808331"
+  }
 ]
