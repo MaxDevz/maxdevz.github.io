@@ -1235,12 +1235,14 @@ export const app = {
     var infoActualSeason = null;
     var playerGeneralInfo = this.getPlayerGeneralInfo(id);
     var playerSeasons = new Map();
+    var playerPlayoffs = new Map();
     var activeSeason = seasonSelected;
     var lastPlayedSeason = seasonSelected;
 
     for (const season of seasons) {
       playersStats = new Map();
       seasonSelected = season;
+      isPlayoffs = false;
       await this.createStatsSeasonOrPlayoffsMap();
       await this.setSeasonJSON(season);
 
@@ -1262,6 +1264,24 @@ export const app = {
       var seasonStatsSub = playersStats.get(id + "_S");
       if (seasonStatsSub) {
         playerSeasons.set(season + "_S", seasonStatsSub);
+      }
+
+      isPlayoffs = true;
+      playersStats = new Map();
+      await this.createStatsSeasonOrPlayoffsMap();
+
+      var playoffStats = playersStats.get(+id);
+      if (playoffStats) {
+        playoffStats["winner"] = false;
+        if (seasonJSON.winner == seasonStats.team) {
+          playoffStats["winner"] = true;
+        }
+        playerPlayoffs.set(season, playoffStats);
+      }
+
+      var playoffStatsSub = playersStats.get(id + "_S");
+      if (playoffStatsSub) {
+        playerPlayoffs.set(season + "_S", playoffStatsSub);
       }
     }
 
@@ -1354,12 +1374,10 @@ export const app = {
       </div>
     </div>`;
 
-    pageHtml += `<div class="stats">`;
+    pageHtml += `<div class="player-title">Saison</div><div class="stats">`;
 
     if (playerSeasons.size == 0) {
-      pageHtml += `<div>Aucune statistique pour cette ${
-        this.isGamePage() ? "partie" : "saison"
-      }</div>`;
+      pageHtml += `<div>Aucune statistique pour cette saison</div>`;
     } else {
       pageHtml += `<div class="unsortable-columns"><table>
         <tr class="header">
@@ -1456,10 +1474,113 @@ export const app = {
           <td>${stats.SAC}</td>
         <tr>`;
       });
-      pageHtml += `</table></div>`;
+      pageHtml += `</table></div></div>`;
     }
 
-    pageHtml += `</div></div></div>`;
+    pageHtml += `<div class="player-title">Playoffs</div><div class="stats player-stats">`;
+
+    if (playerPlayoffs.size == 0) {
+      pageHtml += `<div>Aucune statistique pour cette saison</div>`;
+    } else {
+      pageHtml += `<div class="unsortable-columns"><table>
+        <tr class="header">
+          <th title="Rang" class="rank">Année</th>
+          <th>Équipe</th>
+        </tr>`;
+
+      playerPlayoffs.forEach((stats, id) => {
+        var imgName = stats.team.toLowerCase();
+        var imgTitle = this.formatTeamName(stats.team);
+        if (stats.isSubstitute) {
+          imgName = "liguedumercredi_logo";
+          imgTitle = "Substitut";
+        }
+
+        pageHtml += `<tr ${id.includes("_S") ? 'class="subs"' : ""}>
+          <td class="rank">${id.includes("_S") ? id.replace("_S", "") : id}</td>
+          <td>
+            <div class="team">
+            <div class="team-stats">
+            ${
+              id.includes("_S")
+                ? ""
+                : `<img 
+                  title="${imgTitle}" 
+                  alt="Logo" 
+                  class="stats-logo"
+                  src="./img/logo/${imgName}.png"
+                />`
+            }
+                <div>
+                  <div class="team-name">${imgTitle}</div>
+                </div>
+                ${stats.captain ? `<span class="captain">C</span>` : ""}
+                ${stats.winner ? `<i class="fas fa-trophy"></i>` : ""}
+                </div>
+              </div>
+            </div>
+          </td>
+        <tr>`;
+      });
+
+      pageHtml += `</table></div><div class="sortable-columns"><table><tr class="header">`;
+
+      columns.forEach((column) => {
+        if (column.sortable) {
+          pageHtml += `<th title="${column.description}" ${
+            column.short == "Cote" ? 'class="rating"' : ""
+          }>${column.short}</th>`;
+        }
+      });
+
+      pageHtml += `</tr>`;
+
+      playerPlayoffs.forEach((stats, id) => {
+        const fristGame2023CC = stats.fristGame2023CC
+          ? stats.fristGame2023CC
+          : 0;
+        const fristGame2023AB = stats.fristGame2023AB
+          ? stats.fristGame2023AB
+          : 0;
+        const tdb =
+          stats.S +
+          stats.double * 2 +
+          stats.triple * 3 +
+          (id == 2023 ? stats.CC - fristGame2023CC : stats.CC) * 4;
+        const pmdp = stats.PB / (stats.AB + stats.BB);
+        var mdp =
+          id == 2023 ? tdb / (stats.AB - fristGame2023AB) : tdb / stats.AB;
+        mdp = mdp ? mdp : 0;
+
+        pageHtml += `<tr ${id.includes("_S") ? 'class="subs"' : ""}>
+        <td class="rating"> ${id.includes("_S") ? "" : stats.rating}</td>`;
+        pageHtml += `<td>${stats.PJ}</td>
+          <td>${stats.AB}</td>
+          <td>${stats.P}</td>
+          <td>${stats.CS}</td>
+          <td>${this.formatDecimal(stats.CS / stats.AB)}</td>
+          <td>${stats.PB}</td>
+          <td>${this.formatDecimal(pmdp)}</td>
+          <td>${stats.S}</td>
+          <td>${stats.double}</td>
+          <td>${stats.triple}</td>
+          <td>${stats.CC}</td>
+          <td>${stats.GC}</td>
+          <td>${tdb}</td>
+          <td>${this.formatDecimal(mdp)}</td>
+          <td>${this.formatDecimal(pmdp + mdp)}</td>
+          <td>${stats.PP}</td>
+          <td>${stats.BB}</td>
+          <td>${stats.RB}</td>
+          <td>${stats.OPT}</td>
+          <td>${stats.ERR}</td>
+          <td>${stats.SAC}</td>
+        <tr>`;
+      });
+      pageHtml += `</table></div></div>`;
+    }
+
+    pageHtml += `</div></div>`;
 
     this.setPageHtml(pageHtml);
   },

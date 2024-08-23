@@ -283,12 +283,36 @@
           "home": "centrale_auto_SM",
           "home_position": 4,
           "away": "bar_le_cocotier",
-          "away_position": 1
+          "away_position": 1,
+          "reported": "Pluie"
         }
       ]
     },
     {
-      "date": "2024-09-28",
+      "date": "2024-08-28",
+      "games": [
+        {
+          "game_number": 2,
+          "time": "19h00",
+          "home": "la_bouchée_d'or",
+          "home_position": 3,
+          "away": "buffet_frédéric",
+          "away_position": 2,
+          "rescheduled": "2024-08-21"
+        },
+        {
+          "game_number": 2,
+          "time": "20h00",
+          "home": "centrale_auto_SM",
+          "home_position": 4,
+          "away": "bar_le_cocotier",
+          "away_position": 1,
+          "rescheduled": "2024-08-21"
+        }
+      ]
+    },
+    {
+      "date": "2024-09-04",
       "games": [
         {
           "game_number": 3,
@@ -309,7 +333,7 @@
       ]
     },
     {
-      "date": "2024-09-04",
+      "date": "2024-09-11",
       "games": [
         {
           "game_number": 1,
@@ -322,7 +346,7 @@
       ]
     },
     {
-      "date": "2024-09-11",
+      "date": "2024-09-18",
       "games": [
         {
           "game_number": 2,

@@ -295,6 +295,11 @@ table .header th {
   font-style: italic;
 }
 
+.player-title {
+  font-size: 1.5rem;
+  font-family: "Anton", sans-serif;
+}
+
 .value {
   color: #eee;
   font-size: 1rem;
@@ -732,6 +737,11 @@ td.name {
   padding: 20px;
   box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
   justify-content: center;
+  margin-bottom: 20px;
+}
+
+.player-stats {
+  display: flex;
 }
 
 .playerHeader {
@@ -741,7 +751,6 @@ td.name {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center bottom;
-  margin: 20px 0px;
 }
 
 .lineup {
@@ -1144,6 +1153,10 @@ input[type="checkbox"] {
   transition: all 0.3s;
   box-sizing: border-box;
   display: none;
+}
+
+.page input[type="checkbox"] {
+  display: initial;
 }
 
 .sidebarIconToggle {
