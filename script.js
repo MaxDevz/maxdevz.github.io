@@ -1162,7 +1162,9 @@ export const app = {
                   </div>
                   <div class="round">
                     <div class="final">${this.createTeams(
-                      seasonJSON.playoffs[3]
+                      seasonJSON.playoffs[4]
+                        ? seasonJSON.playoffs[4].games[0]
+                        : seasonJSON.playoffs[3]
                         ? seasonJSON.playoffs[3].games[0]
                         : seasonJSON.playoffs[2].games[0],
                       true
