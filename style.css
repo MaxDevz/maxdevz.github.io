@@ -208,7 +208,7 @@ table .header th {
   z-index: 10;
 
   position: absolute;
-  top: 596px;
+  top: 595px;
 }
 
 .bracket {
@@ -1401,7 +1401,7 @@ ol > li::marker {
   }
 
   .arrow-down {
-    top: 546px;
+    top: 545px;
   }
 
   .rating,
