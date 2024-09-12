@@ -181,7 +181,7 @@
     },
     {
       "id": 29,
-      "name": "Bruno Perron",
+      "name": "Bruno Jacques-Perron",
       "throws": "Droite",
       "bats": "Droitier"
     },
@@ -257,6 +257,7 @@
     {
       "id": 41,
       "name": "Paul Brouillard",
+      "nickname": "Popaul",
       "throws": "Droite",
       "bats": "Gaucher"
     },

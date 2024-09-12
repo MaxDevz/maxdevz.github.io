@@ -1124,22 +1124,31 @@ export const app = {
   },
 
   async createPlayoffsBanner() {
-    pageHtml += `<div class="banner">
-      <div class="banner-content">
-        <div class="champions">CHAMPIONS</div>
-        <img
-          alt="Logo"
-          class="winner-logo"
-          src="./img/logo/${seasonJSON.winner.toLowerCase()}.png"
-        />
-        <div class="year">${seasonSelected}</div>
-        <img
-          alt="Logo"
-          class="league-logo"
-          src="./img/logo/tbd.png"
-        />
+    pageHtml += `<div class="winner-section">
+      <div class="banner">
+      <div class="banner-top">
+        <div class="banner-content">
+          <div class="champions">CHAMPIONS</div>
+          <img
+            alt="Logo"
+            class="winner-logo"
+            src="./img/logo/${seasonJSON.winner.toLowerCase()}.png"
+          />
+          <div class="year">${seasonSelected}</div>
+          <img
+            alt="Logo"
+            class="league-logo"
+            src="./img/logo/tbd.png"
+          />
+        </div>
       </div>
-    </div><div class="arrow-down"></div>`;
+      <div class="arrow-down"></div>
+      </div>`;
+    pageHtml += `<img
+                    title="Photo des gagnants ${seasonSelected}"
+                    class="winner-img"
+                    src="./img/winners/winner_${seasonSelected}.jpg"
+                    /></div>`;
   },
 
   async createPlayoffsTree() {

@@ -139,13 +139,34 @@ table .header th {
   z-index: 20;
 }
 
+.winner-img {
+  max-width: 500px;
+  margin: 10px;
+  margin-bottom: 100px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.55);
+  border-radius: 50px;
+}
+
 .banner {
+  display: contents;
+}
+
+.banner-top {
   margin: 0px 20px;
   background-color: rgb(255, 235, 217);
   width: 200px;
   height: auto;
   box-shadow: 0 50px 140px rgba(0, 0, 0, 0.75);
   padding: 10px;
+  position: absolute;
+  top: 300px;
+}
+
+.winner-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   position: relative;
 }
 
@@ -185,6 +206,9 @@ table .header th {
   border-top: 50px solid #ffebd9;
   margin-bottom: 20px;
   z-index: 10;
+
+  position: absolute;
+  top: 596px;
 }
 
 .bracket {
@@ -1367,6 +1391,19 @@ ol > li::marker {
     padding: 0 5px;
   }
 
+  .winner-img {
+    max-width: 400px;
+    margin-bottom: 160px;
+  }
+
+  .banner-top {
+    top: 250px;
+  }
+
+  .arrow-down {
+    top: 546px;
+  }
+
   .rating,
   .rank {
     padding-right: 10px !important;
@@ -1387,7 +1424,7 @@ ol > li::marker {
   }
 
   .lastName {
-    font-size: 3rem;
+    font-size: 2rem;
   }
 
   .firstName {

@@ -1,6 +1,6 @@
 {
   "name": "2024",
-  "winner": "placeholder-winner",
+  "winner": "buffet_frédéric",
   "teams": [
     {
       "name": "bar_le_cocotier",
@@ -27,7 +27,7 @@
       "ptsAgainst": 153,
       "players": [1, 2, 41, 4, 37, 27, 29, 57, 58, 24, 61],
       "semiFinal": 2,
-      "final": 1
+      "final": 2
     },
     {
       "name": "centrale_auto_SM",
@@ -342,14 +342,6 @@
           "home_position": 4,
           "away": "buffet_frédéric",
           "away_position": 2
-        },
-        {
-          "game_number": 3,
-          "time": "20h30",
-          "home": "buffet_frédéric",
-          "home_position": 2,
-          "away": "centrale_auto_SM",
-          "away_position": 4
         }
       ]
     }

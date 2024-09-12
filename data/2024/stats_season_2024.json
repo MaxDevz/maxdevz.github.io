@@ -2,7 +2,7 @@
   {
     "id": 29,
     "stats": {
-      "name": "Bruno Perron",
+      "name": "Bruno Jacques-Perron",
       "order": 0,
       "rating": 23,
       "captain": false,
@@ -1794,7 +1794,7 @@
   {
     "id": "29_S",
     "stats": {
-      "name": "Bruno Perron<span class='sub rank'>  Sub</span>",
+      "name": "Bruno Jacques-Perron<span class='sub rank'>  Sub</span>",
       "order": 0,
       "rating": 23,
       "captain": false,
