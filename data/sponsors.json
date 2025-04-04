@@ -1,5 +1,14 @@
 [
   {
+    "logo": "brasserie_du_boulevard_logo",
+    "name": "Brasserie du Boulevard",
+    "type": "Bar Sportif",
+    "address": "505 Celanese, Drummondville, QC J2B 5K4",
+    "phone": "(819) 478-9060",
+    "site": "https://brasserieduboulevard.ca/",
+    "fb": "https://www.facebook.com/brasserieduboulevard/"
+  },
+  {
     "logo": "buffet_frédéric_logo",
     "name": "Buffet Frédéric",
     "type": "Traiteur",
