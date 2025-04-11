@@ -1,0 +1,340 @@
+{
+  "players": [
+    {
+      "id": 0,
+      "rating": 0,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 1,
+      "rating": 25,
+      "captain": true,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 2,
+      "rating": 26,
+      "captain": true,
+      "number": 4,
+      "pos": "CCG"
+    },
+    {
+      "id": 3,
+      "rating": 26,
+      "captain": true,
+      "number": 16,
+      "pos": "CCG"
+    },
+    {
+      "id": 4,
+      "rating": 25,
+      "captain": false,
+      "number": 0,
+      "pos": "SS"
+    },
+    {
+      "id": 5,
+      "rating": 25,
+      "captain": false,
+      "number": 5,
+      "pos": "CCG"
+    },
+    {
+      "id": 6,
+      "rating": 25,
+      "captain": false,
+      "number": 27,
+      "pos": "CCD"
+    },
+    {
+      "id": 7,
+      "rating": 26,
+      "captain": false,
+      "number": "00",
+      "pos": "SS"
+    },
+    {
+      "id": 8,
+      "rating": 25,
+      "captain": false,
+      "number": 3,
+      "pos": "2B"
+    },
+    {
+      "id": 9,
+      "rating": 25,
+      "captain": true,
+      "number": 7,
+      "pos": "SS"
+    },
+    {
+      "id": 10,
+      "rating": 24,
+      "captain": true,
+      "number": 1,
+      "pos": "CCG"
+    },
+    {
+      "id": 12,
+      "rating": 24,
+      "captain": false,
+      "number": 0,
+      "pos": "CCD"
+    },
+    {
+      "id": 13,
+      "rating": 23,
+      "captain": false,
+      "number": 55,
+      "pos": "CG"
+    },
+    {
+      "id": 14,
+      "rating": 23,
+      "captain": false,
+      "number": 2,
+      "pos": "CCD"
+    },
+    {
+      "id": 15,
+      "rating": 23,
+      "captain": false,
+      "number": 0,
+      "pos": "CG"
+    },
+    {
+      "id": 16,
+      "rating": 24,
+      "captain": true,
+      "number": 4,
+      "pos": "SS"
+    },
+    {
+      "id": 17,
+      "rating": 23,
+      "captain": false,
+      "number": 9,
+      "pos": "1B"
+    },
+    {
+      "id": 20,
+      "rating": 23,
+      "captain": true,
+      "number": 3,
+      "pos": "P, CCG"
+    },
+    {
+      "id": 21,
+      "rating": 23,
+      "captain": false,
+      "number": 12,
+      "pos": "3B"
+    },
+    {
+      "id": 22,
+      "rating": 22,
+      "captain": false,
+      "number": 0,
+      "pos": "R"
+    },
+    {
+      "id": 23,
+      "rating": 22,
+      "captain": false,
+      "number": 1,
+      "pos": "R"
+    },
+    {
+      "id": 24,
+      "rating": 22,
+      "captain": false,
+      "number": 1,
+      "pos": "1B"
+    },
+    {
+      "id": 27,
+      "rating": 23,
+      "captain": false,
+      "number": 12,
+      "pos": "CCD"
+    },
+    {
+      "id": 28,
+      "rating": 22,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 29,
+      "rating": 23,
+      "captain": false,
+      "number": 11,
+      "pos": "CCG"
+    },
+    {
+      "id": 30,
+      "rating": 22,
+      "captain": false,
+      "number": 8,
+      "pos": "P"
+    },
+    {
+      "id": 31,
+      "rating": 22,
+      "captain": false,
+      "number": 14,
+      "pos": "3B"
+    },
+    {
+      "id": 32,
+      "rating": 22,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 35,
+      "rating": 19,
+      "captain": false,
+      "number": 9,
+      "pos": "P"
+    },
+    {
+      "id": 36,
+      "rating": 20,
+      "captain": false,
+      "number": 0,
+      "pos": "CD"
+    },
+    {
+      "id": 37,
+      "rating": 21,
+      "captain": false,
+      "number": 5,
+      "pos": "3B"
+    },
+    {
+      "id": 39,
+      "rating": 21,
+      "captain": false,
+      "number": 27,
+      "pos": "CD"
+    },
+    {
+      "id": 41,
+      "rating": 19,
+      "captain": false,
+      "number": 0,
+      "pos": "P"
+    },
+    {
+      "id": 43,
+      "rating": 19,
+      "captain": false,
+      "number": 14,
+      "pos": "R"
+    },
+    {
+      "id": 44,
+      "rating": 20,
+      "captain": false,
+      "number": 11,
+      "pos": "C"
+    },
+    {
+      "id": 45,
+      "rating": 24,
+      "captain": false,
+      "number": 0,
+      "pos": "C"
+    },
+    {
+      "id": 47,
+      "rating": 23,
+      "captain": false,
+      "number": 11,
+      "pos": "R"
+    },
+    {
+      "id": 49,
+      "rating": 22,
+      "captain": false,
+      "number": 0,
+      "pos": "CD"
+    },
+    {
+      "id": 53,
+      "rating": 20,
+      "captain": false,
+      "number": 10,
+      "pos": "C"
+    },
+    {
+      "id": 54,
+      "rating": 22,
+      "captain": false,
+      "number": 0,
+      "pos": "CCD"
+    },
+    {
+      "id": 55,
+      "rating": 22,
+      "captain": false,
+      "number": 9,
+      "pos": "CG"
+    },
+    {
+      "id": 56,
+      "rating": 21,
+      "captain": false,
+      "number": 7,
+      "pos": ""
+    },
+    {
+      "id": 57,
+      "rating": 24,
+      "captain": true,
+      "number": 14,
+      "pos": "1B, 2B"
+    },
+    {
+      "id": 58,
+      "rating": 20,
+      "captain": false,
+      "number": 15,
+      "pos": "C"
+    },
+    {
+      "id": 59,
+      "rating": 22,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 60,
+      "rating": 24,
+      "captain": false,
+      "number": 68,
+      "pos": ""
+    },
+    {
+      "id": 61,
+      "rating": 21,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 75,
+      "rating": 22,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    }
+  ]
+}

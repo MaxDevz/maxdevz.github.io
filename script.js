@@ -723,7 +723,7 @@ export const app = {
           var imgName = player.team.toLowerCase();
           var imgTitle = this.formatTeamName(player.team);
           if (player.isSubstitute) {
-            imgName = "liguedumercredi_logo";
+            imgName = "liguebrasserieduboulevard_logo";
             imgTitle = "Substitut";
           }
 
@@ -731,10 +731,7 @@ export const app = {
             <td class="rank">${index}</td>
             <td>
               <div class="team">
-              <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
-                "'",
-                "\\'"
-              )}')">
+              <div>
                   <img
                     title="${imgTitle}"
                     alt="Logo"
@@ -939,7 +936,7 @@ export const app = {
         var imgName = player.team.toLowerCase();
         var imgTitle = this.formatTeamName(player.team);
         if (player.isSubstitute) {
-          imgName = "liguedumercredi_logo";
+          imgName = "liguebrasserieduboulevard_logo";
           imgTitle = "Substitut";
         }
 
@@ -947,10 +944,7 @@ export const app = {
         <td class="rank">${index}</td>
         <td>
           <div class="team">
-          <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
-            "'",
-            "\\'"
-          )}')">
+          <div>
               <img
                 title="${imgTitle}"
                 alt="Logo"
@@ -1041,6 +1035,8 @@ export const app = {
   async createLineup() {
     pageHtml = this.createPageTitle("LINEUP", true);
 
+    var random = randomLineup;
+
     await this.createStatsSeasonOrPlayoffsMap();
 
     var lineupMap = new Map();
@@ -1067,11 +1063,11 @@ export const app = {
         });
         pageHtml += `</div>`;
       } else {
-        pageHtml += `<div class="card-container"><button class="card" onclick="app.shuffleLineup()"> <i class="fas fa-question"></i>Génération aléatoire</button></div>`;
+        pageHtml += `<div class="card-container suffleButton"><button class="card" onclick="app.shuffleLineup()"> <i class="fas fa-question"></i>Génération aléatoire</button></div>`;
 
         this.createLineupCard(
           this.generateBestLineup(lineupMap.get(teamFiltered)),
-          randomLineup
+          random
         );
       }
     }
@@ -1400,7 +1396,7 @@ export const app = {
         var imgName = stats.team.toLowerCase();
         var imgTitle = this.formatTeamName(stats.team);
         if (stats.isSubstitute) {
-          imgName = "liguedumercredi_logo";
+          imgName = "liguebrasserieduboulevard_logo";
           imgTitle = "Substitut";
         }
 
@@ -1412,12 +1408,15 @@ export const app = {
             ${
               id.includes("_S")
                 ? ""
-                : `<img 
+                : `
+                <a class="team-link" href="?page=stats&season=${id}&team=${imgName}">
+                <img 
                   title="${imgTitle}" 
                   alt="Logo" 
                   class="stats-logo"
                   src="./img/logo/${imgName}.png"
-                />`
+                />
+                </a>`
             }
                 <div>
                   <div class="team-name">${imgTitle}</div>
@@ -1503,7 +1502,7 @@ export const app = {
         var imgName = stats.team.toLowerCase();
         var imgTitle = this.formatTeamName(stats.team);
         if (stats.isSubstitute) {
-          imgName = "liguedumercredi_logo";
+          imgName = "liguebrasserieduboulevard_logo";
           imgTitle = "Substitut";
         }
 
@@ -1836,6 +1835,7 @@ export const app = {
         <th class="lineup-stats">PPP</th>
       </tr>`;
 
+    console.log("Random = " + random);
     if (random) {
       teamLineup = this.shuffle([...teamLineup]);
     }
@@ -1847,7 +1847,7 @@ export const app = {
         var imgName = player.team.toLowerCase();
         var imgTitle = this.formatTeamName(player.team);
         if (player.isSubstitute) {
-          imgName = "liguedumercredi_logo";
+          imgName = "liguebrasserieduboulevard_logo";
           imgTitle = "Substitut";
         }
 
