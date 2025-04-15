@@ -651,6 +651,7 @@ export const app = {
   async createStats() {
     var dateStart = new Date();
     await this.createStatsSeasonOrPlayoffsMap();
+    await this.initializeStats();
 
     // Uncomment Export JSON in logs
     /*var statsArrayJson = [];
@@ -1038,6 +1039,7 @@ export const app = {
     var random = randomLineup;
 
     await this.createStatsSeasonOrPlayoffsMap();
+    await this.initializeStats();
 
     var lineupMap = new Map();
 
@@ -1932,7 +1934,6 @@ export const app = {
           playersStats.set(player.id, player.stats);
         });
       }
-      await this.initializeStats();
     }
   },
 
