@@ -938,7 +938,7 @@ td.name {
 
 .toolbar img {
   padding-top: 55px;
-  width: 100%;
+  width: auto;
   height: 175px;
 }
 
