@@ -464,6 +464,24 @@
       "name": "Simon St-Onge",
       "throws": "Droite",
       "bats": "Droitier"
+    },
+    {
+      "id": 76,
+      "name": "Danick Champagne",
+      "throws": "Droite",
+      "bats": "N/A"
+    },
+    {
+      "id": 77,
+      "name": "Steven Gaumond",
+      "throws": "N/A",
+      "bats": "N/A"
+    },
+    {
+      "id": 78,
+      "name": "Sébastien Hamel",
+      "throws": "N/A",
+      "bats": "N/A"
     }
   ]
 }

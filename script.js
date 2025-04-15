@@ -1830,12 +1830,12 @@ export const app = {
       <tr class="header">
         <th title="Rang" class="lineup-stats">RG</th>
         <th>Équipe</th>
+        <th title="Rang" class="lineup-stats">#</th>
         <th class="name">Nom</th>
         <th class="lineup-stats">MAB</th>
         <th class="lineup-stats">PPP</th>
       </tr>`;
 
-    console.log("Random = " + random);
     if (random) {
       teamLineup = this.shuffle([...teamLineup]);
     }
@@ -1888,6 +1888,9 @@ export const app = {
                   </div>
                 </div>
               </td>
+              <td class="lineup-stats">${
+                player.number ? player.number : "-"
+              }</td>
               <td class="name">
               <a class="team-link" href="?page=player&id=${
                 isNaN(player.id) ? player.id.replace("_S", "") : player.id
@@ -2188,6 +2191,7 @@ export const app = {
         rating: info.rating,
         captain: isSubstitute ? false : info.captain,
         team: teamName,
+        number: isSubstitute ? 0 : info.number,
         PJ: 0,
         AB: hitter.BB ? 0 : 1,
         P: hitter.bags == "4B" ? 1 : 0,
@@ -2238,7 +2242,6 @@ export const app = {
 
   async readSeasonPlayoffsStats() {
     var statsJson;
-    console.log(seasonSelected);
     const stats = await fetch(
       `./data/${seasonSelected}/stats_${
         isPlayoffs ? "playoff" : "season"
