@@ -1932,6 +1932,7 @@ export const app = {
           playersStats.set(player.id, player.stats);
         });
       }
+      await this.initializeStats();
     }
   },
 
@@ -2256,6 +2257,23 @@ export const app = {
     }
 
     return statsJson;
+  },
+
+  async initializeStats() {
+    for (const team of seasonJSON.teams) {
+      for (const player of team.players) {
+        var hitterMap = playersStats.get(player);
+        if (!hitterMap) {
+          const game = {
+            home: team.name,
+          };
+          const hitter = {
+            id: player,
+          };
+          await this.setPlayerMap(game, hitter, true, 0);
+        }
+      }
+    }
   },
 
   // ****************************
