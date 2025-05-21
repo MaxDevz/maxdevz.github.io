@@ -11,21 +11,21 @@
       "id": 1,
       "rating": 25,
       "captain": true,
-      "number": 0,
+      "number": 14,
       "pos": ""
     },
     {
       "id": 2,
       "rating": 26,
       "captain": true,
-      "number": 0,
+      "number": 4,
       "pos": "CCG"
     },
     {
       "id": 3,
       "rating": 26,
       "captain": true,
-      "number": 0,
+      "number": 16,
       "pos": "CCG"
     },
     {
@@ -39,84 +39,84 @@
       "id": 5,
       "rating": 25,
       "captain": false,
-      "number": 0,
+      "number": 5,
       "pos": "CCG"
     },
     {
       "id": 6,
       "rating": 25,
       "captain": false,
-      "number": 0,
+      "number": 10,
       "pos": "CCD"
     },
     {
       "id": 7,
       "rating": 26,
       "captain": false,
-      "number": 0,
+      "number": 12,
       "pos": "SS"
     },
     {
       "id": 8,
       "rating": 25,
       "captain": false,
-      "number": 0,
+      "number": 11,
       "pos": "2B"
     },
     {
       "id": 9,
       "rating": 25,
       "captain": true,
-      "number": 0,
+      "number": 7,
       "pos": "SS"
     },
     {
       "id": 10,
       "rating": 24,
       "captain": true,
-      "number": 0,
+      "number": 64,
       "pos": "CCG"
     },
     {
       "id": 13,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 55,
       "pos": "CG"
     },
     {
       "id": 14,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 2,
       "pos": "CCD"
     },
     {
       "id": 16,
       "rating": 24,
       "captain": true,
-      "number": 0,
+      "number": 5,
       "pos": "SS"
     },
     {
       "id": 17,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": "00",
       "pos": "1B"
     },
     {
       "id": 20,
       "rating": 23,
       "captain": true,
-      "number": 0,
+      "number": 20,
       "pos": "P, CCG"
     },
     {
       "id": 21,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 1,
       "pos": "3B"
     },
     {
@@ -137,182 +137,182 @@
       "id": 24,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 3,
       "pos": "1B"
-    },
-    {
-      "id": 25,
-      "rating": 22,
-      "captain": false,
-      "number": 0,
-      "pos": ""
     },
     {
       "id": 27,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 1,
       "pos": "CCD"
     },
     {
       "id": 29,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 11,
       "pos": "CCG"
     },
     {
       "id": 30,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 12,
       "pos": "P"
     },
     {
       "id": 31,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 10,
       "pos": "3B"
     },
     {
       "id": 35,
       "rating": 19,
       "captain": false,
-      "number": 0,
+      "number": 2,
       "pos": "P"
     },
     {
       "id": 36,
       "rating": 19,
       "captain": false,
-      "number": 0,
+      "number": 4,
       "pos": "CD"
     },
     {
       "id": 37,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 9,
       "pos": "3B"
     },
     {
       "id": 39,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 27,
       "pos": "CD"
     },
     {
       "id": 41,
       "rating": 19,
       "captain": false,
-      "number": 0,
+      "number": 47,
       "pos": "P"
     },
     {
       "id": 43,
       "rating": 20,
       "captain": false,
-      "number": 0,
+      "number": 14,
       "pos": "R"
     },
     {
       "id": 44,
       "rating": 20,
       "captain": false,
-      "number": 0,
+      "number": 24,
       "pos": "C"
     },
     {
       "id": 45,
       "rating": 25,
       "captain": false,
-      "number": 0,
+      "number": 93,
       "pos": "C"
     },
     {
       "id": 47,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 8,
       "pos": "R"
     },
     {
       "id": 49,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 13,
       "pos": "CD"
     },
     {
       "id": 53,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 7,
       "pos": "C"
     },
     {
       "id": 54,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 8,
       "pos": "CCD"
     },
     {
       "id": 55,
       "rating": 22,
       "captain": false,
-      "number": 0,
+      "number": 6,
       "pos": "CG"
     },
     {
       "id": 56,
       "rating": 20,
       "captain": false,
-      "number": 0,
+      "number": 27,
       "pos": ""
     },
     {
       "id": 57,
       "rating": 24,
       "captain": true,
-      "number": 0,
+      "number": 14,
       "pos": "1B, 2B"
     },
     {
       "id": 58,
       "rating": 20,
       "captain": false,
-      "number": 0,
+      "number": 9,
       "pos": "C"
+    },
+    {
+      "id": 59,
+      "rating": 22,
+      "captain": false,
+      "number": 7,
+      "pos": ""
     },
     {
       "id": 61,
       "rating": 19,
       "captain": false,
-      "number": 0,
+      "number": 15,
       "pos": ""
     },
     {
       "id": 76,
       "rating": 23,
       "captain": false,
-      "number": 0,
+      "number": 11,
       "pos": ""
     },
     {
       "id": 77,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 94,
       "pos": ""
     },
     {
       "id": 78,
       "rating": 21,
       "captain": false,
-      "number": 0,
+      "number": 2,
       "pos": ""
     }
   ]
