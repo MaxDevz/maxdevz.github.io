@@ -92,6 +92,13 @@
       "pos": "CCD"
     },
     {
+      "id": 15,
+      "rating": 23,
+      "captain": false,
+      "number": 0,
+      "pos": "CG"
+    },
+    {
       "id": 16,
       "rating": 24,
       "captain": true,
@@ -313,6 +320,13 @@
       "rating": 21,
       "captain": false,
       "number": 2,
+      "pos": ""
+    },
+    {
+      "id": 79,
+      "rating": 23,
+      "captain": false,
+      "number": 0,
       "pos": ""
     }
   ]
