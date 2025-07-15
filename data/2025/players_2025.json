@@ -328,6 +328,20 @@
       "captain": false,
       "number": 0,
       "pos": ""
+    },
+    {
+      "id": 80,
+      "rating": 24,
+      "captain": false,
+      "number": 0,
+      "pos": ""
+    },
+    {
+      "id": 81,
+      "rating": 23,
+      "captain": false,
+      "number": 0,
+      "pos": ""
     }
   ]
 }
