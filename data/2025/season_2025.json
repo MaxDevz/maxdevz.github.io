@@ -1,39 +1,40 @@
 {
   "name": "2025",
   "winner": "placeholder-winner",
+  "season_winner": "bar_le_cocotier",
   "teams": [
     {
       "name": "bar_le_cocotier",
-      "record": "6-4-1",
-      "ptsFor": 167,
-      "ptsAgainst": 160,
+      "record": "7-4-1",
+      "ptsFor": 177,
+      "ptsAgainst": 167,
       "players": [3, 8, 13, 17, 20, 22, 43, 44, 45, 56, 77],
       "semiFinal": 0,
       "final": 0
     },
     {
       "name": "la_bouchée_d'or",
-      "record": "5-6-0",
-      "ptsFor": 140,
-      "ptsAgainst": 147,
+      "record": "5-7-0",
+      "ptsFor": 149,
+      "ptsAgainst": 165,
       "players": [4, 9, 10, 14, 24, 27, 30, 36, 47, 58, 76],
       "semiFinal": 0,
       "final": 0
     },
     {
       "name": "buffet_frédéric",
-      "record": "3-6-2",
-      "ptsFor": 141,
-      "ptsAgainst": 162,
+      "record": "4-6-2",
+      "ptsFor": 159,
+      "ptsAgainst": 171,
       "players": [7, 16, 21, 29, 31, 53, 54, 55, 57, 61, 78],
       "semiFinal": 0,
       "final": 0
     },
     {
       "name": "centrale_auto_SM",
-      "record": "6-4-1",
-      "ptsFor": 173,
-      "ptsAgainst": 152,
+      "record": "6-5-1",
+      "ptsFor": 180,
+      "ptsAgainst": 162,
       "players": [1, 2, 5, 6, 23, 35, 37, 39, 41, 49, 59],
       "semiFinal": 0,
       "final": 0
@@ -228,17 +229,17 @@
         {
           "game_number": 1,
           "time": "19h00",
-          "home": "TBD",
+          "home": "bar_le_cocotier",
           "home_position": 1,
-          "away": "TBD",
+          "away": "buffet_frédéric",
           "away_position": 4
         },
         {
           "game_number": 1,
           "time": "20h30",
-          "home": "TBD",
+          "home": "centrale_auto_SM",
           "home_position": 2,
-          "away": "TBD",
+          "away": "la_bouchée_d'or",
           "away_position": 3
         }
       ]
@@ -249,17 +250,17 @@
         {
           "game_number": 2,
           "time": "19h00",
-          "home": "TBD",
+          "home": "la_bouchée_d'or",
           "home_position": 3,
-          "away": "TBD",
+          "away": "centrale_auto_SM",
           "away_position": 2
         },
         {
           "game_number": 2,
           "time": "20h30",
-          "home": "TBD",
+          "home": "buffet_frédéric",
           "home_position": 4,
-          "away": "TBD",
+          "away": "bar_le_cocotier",
           "away_position": 1
         }
       ]
@@ -270,17 +271,17 @@
         {
           "game_number": 3,
           "time": "19h00",
-          "home": "TBD",
+          "home": "bar_le_cocotier",
           "home_position": 1,
-          "away": "TBD",
+          "away": "buffet_frédéric",
           "away_position": 4
         },
         {
           "game_number": 3,
           "time": "20h00",
-          "home": "TBD",
+          "home": "centrale_auto_SM",
           "home_position": 2,
-          "away": "TBD",
+          "away": "la_bouchée_d'or",
           "away_position": 3
         }
       ]

@@ -469,6 +469,16 @@ export const app = {
   createRanking() {
     pageHtml = this.createPageTitle("CLASSEMENT", true);
 
+    console.log(seasonJSON);
+    if (seasonJSON.season_winner) {
+      pageHtml += `<div class="relative"><img
+                    title="Photo des gagnants de la saison ${seasonSelected}"
+                    class="season-winner-img"
+                    src="./img/winners/season_winner_${seasonSelected}.jpg"
+                    />
+                    <div class="first-badge">1er</div></div>`;
+    }
+
     pageHtml += `<div class="ranking">
       <table>
         <tr class="header">
@@ -503,6 +513,13 @@ export const app = {
         return 1;
       }
 
+      if (scoreA[0] > scoreB[0]) {
+        return -1;
+      }
+      if (scoreA[0] < scoreB[0]) {
+        return 1;
+      }
+
       const diffA = a.ptsFor - a.ptsAgainst;
       const diffB = b.ptsFor - b.ptsAgainst;
 
@@ -531,7 +548,15 @@ export const app = {
                   src="./img/logo/${team.name.toLowerCase()}.png"
                 />
                 <div>
-                  <div class="team-name">${this.formatTeamName(team.name)}</div>
+                  <div class="team-name">${this.formatTeamName(team.name)}
+                    <span>
+                      ${
+                        team.name == seasonJSON.winner
+                          ? `<i class="fas fa-trophy"></i>`
+                          : ""
+                      }
+                    </span>
+                  </div>
                 </div>
               </a>
             </div>
