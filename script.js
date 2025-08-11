@@ -20,27 +20,33 @@ var columns;
 var rules;
 var sponsors;
 
-const PTS_BY_WIN = 2;
-const PTS_BY_TIE = 1;
+const CONSTANTS = {
+  DATA_PATH: "./data",
+  IMG_PATH: "./img",
+  DATE_OPTIONS: { year: "numeric", month: "long", day: "numeric" },
+  LOCALE: "fr-CA",
+  PTS_BY_WIN: 2,
+  PTS_BY_TIE: 1,
+};
 
 export const app = {
   async init() {
-    var response = await fetch("./data/players.json");
+    var response = await fetch(CONSTANTS.DATA_PATH + "/players.json");
     players = await response.json();
 
-    response = await fetch("./data/seasons.json");
+    response = await fetch(CONSTANTS.DATA_PATH + "/seasons.json");
     seasons = await response.json();
 
-    response = await fetch("./data/default_game.json");
+    response = await fetch(CONSTANTS.DATA_PATH + "/default_game.json");
     defaultGame = await response.json();
 
-    response = await fetch("./data/columns.json");
+    response = await fetch(CONSTANTS.DATA_PATH + "/columns.json");
     columns = await response.json();
 
-    response = await fetch("./data/rules.json");
+    response = await fetch(CONSTANTS.DATA_PATH + "/rules.json");
     rules = await response.json();
 
-    response = await fetch("./data/sponsors.json");
+    response = await fetch(CONSTANTS.DATA_PATH + "/sponsors.json");
     sponsors = await response.json();
 
     app.setSeason();
@@ -119,7 +125,6 @@ export const app = {
     if (seasonJSON.schedule.length == 0) {
       pageHtml += `<div>Aucune horaire pour cette saison</div>`;
     } else {
-      const options = { year: "numeric", month: "long", day: "numeric" };
       const now = Date.now();
       var nextGameDate = null;
       var nextGames = null;
@@ -166,8 +171,8 @@ export const app = {
         pageHtml += `<div class="date-card">
         <div class="nextGame">
           <div class="date nextGame">Prochain Match - ${nextGameDate.toLocaleDateString(
-            "fr-CA",
-            options
+            CONSTANTS.LOCALE,
+            CONSTANTS.DATE_OPTIONS
           )}</div>
           <span>${daysLeft}</span>
         </div>
@@ -190,7 +195,10 @@ export const app = {
         const gameDate = new Date(date.date + "T00:00");
 
         pageHtml += `<div class="date-card">
-        <div class="date">${gameDate.toLocaleDateString("fr-CA", options)}</div>
+        <div class="date">${gameDate.toLocaleDateString(
+          CONSTANTS.LOCALE,
+          CONSTANTS.DATE_OPTIONS
+        )}</div>
         <div class="card-container">`;
 
         for (const game of date.games) {
@@ -215,73 +223,23 @@ export const app = {
   },
 
   async createGameCalendar(game, date) {
-    var homePoints = 0;
-    var homeHits = 0;
-    var homeErrors = 0;
+    await this.readGameStats(game, date);
 
-    var awayPoints = 0;
-    var awayHits = 0;
-    var awayErrors = 0;
-
-    if (!homeStatsJson) {
-      homeStatsJson = await this.readGame(game, date, true);
-    }
-    if (!awayStatsJson) {
-      awayStatsJson = await this.readGame(game, date, false);
-    }
-
-    homeStatsJson.innings.forEach((inning) => {
-      inning.hitters.forEach((hitter) => {
-        if (hitter.bags == "4B") {
-          homePoints++;
-        }
-        if (hitter.CS) {
-          homeHits++;
-        }
-        if (hitter.ERR) {
-          awayErrors++;
-        }
-      });
-    });
-
-    awayStatsJson.innings.forEach((inning) => {
-      inning.hitters.forEach((hitter) => {
-        if (hitter.bags == "4B") {
-          awayPoints++;
-        }
-        if (hitter.CS) {
-          awayHits++;
-        }
-        if (hitter.ERR) {
-          homeErrors++;
-        }
-      });
-    });
+    var homeStats = this.calculateGameStats(homeStatsJson);
+    var awayStats = this.calculateGameStats(awayStatsJson);
 
     if (game.homePoints && game.awayPoints) {
-      homePoints = game.homePoints;
-      awayPoints = game.awayPoints;
+      homeStats.points = game.homePoints;
+      awayStats.points = game.awayPoints;
     }
 
     pageHtml += `<div class="game">
           <div class="time">${game.time}`;
 
     if (game.rescheduled || game.game_number) {
-      var note = `Partie ${game.game_number} de 3`;
-      if (game.game_number == 3) {
-        note += ` (Si Nécessaire)`;
-      }
-
-      if (game.rescheduled) {
-        const gameRescheduled = new Date(game.rescheduled + "T00:00");
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        note = `(Reprise du ${gameRescheduled.toLocaleDateString(
-          "fr-CA",
-          options
-        )})`;
-      }
-
-      pageHtml += `<span class="game-note">${note}</span>`;
+      pageHtml += `<span class="game-note">${this.generateGameNote(
+        game
+      )}</span>`;
     }
 
     pageHtml += `</div>
@@ -293,62 +251,20 @@ export const app = {
         : "onclick=\"app.selectGame('" + date + "_" + game.time + "')\""
     }>
             <div class="reported">Partie reportée : ${game.reported}</div>
-            <div id="teams" class="teams">
-              <div class="team ${
-                awayPoints == homePoints
-                  ? ""
-                  : awayPoints > homePoints
-                  ? "winner"
-                  : "loser"
-              }">
-                <div class="team-group">
-                <a class="team-link" ${
-                  game.away != "TBD"
-                    ? `href="?page=stats&season=${seasonSelected}&team=${game.away}"`
-                    : ""
-                }>
-                  <img
-                    alt="Logo"
-                    class="calendar-logo"
-                    src="./img/logo/${game.away.toLowerCase()}.png"
-                  />
-                  <div>
-                  <div class="team-name">${this.formatTeamName(game.away)}</div>
-                  <div class="team-record">${this.getTeamRecord(
-                    game.away
-                  )} ${this.formatPosition(game.away_position)}</div>
-                  </div>
-                  </a>
-                </div>
-              </div>
-              <div class="team ${
-                awayPoints == homePoints
-                  ? ""
-                  : awayPoints < homePoints
-                  ? "winner"
-                  : "loser"
-              }">
-                <div class="team-group">
-                  <a class="team-link" ${
-                    game.home != "TBD"
-                      ? ` href="?page=stats&season=${seasonSelected}&team=${game.home}"`
-                      : ""
-                  }>
-                  <img
-                    alt="Logo"
-                    class="calendar-logo"
-                    src="./img/logo/${game.home.toLowerCase()}.png"
-                  />
-                  <div>
-                  <div class="team-name">${this.formatTeamName(game.home)}</div>
-                  <div class="team-record">${this.getTeamRecord(
-                    game.home
-                  )} ${this.formatPosition(game.home_position)}</div>
-                  </div>
-                  </a>
-                </div>
-              </div>
-            </div>`;
+            <div id="teams" class="teams">`;
+    pageHtml += this.generateTeamDisplay(
+      game.away,
+      awayStats.points,
+      homeStats.points,
+      seasonSelected
+    );
+    pageHtml += this.generateTeamDisplay(
+      game.home,
+      homeStats.points,
+      awayStats.points,
+      seasonSelected
+    );
+    pageHtml += `</div>`;
 
     pageHtml += `<div class="score">
           <table class="innings">
@@ -399,14 +315,14 @@ export const app = {
               <th>E</th>
             </tr>
             <tr>
-              <th>${awayPoints}</th>
-              <th>${awayHits}</th>
-              <th>${awayErrors}</th>
+              <th>${awayStats.points}</th>
+              <th>${awayStats.hits}</th>
+              <th>${awayStats.errors}</th>
             </tr>
             <tr>
-              <th>${homePoints}</th>
-              <th>${homeHits}</th>
-              <th>${homeErrors}</th>
+              <th>${homeStats.points}</th>
+              <th>${homeStats.hits}</th>
+              <th>${homeStats.errors}</th>
             </tr>
           </table>
         </div>`;
@@ -422,21 +338,9 @@ export const app = {
           <div class="time">${game.time}`;
 
     if (game.rescheduled || game.game_number) {
-      var note = `Partie ${game.game_number} de 3`;
-      if (game.game_number == 3) {
-        note += ` (Si Nécessaire)`;
-      }
-
-      if (game.rescheduled) {
-        const gameRescheduled = new Date(game.rescheduled + "T00:00");
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        note = `(Reprise du ${gameRescheduled.toLocaleDateString(
-          "fr-CA",
-          options
-        )})`;
-      }
-
-      pageHtml += `<span class="game-note">${note}</span>`;
+      pageHtml += `<span class="game-note">${this.generateGameNote(
+        game
+      )}</span>`;
     }
 
     pageHtml += `</div>
@@ -446,7 +350,9 @@ export const app = {
                 <img
                   alt="Logo"
                   class="calendar-logo"
-                  src="./img/logo/${game.away.toLowerCase()}.png"
+                  src="${
+                    CONSTANTS.IMG_PATH
+                  }/logo/${game.away.toLowerCase()}.png"
                 />
               </div>
               VS
@@ -454,7 +360,9 @@ export const app = {
                 <img
                   alt="Logo"
                   class="calendar-logo"
-                  src="./img/logo/${game.home.toLowerCase()}.png"
+                  src="${
+                    CONSTANTS.IMG_PATH
+                  }/logo/${game.home.toLowerCase()}.png"
                 />
               </div>
             </div>`;
@@ -474,7 +382,7 @@ export const app = {
       pageHtml += `<div class="relative"><img
                     title="Photo des gagnants de la saison ${seasonSelected}"
                     class="season-winner-img"
-                    src="./img/winners/season_winner_${seasonSelected}.jpg"
+                    src="${CONSTANTS.IMG_PATH}/winners/season_winner_${seasonSelected}.jpg"
                     />
                     <div class="first-badge">1er</div></div>`;
     }
@@ -500,11 +408,11 @@ export const app = {
       const scoreB = b.record.split("-");
 
       const ptsA =
-        parseInt(scoreA[0], 10) * PTS_BY_WIN +
-        parseInt(scoreA[2], 10) * PTS_BY_TIE;
+        parseInt(scoreA[0], 10) * CONSTANTS.PTS_BY_WIN +
+        parseInt(scoreA[2], 10) * CONSTANTS.PTS_BY_TIE;
       const ptsB =
-        parseInt(scoreB[0], 10) * PTS_BY_WIN +
-        parseInt(scoreB[2], 10) * PTS_BY_TIE;
+        parseInt(scoreB[0], 10) * CONSTANTS.PTS_BY_WIN +
+        parseInt(scoreB[2], 10) * CONSTANTS.PTS_BY_TIE;
 
       if (ptsA > ptsB) {
         return -1;
@@ -545,7 +453,9 @@ export const app = {
                   title="${this.formatTeamName(team.name)}"
                   alt="Logo"
                   class="calendar-logo"
-                  src="./img/logo/${team.name.toLowerCase()}.png"
+                  src="${
+                    CONSTANTS.IMG_PATH
+                  }/logo/${team.name.toLowerCase()}.png"
                 />
                 <div>
                   <div class="team-name">${this.formatTeamName(team.name)}
@@ -576,8 +486,8 @@ export const app = {
           <td>${score[2]}</td>
           <td>${this.formatDecimal(pourcentageV)}</td>
           <th>${
-            parseInt(score[0], 10) * PTS_BY_WIN +
-            parseInt(score[2], 10) * PTS_BY_TIE
+            parseInt(score[0], 10) * CONSTANTS.PTS_BY_WIN +
+            parseInt(score[2], 10) * CONSTANTS.PTS_BY_TIE
           }</th>
           <td>${team.ptsFor ? team.ptsFor : "-"}</td>
           <td>${team.ptsAgainst ? team.ptsAgainst : "-"}</td>
@@ -642,7 +552,7 @@ export const app = {
                         title="${sponsor.name}"
                         alt="Logo"
                         class="sponsor-logo"
-                        src="./img/logo/${sponsor.logo}.png"
+                        src="${CONSTANTS.IMG_PATH}/logo/${sponsor.logo}.png"
                       />
                       <div class="rank">${sponsor.type}</div>
                       <div class="sponsor-name">${sponsor.name}</div>
@@ -762,7 +672,7 @@ export const app = {
                     title="${imgTitle}"
                     alt="Logo"
                     class="calendar-logo"
-                    src="./img/logo/${imgName}.png"
+                    src="${CONSTANTS.IMG_PATH}/logo/${imgName}.png"
                   />
                   </div>
                 </div>
@@ -902,12 +812,11 @@ export const app = {
     }
 
     const gameDate = new Date(date.date + "T00:00");
-    const options = { year: "numeric", month: "long", day: "numeric" };
 
     pageHtml = this.createPageTitle(
       `Sommaire - ${gameDate.toLocaleDateString(
-        "fr-CA",
-        options
+        CONSTANTS.LOCALE,
+        CONSTANTS.DATE_OPTIONS
       )} - ${timeSelected}`,
       false
     );
@@ -975,7 +884,7 @@ export const app = {
                 title="${imgTitle}"
                 alt="Logo"
                 class="calendar-logo"
-                src="./img/logo/${imgName}.png"
+                src="${CONSTANTS.IMG_PATH}/logo/${imgName}.png"
               />
               </div>
             </div>
@@ -1041,7 +950,7 @@ export const app = {
         title="${attendance.bags}"
         alt="${attendance.bags}"
         class="attendance"
-        src="./img/${attendance.bags}.png"
+        src="${CONSTANTS.IMG_PATH}/${attendance.bags}.png"
       />
       <div class="opt-sac">
         <span class="optional ${attendance.OPT ? "activated" : ""}">Opt.</span>
@@ -1125,10 +1034,12 @@ export const app = {
     } else {
       for (const date of seasonJSON.playoffs) {
         const gameDate = new Date(date.date + "T00:00");
-        const options = { year: "numeric", month: "long", day: "numeric" };
 
         pageHtml += `<div class="date-card">
-        <div class="date">${gameDate.toLocaleDateString("fr-CA", options)}</div>
+        <div class="date">${gameDate.toLocaleDateString(
+          CONSTANTS.LOCALE,
+          CONSTANTS.DATE_OPTIONS
+        )}</div>
         <div class="card-container">`;
 
         for (const game of date.games) {
@@ -1155,13 +1066,15 @@ export const app = {
           <img
             alt="Logo"
             class="winner-logo"
-            src="./img/logo/${seasonJSON.winner.toLowerCase()}.png"
+            src="${
+              CONSTANTS.IMG_PATH
+            }/logo/${seasonJSON.winner.toLowerCase()}.png"
           />
           <div class="year">${seasonSelected}</div>
           <img
             alt="Logo"
             class="league-logo"
-            src="./img/logo/tbd.png"
+            src="${CONSTANTS.IMG_PATH}/logo/tbd.png"
           />
         </div>
       </div>
@@ -1170,7 +1083,7 @@ export const app = {
     pageHtml += `<img
                     title="Photo des gagnants ${seasonSelected}"
                     class="winner-img"
-                    src="./img/winners/winner_${seasonSelected}.jpg"
+                    src="${CONSTANTS.IMG_PATH}/winners/winner_${seasonSelected}.jpg"
                     /></div>`;
   },
 
@@ -1189,7 +1102,7 @@ export const app = {
                   <div class="bracket-connector">
                     <img
                     class="connector"
-                    src="./img/bracket-connector.png"
+                    src="${CONSTANTS.IMG_PATH}/bracket-connector.png"
                     />
                   </div>
                   <div class="round">
@@ -1213,7 +1126,9 @@ export const app = {
                   <img
                     alt="Logo"
                     class="calendar-logo"
-                    src="./img/logo/${game.home.toLowerCase()}.png"
+                    src="${
+                      CONSTANTS.IMG_PATH
+                    }/logo/${game.home.toLowerCase()}.png"
                   />
                   <div>
                     <div class="team-name">${this.formatTeamName(
@@ -1231,7 +1146,9 @@ export const app = {
                   <img
                     alt="Logo"
                     class="calendar-logo "
-                    src="./img/logo/${game.away.toLowerCase()}.png"
+                    src="${
+                      CONSTANTS.IMG_PATH
+                    }/logo/${game.away.toLowerCase()}.png"
                   />
                   <div>
                     <div class="team-name">${this.formatTeamName(
@@ -1339,14 +1256,14 @@ export const app = {
                 title="${fullName}"
                 alt="Logo"
                 class="headshot"
-                src="./img/headshots/${imageName}.jpg"
+                src="${CONSTANTS.IMG_PATH}/headshots/${imageName}.jpg"
               />
            <img
               alt="Logo"
               class="playerTeam"
-              src="./img/logo/${playerSeasons
-                .get(lastPlayedSeason)
-                .team.toLowerCase()}.png"
+              src="${CONSTANTS.IMG_PATH}/logo/${playerSeasons
+      .get(lastPlayedSeason)
+      .team.toLowerCase()}.png"
             />
         </div>  
         <div class="fullName">
@@ -1441,7 +1358,7 @@ export const app = {
                   title="${imgTitle}" 
                   alt="Logo" 
                   class="stats-logo"
-                  src="./img/logo/${imgName}.png"
+                  src="${CONSTANTS.IMG_PATH}/logo/${imgName}.png"
                 />
                 </a>`
             }
@@ -1545,7 +1462,7 @@ export const app = {
                   title="${imgTitle}" 
                   alt="Logo" 
                   class="stats-logo"
-                  src="./img/logo/${imgName}.png"
+                  src="${CONSTANTS.IMG_PATH}/logo/${imgName}.png"
                 />`
             }
                 <div>
@@ -1747,6 +1664,10 @@ export const app = {
     return value.split("-")[0].replaceAll("_", " ");
   },
 
+  formatPath(season, path) {
+    return `data/${season}/${path}.json`;
+  },
+
   formatPosition(value) {
     var position;
     switch (value) {
@@ -1769,7 +1690,7 @@ export const app = {
       let img = new Image();
       img.onload = () => resolve(true);
       img.onerror = () => resolve(false);
-      img.src = `./img/headshots/${id}.jpg`;
+      img.src = `${CONSTANTS.IMG_PATH}/headshots/${id}.jpg`;
     });
   },
 
@@ -1844,7 +1765,7 @@ export const app = {
           class="logo-filter ${
             teamFiltered == team.name ? "team-selected" : ""
           }"
-          src="./img/logo/${team.name.toLowerCase()}.png"
+          src="${CONSTANTS.IMG_PATH}/logo/${team.name.toLowerCase()}.png"
         />`;
     });
 
@@ -1909,7 +1830,7 @@ export const app = {
                       title="${imgTitle}"
                       alt="Logo"
                       class="calendar-logo"
-                      src="./img/logo/${imgName}.png"
+                      src="${CONSTANTS.IMG_PATH}/logo/${imgName}.png"
                     />
                     </div>
                   </div>
@@ -2011,6 +1932,70 @@ export const app = {
     )} </button>`;
 
     pageHtml += `</div>`;
+  },
+
+  generateGameNote(game) {
+    let note = "";
+    if (game.consolation) note += `Consolation - `;
+    if (game.semi_final) note += `Demi-finale - `;
+    if (game.final) note += `Finale - `;
+
+    note += `Partie ${game.game_number} de 3`;
+    if (game.game_number == 3) note += ` (Si Nécessaire)`;
+
+    if (game.rescheduled) {
+      const gameRescheduled = new Date(game.rescheduled + "T00:00");
+      note = `(Reprise du ${gameRescheduled.toLocaleDateString(
+        CONSTANTS.LOCALE,
+        CONSTANTS.DATE_OPTIONS
+      )})`;
+    }
+
+    return note;
+  },
+
+  calculateGameStats(statsJson) {
+    let points = 0,
+      hits = 0,
+      errors = 0;
+
+    statsJson.innings.forEach((inning) => {
+      inning.hitters.forEach((hitter) => {
+        if (hitter.bags === "4B") points++;
+        if (hitter.CS) hits++;
+        if (hitter.ERR) errors++;
+      });
+    });
+
+    return { points, hits, errors };
+  },
+
+  generateTeamDisplay(team, points, opponentPoints, seasonSelected) {
+    const isWinner = points > opponentPoints;
+    const isTie = points === opponentPoints;
+
+    return `
+    <div class="team ${isTie ? "" : isWinner ? "winner" : "loser"}">
+      <div class="team-group">
+        <a class="team-link" ${
+          team !== "TBD"
+            ? `href="?page=stats&season=${seasonSelected}&team=${team}"`
+            : ""
+        }>
+          <img
+            alt="Logo" 
+            class="calendar-logo"
+            src="${CONSTANTS.IMG_PATH}/logo/${team.toLowerCase()}.png"
+          />
+          <div>
+            <div class="team-name">${this.formatTeamName(team)}</div>
+            <div class="team-record">${this.getTeamRecord(
+              team
+            )} ${this.formatPosition(team + "_position")}</div>
+          </div>
+        </a>
+      </div>
+    </div>`;
   },
 
   sortByColumn(a, b) {
@@ -2119,35 +2104,29 @@ export const app = {
   },
 
   async createStatsMap(game, date) {
-    if (!homeStatsJson) {
-      homeStatsJson = await this.readGame(game, date, true);
-    }
+    // Destructure for cleaner code
+    await this.readGameStats(game, date);
+    await this.processInnings(homeStatsJson, game, date, true);
+    await this.processInnings(awayStatsJson, game, date, false);
+  },
 
-    if (!awayStatsJson) {
-      awayStatsJson = await this.readGame(game, date, false);
-    }
-
-    for (const inning of homeStatsJson.innings) {
+  async processInnings(stats, game, date, isHome) {
+    const { home, away } = game;
+    const team = isHome ? home : away;
+    for (const inning of stats.innings) {
       for (const hitter of inning.hitters) {
-        var index = homeStatsJson.lineup.findIndex(
-          (player) => player == hitter.id
-        );
-        await this.setPlayerMap(game, hitter, true, index);
+        var index = stats.lineup.findIndex((player) => player == hitter.id);
+        await this.setPlayerMap(game, hitter, isHome, index);
       }
     }
 
-    for (const inning of awayStatsJson.innings) {
-      for (const hitter of inning.hitters) {
-        var index = awayStatsJson.lineup.findIndex(
-          (player) => player == hitter.id
-        );
-        await this.setPlayerMap(game, hitter, false, index);
-      }
-    }
+    this.updatePlayerStats(stats.lineup, team, date);
+  },
 
-    homeStatsJson.lineup.forEach((playerId) => {
+  updatePlayerStats(lineup, team, date) {
+    lineup.forEach((playerId) => {
       var hitterMap = playersStats.get(
-        this.getTeamPlayers(game.home).includes(playerId)
+        this.getTeamPlayers(team).includes(playerId)
           ? playerId
           : playerId + "_S"
       );
@@ -2159,21 +2138,30 @@ export const app = {
         hitterMap.fristGame2023CC = hitterMap.CC;
       }
     });
+  },
 
-    awayStatsJson.lineup.forEach((playerId) => {
-      var hitterMap = playersStats.get(
-        this.getTeamPlayers(game.away).includes(playerId)
-          ? playerId
-          : playerId + "_S"
-      );
-      if (!this.isGamePage()) {
-        hitterMap.PJ += 1;
+  async readGameStats(game, date) {
+    const readStats = async (team) => {
+      if (this.shouldReadStats(date, game)) {
+        const response = await fetch(
+          this.formatPath(seasonSelected, `${team}/${date}_${game.time}`)
+        );
+        return response.ok ? await response.json() : defaultGame;
       }
-      if (date == "2023-05-17") {
-        hitterMap.fristGame2023AB = hitterMap.AB;
-        hitterMap.fristGame2023CC = hitterMap.CC;
-      }
-    });
+      return defaultGame;
+    };
+
+    homeStatsJson = await readStats(game.home);
+    awayStatsJson = await readStats(game.away);
+  },
+
+  shouldReadStats(date, game) {
+    return (
+      new Date(date + "T00:00") <= new Date() &&
+      !game.reported &&
+      !game.homePoints &&
+      !game.awayPoints
+    );
   },
 
   async setPlayerMap(game, hitter, isHome, order) {
@@ -2242,37 +2230,13 @@ export const app = {
     }
   },
 
-  async readGame(game, date, isHome) {
-    var statsJson = defaultGame;
-
-    if (
-      new Date(date + "T00:00") <= new Date() &&
-      !game.reported &&
-      !game.homePoints &&
-      !game.awayPoints
-    ) {
-      const stats = await fetch(
-        `./data/${seasonSelected}/${isHome ? game.home : game.away}/${date}_${
-          game.time
-        }.json`
-      );
-      if (!stats.ok) {
-        const message = `An error has occured: ${stats.status}`;
-        console.log(message);
-      } else {
-        statsJson = await stats.json();
-      }
-    }
-
-    return statsJson;
-  },
-
   async readSeasonPlayoffsStats() {
     var statsJson;
     const stats = await fetch(
-      `./data/${seasonSelected}/stats_${
-        isPlayoffs ? "playoff" : "season"
-      }_${seasonSelected}.json`
+      this.formatPath(
+        seasonSelected,
+        `stats_${isPlayoffs ? "playoff" : "season"}_${seasonSelected}`
+      )
     );
 
     if (!stats.ok) {
@@ -2369,7 +2333,7 @@ export const app = {
   async getPlayerInfo(id) {
     if (!playersInfo) {
       const seasonInfo = await fetch(
-        `./data/${seasonSelected}/players_${seasonSelected}.json`
+        this.formatPath(seasonSelected, `players_${seasonSelected}`)
       );
       if (!seasonInfo.ok) {
         const message = `An error has occured: ${seasonInfo.status}`;
@@ -2408,7 +2372,7 @@ export const app = {
   async setSeasonJSON(seasonToLoad) {
     if (!seasonJSON || seasonJSON.name != seasonToLoad) {
       const seasonInfo = await fetch(
-        `./data/${seasonToLoad}/season_${seasonToLoad}.json`
+        this.formatPath(seasonToLoad, `season_${seasonToLoad}`)
       );
       if (!seasonInfo.ok) {
         const message = `An error has occured: ${seasonInfo.status}`;
