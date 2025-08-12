@@ -1,0 +1,300 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  gap: 20px;
+}
+
+.field-container {
+  flex: 1;
+}
+
+.controls-container {
+  flex: 1;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.baseball-field {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  background: #90ee90;
+  border: 2px solid #666;
+}
+
+.base {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 2px solid #666;
+  cursor: pointer;
+}
+
+.base.active {
+  background: #ffd700;
+}
+
+#home-plate {
+  bottom: 20px;
+  left: 190px;
+  transform: rotate(45deg);
+}
+
+#first-base {
+  right: 100px;
+  top: 190px;
+}
+
+#second-base {
+  top: 20px;
+  left: 190px;
+}
+
+#third-base {
+  left: 100px;
+  top: 190px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.stats-container {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.stat-button {
+  padding: 2px 4px;
+  font-size: 0.8em;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 3px;
+}
+
+.stat-button.active {
+  background: #4caf50;
+  color: white;
+  border-color: #45a049;
+}
+
+.player-selection {
+  margin-top: 20px;
+}
+
+.lineup {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0;
+}
+
+.lineup-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  background: white;
+}
+
+.lineup-player.empty {
+  background: #f5f5f5;
+}
+
+.lineup-player select {
+  flex: 1;
+  margin: 0 10px;
+  padding: 4px;
+}
+
+.lineup-player span {
+  min-width: 150px;
+}
+
+.lineup-spot {
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.lineup-spot select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.lineup-spot select:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+.extra-players {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px dashed #ddd;
+}
+
+.add-extra-player {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-extra-player:hover {
+  background: #45a049;
+}
+
+.date-selection {
+  margin-bottom: 20px;
+}
+
+.date-selection input,
+.date-selection select {
+  padding: 8px;
+  margin-right: 10px;
+}
+.date-selection {
+  margin-bottom: 20px;
+}
+
+.date-selection input,
+.date-selection select {
+  padding: 8px;
+  margin-right: 10px;
+}
+
+.spot-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.spot-container select {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.spot-container select option {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.spot-container select option:hover {
+  background-color: #f0f0f0;
+}
+
+.spot-container {
+  cursor: pointer;
+}
+
+.sub-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sub-container input[type="checkbox"] {
+  margin: 0;
+}
+
+.sub-checkbox {
+  margin: 0;
+  cursor: pointer;
+}
+
+.sub-checkbox + label {
+  cursor: pointer;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.lineup-header {
+  display: grid;
+  grid-template-columns: 300px repeat(9, 1fr);
+  gap: 2px;
+  margin-bottom: 5px;
+  background: #f5f5f5;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.lineup-row {
+  display: grid;
+  grid-template-columns: 300px repeat(9, 1fr);
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.player-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+}
+
+.player-section select {
+  flex: 1;
+  padding: 5px;
+}
+
+.inning-cell {
+  width: 80px;
+  height: 80px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.inning-cell:hover {
+  background: #e0e0e0;
+}
+
+.base-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.inning-header {
+  text-align: center;
+  padding: 5px;
+}
+
+.inning-container {
+  display: flex;
+  flex-direction: column;
+  width: 125px;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}

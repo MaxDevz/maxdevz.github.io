@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<ht lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des fichiers JSON</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="game-controls">
+        <div class="date-selection">
+          <input type="date" id="game-date" />
+          <select id="game-time">
+            <option value="19h00">19h00</option>
+            <option value="20h30">20h30</option>
+          </select>
+        </div>
+
+        <div class="team-selection">
+          <label>Équipe:</label>
+          <select id="team-select" onchange="loadTeamPlayers()"></select>
+        </div>
+
+        <div id="lineup-container" class="lineup"></div>
+
+        <button onclick="generateJson()">Générer JSON</button>
+        <button onclick="saveJson()">Sauvegarder</button>
+      </div>
+    </div>
+
+    <pre id="output"></pre>
+    <script src="gameApp.js"></script>
+    <script>
+      async function saveJson() {
+        console.log("Save...");
+        const data = JSON.parse(document.getElementById("json-input").value);
+        const filename =
+          document.getElementById("filename").value || "default.json";
+
+        const response = await fetch(
+          `http://127.0.0.1:5000/save?filename=${filename}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          }
+        );
+        const result = await response.json();
+        alert(result.message);
+      }
+
+      async function loadJson() {
+        console.log("Load...");
+        const filename =
+          document.getElementById("filename").value || "default.json";
+
+        const response = await fetch(
+          `http://127.0.0.1:5000/load?filename=${filename}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          document.getElementById("output").textContent = JSON.stringify(
+            data,
+            null,
+            2
+          );
+        } else {
+          alert("Erreur: Fichier introuvable.");
+        }
+      }
+    </script>
+  </body>
+</html>
