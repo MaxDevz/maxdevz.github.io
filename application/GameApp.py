@@ -21,7 +21,7 @@ def save_json():
     # Create directories if they don't exist
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     
-    with open(filepath, "w") as json_file:
+    with open(filepath, "w", encoding="utf-8") as json_file:
         json.dump(data, json_file, indent=2)
     return jsonify({"message": f"Fichier {filename} enregistré."}), 200
 

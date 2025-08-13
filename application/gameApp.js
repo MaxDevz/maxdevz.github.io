@@ -1,6 +1,7 @@
 let currentBases = new Set();
 let currentStats = new Set();
 let players = [];
+let yearPlayers = [];
 let teams = [];
 let lineup = [];
 let selectedTeam = "";
@@ -24,8 +25,9 @@ const statMap = {
 };
 
 async function init() {
-  await loadPlayers();
-  await loadTeams();
+  await loadAllPlayers();
+  await loadYearPlayers(2025);
+  await loadTeams(2025);
   populateTeamSelect();
   setupDateDefaults();
   updateLineupDisplay(); // Ajout de cette ligne pour afficher la liste vide au démarrage
@@ -37,7 +39,19 @@ function setupDateDefaults() {
   dateInput.value = today.toISOString().split("T")[0];
 }
 
-async function loadPlayers() {
+async function loadYearPlayers(year) {
+  const response = await fetch(
+    `http://127.0.0.1:5000/load?filename=${year}/players_${year}.json`
+  );
+  if (!response.ok) {
+    console.error(`Erreur chargement players_${year}.json`);
+    return;
+  }
+  const data = await response.json();
+  yearPlayers = data.players.filter((player) => player.id !== 0); // Remove player with id 0
+}
+
+async function loadAllPlayers() {
   const response = await fetch(
     "http://127.0.0.1:5000/load?filename=players.json"
   );
@@ -49,12 +63,12 @@ async function loadPlayers() {
   players = data.players;
 }
 
-async function loadTeams() {
+async function loadTeams(year) {
   const response = await fetch(
-    "http://127.0.0.1:5000/load?filename=2025/season_2025.json"
+    `http://127.0.0.1:5000/load?filename=${year}/season_${year}.json`
   );
   if (!response.ok) {
-    console.error("Erreur chargement season_2025.json");
+    console.error(`Erreur chargement season_${year}.json`);
     return;
   }
   const data = await response.json();
@@ -102,12 +116,11 @@ function getAvailablePlayers(currentPlayerId) {
 
 function getSubstitutePlayers(currentPlayerId) {
   const currentTeam = teams.find((t) => t.name === selectedTeam);
-  if (!currentTeam) return [];
+  const teamPlayerIds = currentTeam ? new Set(currentTeam.players) : new Set();
 
-  // Obtenir tous les joueurs des autres équipes
-  const substitutePlayers = teams
-    .filter((team) => team.name !== selectedTeam)
-    .flatMap((team) => team.players);
+  const substitutePlayers = yearPlayers
+    .filter((player) => !teamPlayerIds.has(player.id))
+    .map((player) => player.id);
 
   // Filtrer les joueurs déjà dans le lineup
   return substitutePlayers.filter((playerId) => {
@@ -152,7 +165,7 @@ function updateLineupDisplay() {
     const select = document.createElement("select");
     select.id = `player-${i}`;
     select.onchange = (e) => updateLineupSpot(i, parseInt(e.target.value));
-    select.innerHTML = `<option value="">Sélectionner une équipe</option>`;
+    select.innerHTML = `<option value="">Sélectionner un joueur</option>`;
 
     // Ajouter les options des joueurs disponibles
     const availablePlayers = getAvailablePlayers();
@@ -193,19 +206,6 @@ function updateLineupDisplay() {
       const statsContainer = document.createElement("div");
       statsContainer.className = "stats-container";
 
-      STATS_OPTIONS.forEach((stat) => {
-        const statButton = document.createElement("button");
-        statButton.className = "stat-button";
-        statButton.textContent = stat;
-        statButton.dataset.stat = stat;
-        const statKey = statMap[statButton.textContent];
-        if (statKey && lineup[i]?.innings?.[j]?.[statKey]) {
-          statButton.classList.add("active");
-        }
-        statButton.onclick = () => toggleStatForInning(i, j, stat);
-        statsContainer.appendChild(statButton);
-      });
-
       // Ajouter l'image de base
       const cell = document.createElement("div");
       cell.className = "inning-cell";
@@ -224,8 +224,42 @@ function updateLineupDisplay() {
 
       cell.appendChild(img);
 
+      STATS_OPTIONS.forEach((stat) => {
+        const statButton = document.createElement("button");
+        statButton.className = "stat-button";
+        statButton.textContent = stat;
+        statButton.dataset.stat = stat;
+        const statKey = statMap[statButton.textContent];
+        const currentBase = img.dataset.currentBase;
+        if (
+          statKey &&
+          lineup[i]?.innings?.[j]?.[statKey] &&
+          currentBase !== "field"
+        ) {
+          statButton.classList.add("active");
+        }
+        // Disable the button if current base is field
+        statButton.disabled = currentBase === "field";
+        statButton.onclick = () => toggleStatForInning(i, j, stat);
+        statsContainer.appendChild(statButton);
+      });
+
+      // Modify the R button to also be disabled when base is field
+      const rButton = document.createElement("button");
+      rButton.className = "stat-button";
+      rButton.textContent = "R";
+      const currentBase = img.dataset.currentBase;
+      if (lineup[i]?.innings?.[j]?.R && currentBase !== "field") {
+        rButton.classList.add("active");
+      }
+      // Disable the R button if current base is field
+      rButton.disabled = currentBase === "field";
+      rButton.onclick = () => toggleRForInning(i, j);
+      statsContainer.appendChild(rButton);
+
       inningContainer.appendChild(statsContainer);
       inningContainer.appendChild(cell);
+      inningContainer.appendChild(rButton);
       row.appendChild(inningContainer);
     }
 
@@ -276,6 +310,26 @@ function toggleStatForInning(playerIndex, inningIndex, stat) {
   }
 }
 
+function toggleRForInning(playerIndex, inningIndex) {
+  if (!lineup[playerIndex]) {
+    lineup[playerIndex] = {
+      innings: Array.from({ length: MAX_INNINGS }, () => createDefaultStats()),
+    };
+  }
+
+  const currentValue = lineup[playerIndex].innings[inningIndex].R;
+  lineup[playerIndex].innings[inningIndex].R = !currentValue;
+
+  // Update visual
+  const row = document.querySelectorAll(`.lineup-row`)[playerIndex];
+  const inning_container =
+    row.querySelectorAll(`.inning-container`)[inningIndex];
+  const rButton = Array.from(
+    inning_container.querySelectorAll(".stat-button")
+  ).find((btn) => btn.textContent === "R");
+  rButton.classList.toggle("active");
+}
+
 function getKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
@@ -288,6 +342,17 @@ function rotateBase(imgElement) {
 
   imgElement.src = `../img/${nextBase}.png`;
   imgElement.dataset.currentBase = nextBase;
+
+  // Get the stats container for this cell and update button states
+  const cell = imgElement.closest(".inning-cell");
+  const statsContainer = cell.parentElement.querySelector(".stats-container");
+  const buttons = statsContainer.querySelectorAll(".stat-button");
+  const rbutton = cell.parentElement.querySelector(":scope > .stat-button");
+
+  rbutton.disabled = nextBase === "field";
+  buttons.forEach((button) => {
+    button.disabled = nextBase === "field";
+  });
 }
 
 function updateStatsForCurrentPlayer() {
@@ -565,11 +630,9 @@ function generateJson() {
     innings: innings,
   };
 
-  document.getElementById("output").textContent = JSON.stringify(
-    gameData,
-    null,
-    2
-  );
+  jsonOutput = JSON.stringify(gameData, null, 2);
+  document.getElementById("output").textContent = jsonOutput;
+  return jsonOutput;
 }
 
 async function saveJson() {
@@ -577,7 +640,7 @@ async function saveJson() {
   const gameTime = document.getElementById("game-time").value;
   const filename = `../data/2025/${selectedTeam}/${gameDate}_${gameTime}.json`;
 
-  const data = JSON.parse(document.getElementById("output").textContent);
+  const data = generateJson();
 
   try {
     const response = await fetch(
@@ -585,7 +648,7 @@ async function saveJson() {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: data,
       }
     );
     const result = await response.json();

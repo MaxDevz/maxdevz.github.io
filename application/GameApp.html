@@ -9,18 +9,30 @@
   <body>
     <div class="container">
       <div class="game-controls">
-        <div class="date-selection">
-          <input type="date" id="game-date" />
-          <select id="game-time">
-            <option value="19h00">19h00</option>
-            <option value="20h30">20h30</option>
-          </select>
-        </div>
 
-        <div class="team-selection">
-          <label>Équipe:</label>
-          <select id="team-select" onchange="loadTeamPlayers()"></select>
+        <div class="game-info">
+          <div class="game-details">
+            <div class="date-selection">
+              <label for="game-date">Date du match:</label>
+              <input type="date" id="game-date" />
+              <label for="game-time">Heure du match:</label>
+              <select id="game-time">
+                <option value="19h00">19h00</option>
+                <option value="20h30">20h30</option>
+              </select>
+            </div>
+            <div class="team-selection">
+              <label>Local:</label>
+              <select id="team-select" onchange="loadTeamPlayers()"></select>
+              <label>Visiteur:</label>
+              <select id="team-select-visiteur" onchange="loadTeamPlayers()"></select>
+            </div>
+          </div>
+          <div class="score-inputs">
+            <label for="home-score">Score:</label>
+          </div>
         </div>
+        
 
         <div id="lineup-container" class="lineup"></div>
 
@@ -31,44 +43,5 @@
 
     <pre id="output"></pre>
     <script src="gameApp.js"></script>
-    <script>
-      async function saveJson() {
-        console.log("Save...");
-        const data = JSON.parse(document.getElementById("json-input").value);
-        const filename =
-          document.getElementById("filename").value || "default.json";
-
-        const response = await fetch(
-          `http://127.0.0.1:5000/save?filename=${filename}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          }
-        );
-        const result = await response.json();
-        alert(result.message);
-      }
-
-      async function loadJson() {
-        console.log("Load...");
-        const filename =
-          document.getElementById("filename").value || "default.json";
-
-        const response = await fetch(
-          `http://127.0.0.1:5000/load?filename=${filename}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          document.getElementById("output").textContent = JSON.stringify(
-            data,
-            null,
-            2
-          );
-        } else {
-          alert("Erreur: Fichier introuvable.");
-        }
-      }
-    </script>
   </body>
 </html>
