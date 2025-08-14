@@ -254,12 +254,14 @@ export const app = {
             <div id="teams" class="teams">`;
     pageHtml += this.generateTeamDisplay(
       game.away,
+      game.away_position,
       awayStats.points,
       homeStats.points,
       seasonSelected
     );
     pageHtml += this.generateTeamDisplay(
       game.home,
+      game.home_position,
       homeStats.points,
       awayStats.points,
       seasonSelected
@@ -1970,7 +1972,7 @@ export const app = {
     return { points, hits, errors };
   },
 
-  generateTeamDisplay(team, points, opponentPoints, seasonSelected) {
+  generateTeamDisplay(team, position, points, opponentPoints, seasonSelected) {
     const isWinner = points > opponentPoints;
     const isTie = points === opponentPoints;
 
@@ -1991,7 +1993,7 @@ export const app = {
             <div class="team-name">${this.formatTeamName(team)}</div>
             <div class="team-record">${this.getTeamRecord(
               team
-            )} ${this.formatPosition(team + "_position")}</div>
+            )} ${this.formatPosition(position)}</div>
           </div>
         </a>
       </div>
