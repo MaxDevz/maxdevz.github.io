@@ -18,8 +18,8 @@
       "ptsFor": 149,
       "ptsAgainst": 165,
       "players": [4, 9, 10, 14, 24, 27, 30, 36, 47, 58, 76],
-      "semiFinal": 1,
-      "final": 0
+      "semiFinal": 2,
+      "final": 1
     },
     {
       "name": "buffet_frédéric",
@@ -286,8 +286,8 @@
           "time": "20h30",
           "home": "bar_le_cocotier",
           "home_position": 1,
-          "away": "TBD",
-          "away_position": 0,
+          "away": "la_bouchée_d'or",
+          "away_position": 3,
           "final": true
         }
       ]
@@ -298,8 +298,8 @@
         {
           "game_number": 2,
           "time": "19h00",
-          "home": "TBD",
-          "home_position": 0,
+          "home": "la_bouchée_d'or",
+          "home_position": 3,
           "away": "bar_le_cocotier",
           "away_position": 1,
           "final": true
@@ -307,8 +307,8 @@
         {
           "game_number": 1,
           "time": "20h30",
-          "home": "TBD",
-          "home_position": 0,
+          "home": "centrale_auto_SM",
+          "home_position": 2,
           "away": "buffet_frédéric",
           "away_position": 4,
           "consolation": true
@@ -323,8 +323,8 @@
           "time": "19h00",
           "home": "bar_le_cocotier",
           "home_position": 1,
-          "away": "TBD",
-          "away_position": 0,
+          "away": "la_bouchée_d'or",
+          "away_position": 3,
           "final": true
         },
         {
@@ -332,8 +332,8 @@
           "time": "20h30",
           "home": "buffet_frédéric",
           "home_position": 4,
-          "away": "TBD",
-          "away_position": 0,
+          "away": "centrale_auto_SM",
+          "away_position": 2,
           "consolation": true
         }
       ]
@@ -344,8 +344,8 @@
         {
           "game_number": 3,
           "time": "19h00",
-          "home": "TBD",
-          "home_position": 0,
+          "home": "centrale_auto_SM",
+          "home_position": 2,
           "away": "buffet_frédéric",
           "away_position": 4,
           "consolation": true
