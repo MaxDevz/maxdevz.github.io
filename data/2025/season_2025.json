@@ -1,6 +1,6 @@
 {
   "name": "2025",
-  "winner": "placeholder-winner",
+  "winner": "la_bouchée_d'or",
   "season_winner": "bar_le_cocotier",
   "teams": [
     {
@@ -19,7 +19,7 @@
       "ptsAgainst": 165,
       "players": [4, 9, 10, 14, 24, 27, 30, 36, 47, 58, 76],
       "semiFinal": 2,
-      "final": 1
+      "final": 2
     },
     {
       "name": "buffet_frédéric",

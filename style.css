@@ -120,13 +120,6 @@ table .header th {
   background-color: white;
 }
 
-.winner-logo {
-  border-radius: 50px;
-  width: 100px;
-  margin: 20px 0px;
-  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
-}
-
 .league-logo {
   border-radius: 50px;
   width: 60px;
@@ -139,7 +132,9 @@ table .header th {
 }
 
 .winner-img {
-  max-width: 500px;
+  max-height: 550px;
+  max-width: 700px;
+
   margin: 10px;
   margin-bottom: 100px;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.55);
@@ -178,14 +173,34 @@ table .header th {
 }
 
 .banner-top {
-  margin: 0px 20px;
   background-color: #333;
-  width: 200px;
+  width: 160px;
   height: auto;
   box-shadow: 0 50px 140px rgba(0, 0, 0, 0.75);
-  padding: 10px;
+  padding: 5px;
   position: absolute;
-  top: 300px;
+  top: 400px;
+}
+
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 80px solid transparent;
+  border-right: 80px solid transparent;
+
+  border-top: 50px solid #333;
+  margin-bottom: 20px;
+  z-index: 10;
+
+  position: absolute;
+  top: 645px;
+}
+
+.winner-logo {
+  border-radius: 50px;
+  width: 100px;
+  margin-bottom: 10px;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
 }
 
 .winner-section {
@@ -197,7 +212,7 @@ table .header th {
 }
 
 .champions {
-  margin-top: 20px;
+  margin-top: 10px;
   color: #f1de0d;
   font-size: 1.9rem;
   font-weight: bold;
@@ -221,20 +236,6 @@ table .header th {
   flex-direction: column;
   width: 100%;
   height: 100%;
-}
-
-.arrow-down {
-  width: 0;
-  height: 0;
-  border-left: 100px solid transparent;
-  border-right: 100px solid transparent;
-
-  border-top: 50px solid #333;
-  margin-bottom: 20px;
-  z-index: 10;
-
-  position: absolute;
-  top: 595px;
 }
 
 .bracket {
@@ -1442,11 +1443,11 @@ ol > li::marker {
   }
 
   .banner-top {
-    top: 250px;
+    top: 280px;
   }
 
   .arrow-down {
-    top: 545px;
+    top: 525px;
   }
 
   .rating,
