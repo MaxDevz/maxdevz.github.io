@@ -221,6 +221,7 @@ function renderRatingAdjustment() {
 }
 
 let draggedPlayer = null;
+let originalRating = null;
 
 function handleDragStart(e) {
   draggedPlayer = e.target;
@@ -242,7 +243,15 @@ function handleDrop(e) {
   const playerId = parseInt(draggedPlayer.dataset.playerId);
   const player = yearPlayers.find((p) => p.id === playerId);
   if (player) {
+    const originalRating = player.originalRating ?? player.rating;
     player.rating = newRating;
+
+    if (newRating === originalRating) {
+      removeRatingChangeIndicator(draggedPlayer);
+    } else {
+      const difference = newRating - originalRating;
+      showRatingChangeIndicator(draggedPlayer, difference);
+    }
   }
 
   // Move the player div to the new column
@@ -263,6 +272,56 @@ function sortColumn(column) {
     return nameA.localeCompare(nameB);
   });
   players.forEach((player) => column.appendChild(player));
+}
+
+function showRatingChangeIndicator(playerElement, difference) {
+  // Remove any existing indicator
+  const existingIndicator = playerElement.querySelector(".rating-indicator");
+  if (existingIndicator) {
+    existingIndicator.remove();
+  }
+
+  // Ensure difference is a number
+  if (typeof difference !== "number" || isNaN(difference)) {
+    console.error("Invalid difference:", difference);
+    return;
+  }
+
+  // Create indicator element
+  const indicator = document.createElement("span");
+  indicator.className = "rating-indicator";
+  const sign = difference > 0 ? "+" : difference < 0 ? "-" : "";
+  const text = sign + Math.abs(difference);
+  indicator.textContent = text;
+  indicator.style.cssText = `
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    color: white;
+    background-color: ${difference > 0 ? "#28a745" : "#dc3545"};
+    z-index: 10;
+    padding: 0 4px;
+  `;
+
+  // Make sure the player element has relative positioning
+  playerElement.style.position = "relative";
+
+  playerElement.appendChild(indicator);
+}
+
+function removeRatingChangeIndicator(playerElement) {
+  const existingIndicator = playerElement.querySelector(".rating-indicator");
+  if (existingIndicator) {
+    existingIndicator.remove();
+  }
 }
 
 async function saveRatingsAndStartDraft() {
@@ -333,6 +392,7 @@ async function loadYearPlayers() {
     .map((player) => ({
       ...player,
       name: basePlayerMap.get(player.id)?.name || `#${player.id}`,
+      originalRating: player.rating,
     }));
 }
 
