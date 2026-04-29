@@ -3,6 +3,28 @@ body {
   padding: 20px;
 }
 
+.tabs {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.tab-button {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+}
+
+.tab-button.active {
+  background: #fff;
+  border-bottom: 1px solid #fff;
+}
+
+.tab-button:not(.active) {
+  background: #e9ecef;
+}
+
 .container {
   display: flex;
   gap: 20px;

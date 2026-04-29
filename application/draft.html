@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Draft 2026</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .team-card,
+      .draft-step {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 8px;
+        background: #fafafa;
+        margin-bottom: 20px;
+      }
+      .tie-breaker-section {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 8px;
+        background: #ffcfa0;
+        margin-bottom: 20px;
+      }
+      .team-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .team-logo {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background: white;
+      }
+      .history-entry img {
+        width: 20px;
+        height: 20px;
+      }
+      .available-player {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 8px;
+        background: #fafafa;
+      }
+      .team-card strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .current-team {
+        border: 3px solid #28a745 !important;
+        background: #e8f5e8 !important;
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+      }
+      .history-entry {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #bbe5c0;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 6px;
+      }
+      .history-entry-tie {
+        background-color: #ffcfa0;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 6px;
+      }
+      .tie-result {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 5px 0px;
+      }
+      .tie-result .tie-order-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .tie-result .tie-order-item img {
+        width: 20px;
+        height: 20px;
+      }
+      .tie-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: #333;
+        margin: 0 4px;
+      }
+      .choice-number,
+      .history-choice-number {
+        font-style: italic;
+        color: #444;
+      }
+      .round-order {
+        margin-top: 16px;
+        padding: 10px;
+        border: 1px solid #d0d0ff;
+        border-radius: 8px;
+        background: #f8f8ff;
+      }
+      .round-order ol {
+        padding-left: 20px;
+        margin: 8px 0 0 0;
+      }
+      .round-order li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .current-pick-order {
+        font-weight: 700;
+        color: #005a9c;
+      }
+      .round-order .team-logo {
+        width: 24px;
+        height: 24px;
+      }
+      .tie-breaker-animation {
+        margin-top: 10px;
+        padding: 8px;
+        background: #f4f4ff;
+        border: 1px dashed #7a7aff;
+        border-radius: 8px;
+        font-style: italic;
+      }
+      .draft-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .draft-step {
+        background-color: #ffffb6;
+        font-weight: 600;
+        text-align: center;
+      }
+      .rating-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 8px;
+      }
+      .rating-columns {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 16px 0;
+      }
+      .rating-column {
+        min-width: 150px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        padding: 8px;
+        background: #f9f9f9;
+        min-height: 400px;
+      }
+      .rating-column h4 {
+        text-align: center;
+        margin: 0 0 8px 0;
+        background: #e9ecef;
+        padding: 4px;
+        border-radius: 4px;
+      }
+      .rating-player {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 4px 8px;
+        margin-bottom: 4px;
+        cursor: move;
+        user-select: none;
+      }
+      .rating-player:hover {
+        background: #f0f0f0;
+      }
+      .rating-player.dragging {
+        opacity: 0.5;
+      }
+      .player-button {
+        display: inline-block;
+        margin: 4px 4px 0 0;
+        padding: 8px 12px;
+        border: 1px solid #007acc;
+        border-radius: 4px;
+        color: #007acc;
+        background: white;
+        cursor: pointer;
+      }
+      .player-button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .player-button.selected {
+        border-color: #005a9c;
+        background: #eff6ff;
+      }
+      .warning {
+        color: #b33;
+        font-weight: 600;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: stretch;
+      }
+      .header {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        align-items: stretch;
+      }
+
+      .draft-section {
+        min-width: 500px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .draft-section h2 {
+        margin-top: 0;
+      }
+      .draft-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+      .draft-captain-selection {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+      .team-card,
+      .available-player,
+      .draft-step {
+        min-width: 0;
+      }
+      .team-card {
+        display: flex;
+        flex-direction: column;
+      }
+      .player-button {
+        width: 100%;
+        max-width: 300px;
+      }
+      .draft-section#round-order {
+        margin-bottom: 20px;
+      }
+      #player-pool .draft-grid {
+        border: 1px solid #ccc;
+        padding: 10px;
+        overflow: scroll;
+        max-height: 400px;
+        background-color: aliceblue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div>
+        <div class="draft-section" id="round-order"></div>
+        <div class="draft-section" id="draft-history"></div>
+      </div>
+      <div class="container">
+        <div class="header">
+          <div class="draft-section" id="captain-selection"></div>
+        </div>
+
+        <div class="draft-section" id="rating-adjustment" style="display: none">
+          <h3>Ajustement des cotes des joueurs pour la saison</h3>
+          <p>
+            Faites glisser les joueurs dans la colonne correspondant à leur cote
+            (19 à 26).
+          </p>
+          <div id="rating-columns" class="rating-columns"></div>
+          <button
+            class="player-button"
+            onclick="saveRatingsAndStartDraft()"
+            style="background: #28a745; color: white; margin-top: 16px"
+          >
+            Sauvegarder et commencer le draft
+          </button>
+        </div>
+
+        <div class="draft-section" id="player-pool"></div>
+
+        <div
+          style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap"
+        >
+          <button
+            class="player-button"
+            onclick="downloadDraftState()"
+            style="background: #fff3cd; color: #856404"
+          >
+            💾 Télécharger brouillon
+          </button>
+          <button
+            class="player-button"
+            onclick="document.getElementById('upload-input').click()"
+            style="background: #d1ecf1; color: #0c5460"
+          >
+            📁 Charger brouillon
+          </button>
+          <button
+            class="player-button"
+            onclick="
+              if (confirm('Vraiment effacer le brouillon sauvegardé?')) {
+                clearDraftState();
+                alert('Brouillon effacé.');
+                location.reload();
+              }
+            "
+            style="background: #f8d7da; color: #721c24"
+          >
+            ❌ Effacer brouillon
+          </button>
+          <button class="player-button" onclick="saveSeason()">
+            Enregistrer season_2026.json
+          </button>
+          <button
+            class="player-button"
+            onclick="resetRatingAdjustment()"
+            style="background: #ffc107; color: #212529"
+          >
+            🔄 Ajustement des cotes
+          </button>
+          <input
+            type="file"
+            id="upload-input"
+            accept=".json"
+            style="display: none"
+            onchange="
+              uploadDraftState(this.files[0]);
+              this.value = '';
+            "
+          />
+        </div>
+        <p id="save-message" style="font-size: 0.9em; color: #666"></p>
+        <p
+          id="draft-status"
+          style="font-size: 0.9em; color: #007acc; font-weight: 600"
+        ></p>
+      </div>
+    </div>
+    <script src="draft.js"></script>
+  </body>
+</html>

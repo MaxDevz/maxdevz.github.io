@@ -22,7 +22,7 @@ def save_json():
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     
     with open(filepath, "w", encoding="utf-8") as json_file:
-        json.dump(data, json_file, indent=2)
+        json.dump(data, json_file, indent=2, ensure_ascii=False)
     return jsonify({"message": f"Fichier {filename} enregistré."}), 200
 
 @app.route("/load", methods=["GET"])

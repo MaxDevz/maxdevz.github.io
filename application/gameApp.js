@@ -3,11 +3,15 @@ let currentStats = new Set();
 let players = [];
 let yearPlayers = [];
 let teams = [];
-let lineup = [];
+let homeLineup = [];
+let awayLineup = [];
+let currentTab = "home"; // "home" or "away"
 let selectedTeam = "";
+let selectedVisitorTeam = "";
 let currentPlayerIndex = -1;
 let currentInningIndex = -1;
 
+const YEAR = 2025;
 const BASES_ORDER = ["field", "0B", "1B", "2B", "3B", "4B"];
 const DEFAULT_LINEUP_SIZE = 11;
 const MAX_INNINGS = 9;
@@ -24,12 +28,77 @@ const statMap = {
   Sac: "SAC",
 };
 
+// LocalStorage management
+const STORAGE_KEY = "gameApp_state";
+
+function saveGameState() {
+  const state = {
+    gameDate: document.getElementById("game-date")?.value || "",
+    gameTime: document.getElementById("game-time")?.value || "19h00",
+    selectedTeam,
+    selectedVisitorTeam,
+    homeLineup,
+    awayLineup,
+    currentTab,
+    currentPlayerIndex,
+    currentInningIndex,
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadGameState() {
+  const state = localStorage.getItem(STORAGE_KEY);
+  if (!state) return null;
+
+  try {
+    return JSON.parse(state);
+  } catch (e) {
+    console.error("Error parsing saved game state:", e);
+    return null;
+  }
+}
+
+function clearGameState() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
 async function init() {
   await loadAllPlayers();
-  await loadYearPlayers(2025);
-  await loadTeams(2025);
+  await loadYearPlayers(YEAR);
+  await loadTeams(YEAR);
   populateTeamSelect();
+  updateTeamSelects(); // Ensure selects are updated initially
   setupDateDefaults();
+
+  // Restore from localStorage if available
+  const savedState = loadGameState();
+  if (savedState) {
+    selectedTeam = savedState.selectedTeam;
+    selectedVisitorTeam = savedState.selectedVisitorTeam;
+    homeLineup = savedState.homeLineup || [];
+    awayLineup = savedState.awayLineup || [];
+    currentTab = savedState.currentTab || "home";
+    currentPlayerIndex = savedState.currentPlayerIndex || -1;
+    currentInningIndex = savedState.currentInningIndex || -1;
+
+    // Restore form values
+    if (savedState.gameDate) {
+      document.getElementById("game-date").value = savedState.gameDate;
+    }
+    if (savedState.gameTime) {
+      document.getElementById("game-time").value = savedState.gameTime;
+    }
+    if (savedState.selectedTeam) {
+      document.getElementById("team-select").value = savedState.selectedTeam;
+    }
+    if (savedState.selectedVisitorTeam) {
+      document.getElementById("team-select-visiteur").value =
+        savedState.selectedVisitorTeam;
+    }
+
+    updateTeamSelects();
+  }
+
   updateLineupDisplay(); // Ajout de cette ligne pour afficher la liste vide au démarrage
 }
 
@@ -41,7 +110,7 @@ function setupDateDefaults() {
 
 async function loadYearPlayers(year) {
   const response = await fetch(
-    `http://127.0.0.1:5000/load?filename=${year}/players_${year}.json`
+    `http://127.0.0.1:5000/load?filename=${year}/players_${year}.json`,
   );
   if (!response.ok) {
     console.error(`Erreur chargement players_${year}.json`);
@@ -53,7 +122,7 @@ async function loadYearPlayers(year) {
 
 async function loadAllPlayers() {
   const response = await fetch(
-    "http://127.0.0.1:5000/load?filename=players.json"
+    "http://127.0.0.1:5000/load?filename=players.json",
   );
   if (!response.ok) {
     console.error("Erreur chargement players.json");
@@ -65,7 +134,7 @@ async function loadAllPlayers() {
 
 async function loadTeams(year) {
   const response = await fetch(
-    `http://127.0.0.1:5000/load?filename=${year}/season_${year}.json`
+    `http://127.0.0.1:5000/load?filename=${year}/season_${year}.json`,
   );
   if (!response.ok) {
     console.error(`Erreur chargement season_${year}.json`);
@@ -76,14 +145,24 @@ async function loadTeams(year) {
 }
 
 function populateTeamSelect() {
-  const select = document.getElementById("team-select");
-  select.innerHTML = '<option value="">Sélectionner une équipe</option>';
+  const selectLocal = document.getElementById("team-select");
+  const selectVisitor = document.getElementById("team-select-visiteur");
+
+  selectLocal.innerHTML = '<option value="">Sélectionner une équipe</option>';
+  selectVisitor.innerHTML = '<option value="">Sélectionner une équipe</option>';
 
   teams.forEach((team) => {
-    const option = document.createElement("option");
-    option.value = team.name;
-    option.textContent = formatTeamName(team.name);
-    select.appendChild(option);
+    // Local select
+    const optionLocal = document.createElement("option");
+    optionLocal.value = team.name;
+    optionLocal.textContent = formatTeamName(team.name);
+    selectLocal.appendChild(optionLocal);
+
+    // Visitor select
+    const optionVisitor = document.createElement("option");
+    optionVisitor.value = team.name;
+    optionVisitor.textContent = formatTeamName(team.name);
+    selectVisitor.appendChild(optionVisitor);
   });
 }
 
@@ -95,27 +174,116 @@ function formatTeamName(name) {
 }
 
 function loadTeamPlayers() {
+  const previousSelectedTeam = selectedTeam;
   selectedTeam = document.getElementById("team-select").value;
-  lineup = []; // Reset lineup when team changes
+  selectedVisitorTeam = document.getElementById("team-select-visiteur").value;
+
+  // If local team changed and visitor was the same, reset visitor
+  if (
+    selectedTeam !== previousSelectedTeam &&
+    selectedVisitorTeam === previousSelectedTeam
+  ) {
+    document.getElementById("team-select-visiteur").value = "";
+    selectedVisitorTeam = "";
+  }
+
+  // Ensure visitor is different from local
+  if (selectedTeam && selectedVisitorTeam === selectedTeam) {
+    alert("L'équipe visiteur ne peut pas être la même que l'équipe locale.");
+    document.getElementById("team-select-visiteur").value = "";
+    selectedVisitorTeam = "";
+    return;
+  }
+
+  // Update dropdowns to exclude selected teams
+  updateTeamSelects();
+
+  // Reset lineups when teams change
+  homeLineup = [];
+  awayLineup = [];
   updateLineupDisplay();
 }
 
+function updateTeamSelects() {
+  const selectLocal = document.getElementById("team-select");
+  const selectVisitor = document.getElementById("team-select-visiteur");
+
+  // Update local select: include all except selectedVisitorTeam
+  selectLocal.innerHTML = '<option value="">Sélectionner une équipe</option>';
+  teams.forEach((team) => {
+    if (team.name !== selectedVisitorTeam) {
+      const option = document.createElement("option");
+      option.value = team.name;
+      option.textContent = formatTeamName(team.name);
+      if (team.name === selectedTeam) {
+        option.selected = true;
+      }
+      selectLocal.appendChild(option);
+    }
+  });
+
+  // Update visitor select: include all except selectedTeam
+  selectVisitor.innerHTML = '<option value="">Sélectionner une équipe</option>';
+  teams.forEach((team) => {
+    if (team.name !== selectedTeam) {
+      const option = document.createElement("option");
+      option.value = team.name;
+      option.textContent = formatTeamName(team.name);
+      if (team.name === selectedVisitorTeam) {
+        option.selected = true;
+      }
+      selectVisitor.appendChild(option);
+    }
+  });
+}
+
+function getCurrentLineup() {
+  return currentTab === "home" ? homeLineup : awayLineup;
+}
+
+function setCurrentLineup(newLineup) {
+  saveGameState();
+  if (currentTab === "home") {
+    homeLineup = newLineup;
+  } else {
+    awayLineup = newLineup;
+  }
+}
+
+function getCurrentTeam() {
+  return currentTab === "home" ? selectedTeam : selectedVisitorTeam;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  // Update tab buttons
+  document
+    .querySelectorAll(".tab-button")
+    .forEach((btn) => btn.classList.remove("active"));
+  document
+    .querySelector(`.tab-button[onclick="switchTab('${tab}')"]`)
+    .classList.add("active");
+  // Update lineup display
+
+  updateLineupDisplay();
+}
 function getAvailablePlayers(currentPlayerId) {
-  const team = teams.find((t) => t.name === selectedTeam);
+  const team = teams.find((t) => t.name === getCurrentTeam());
   if (!team) return [];
 
   // Retourne les joueurs qui ne sont pas dans le lineup
   // ou qui sont le joueur actuellement sélectionné à cette position
+  const currentLineup = getCurrentLineup();
   return team.players.filter((playerId) => {
-    const isPlayerInLineup = lineup.some(
-      (player) => player && player.id === playerId
+    const isPlayerInLineup = currentLineup.some(
+      (player) => player && player.id === playerId,
     );
     return !isPlayerInLineup || playerId === currentPlayerId;
   });
 }
 
 function getSubstitutePlayers(currentPlayerId) {
-  const currentTeam = teams.find((t) => t.name === selectedTeam);
+  const currentTeam = teams.find((t) => t.name === getCurrentTeam());
   const teamPlayerIds = currentTeam ? new Set(currentTeam.players) : new Set();
 
   const substitutePlayers = yearPlayers
@@ -123,9 +291,10 @@ function getSubstitutePlayers(currentPlayerId) {
     .map((player) => player.id);
 
   // Filtrer les joueurs déjà dans le lineup
+  const currentLineup = getCurrentLineup();
   return substitutePlayers.filter((playerId) => {
-    const isPlayerInLineup = lineup.some(
-      (player) => player && player.id === playerId
+    const isPlayerInLineup = currentLineup.some(
+      (player) => player && player.id === playerId,
     );
     return !isPlayerInLineup || playerId === currentPlayerId;
   });
@@ -142,7 +311,7 @@ function updateLineupDisplay() {
                 <div class="player-info">Joueur</div>
                 ${Array.from(
                   { length: MAX_INNINGS },
-                  (_, i) => `<div class="inning-header">${i + 1}</div>`
+                  (_, i) => `<div class="inning-header">${i + 1}</div>`,
                 ).join("")}
         `;
   container.appendChild(headerRow);
@@ -169,14 +338,15 @@ function updateLineupDisplay() {
 
     // Ajouter les options des joueurs disponibles
     const availablePlayers = getAvailablePlayers();
+    const currentLineup = getCurrentLineup();
     availablePlayers.forEach((playerId) => {
       const player = players.find((p) => p.id === playerId);
       if (player) {
         select.innerHTML += `
                                         <option value="${player.id}" 
                                                         ${
-                                                          lineup[i]?.id ===
-                                                          player.id
+                                                          currentLineup[i]
+                                                            ?.id === player.id
                                                             ? "selected"
                                                             : ""
                                                         }>
@@ -224,6 +394,7 @@ function updateLineupDisplay() {
 
       cell.appendChild(img);
 
+      const currentLineup = getCurrentLineup();
       STATS_OPTIONS.forEach((stat) => {
         const statButton = document.createElement("button");
         statButton.className = "stat-button";
@@ -233,7 +404,7 @@ function updateLineupDisplay() {
         const currentBase = img.dataset.currentBase;
         if (
           statKey &&
-          lineup[i]?.innings?.[j]?.[statKey] &&
+          currentLineup[i]?.innings?.[j]?.[statKey] &&
           currentBase !== "field"
         ) {
           statButton.classList.add("active");
@@ -249,7 +420,7 @@ function updateLineupDisplay() {
       rButton.className = "stat-button";
       rButton.textContent = "R";
       const currentBase = img.dataset.currentBase;
-      if (lineup[i]?.innings?.[j]?.R && currentBase !== "field") {
+      if (currentLineup[i]?.innings?.[j]?.R && currentBase !== "field") {
         rButton.classList.add("active");
       }
       // Disable the R button if current base is field
@@ -278,54 +449,59 @@ function toggleStatForInning(playerIndex, inningIndex, stat) {
 
   // Si on clique sur le même stat, le désactiver
   const statKey = statMap[stat];
-  if (lineup[playerIndex]?.innings?.[inningIndex]?.[statKey]) {
-    if (lineup[playerIndex]?.innings?.[inningIndex]) {
-      lineup[playerIndex].innings[inningIndex][statKey] = false;
+  const currentLineup = getCurrentLineup();
+  if (currentLineup[playerIndex]?.innings?.[inningIndex]?.[statKey]) {
+    if (currentLineup[playerIndex]?.innings?.[inningIndex]) {
+      currentLineup[playerIndex].innings[inningIndex][statKey] = false;
       if (CS_STATS.includes(stat)) {
-        lineup[playerIndex].innings[inningIndex].CS = false;
+        currentLineup[playerIndex].innings[inningIndex].CS = false;
       }
     }
   } else {
     // Sinon, activer le nouveau stat
-    if (!lineup[playerIndex]) {
-      lineup[playerIndex] = {
+    if (!currentLineup[playerIndex]) {
+      currentLineup[playerIndex] = {
         innings: Array.from({ length: MAX_INNINGS }, () =>
-          createDefaultStats()
+          createDefaultStats(),
         ),
       };
     }
 
     Object.values(statMap).forEach((key) => {
-      lineup[playerIndex].innings[inningIndex][key] =
+      currentLineup[playerIndex].innings[inningIndex][key] =
         key === statKey ? true : false;
     });
 
     if (CS_STATS.includes(stat))
-      lineup[playerIndex].innings[inningIndex].CS = true;
-    else lineup[playerIndex].innings[inningIndex].CS = false;
+      currentLineup[playerIndex].innings[inningIndex].CS = true;
+    else currentLineup[playerIndex].innings[inningIndex].CS = false;
 
     inning_container
       .querySelector(`[data-stat="${stat}"]`)
       .classList.add("active");
   }
+  setCurrentLineup(currentLineup);
 }
 
 function toggleRForInning(playerIndex, inningIndex) {
-  if (!lineup[playerIndex]) {
-    lineup[playerIndex] = {
+  const currentLineup = getCurrentLineup();
+  if (!currentLineup[playerIndex]) {
+    currentLineup[playerIndex] = {
       innings: Array.from({ length: MAX_INNINGS }, () => createDefaultStats()),
     };
   }
 
-  const currentValue = lineup[playerIndex].innings[inningIndex].R;
-  lineup[playerIndex].innings[inningIndex].R = !currentValue;
+  const currentValue = currentLineup[playerIndex].innings[inningIndex].R;
+  currentLineup[playerIndex].innings[inningIndex].R = !currentValue;
+
+  setCurrentLineup(currentLineup);
 
   // Update visual
   const row = document.querySelectorAll(`.lineup-row`)[playerIndex];
   const inning_container =
     row.querySelectorAll(`.inning-container`)[inningIndex];
   const rButton = Array.from(
-    inning_container.querySelectorAll(".stat-button")
+    inning_container.querySelectorAll(".stat-button"),
   ).find((btn) => btn.textContent === "R");
   rButton.classList.toggle("active");
 }
@@ -358,13 +534,14 @@ function rotateBase(imgElement) {
 function updateStatsForCurrentPlayer() {
   if (currentPlayerIndex === -1 || currentInningIndex === -1) return;
 
+  const currentLineup = getCurrentLineup();
   // Mettre à jour les stats du joueur pour la manche courante
-  if (!lineup[currentPlayerIndex].innings) {
-    lineup[currentPlayerIndex].innings = [];
+  if (!currentLineup[currentPlayerIndex].innings) {
+    currentLineup[currentPlayerIndex].innings = [];
   }
 
-  if (!lineup[currentPlayerIndex].innings[currentInningIndex]) {
-    lineup[currentPlayerIndex].innings[currentInningIndex] = {
+  if (!currentLineup[currentPlayerIndex].innings[currentInningIndex]) {
+    currentLineup[currentPlayerIndex].innings[currentInningIndex] = {
       bags: "field",
       CS: false,
       R: false,
@@ -381,10 +558,12 @@ function updateStatsForCurrentPlayer() {
   }
 
   const cell = document.querySelector(
-    `#inning-${currentPlayerIndex}-${currentInningIndex} img`
+    `#inning-${currentPlayerIndex}-${currentInningIndex} img`,
   );
-  lineup[currentPlayerIndex].innings[currentInningIndex].bags =
+  currentLineup[currentPlayerIndex].innings[currentInningIndex].bags =
     cell.dataset.currentBase;
+
+  setCurrentLineup(currentLineup);
 }
 
 function selectPlayerInning(playerIndex, inningIndex) {
@@ -413,11 +592,13 @@ function updatePlayerOptions(index) {
   const subCheckbox = document.getElementById(`sub-${index}`);
   const isSubstitute = subCheckbox.checked;
 
+  const currentLineup = getCurrentLineup();
   // Réinitialiser la sélection et retirer le joueur du lineup
   select.value = "";
-  if (lineup[index]) {
-    lineup[index] = null;
+  if (currentLineup[index]) {
+    currentLineup[index] = null;
   }
+  setCurrentLineup(currentLineup);
 
   // Mettre à jour les options disponibles
   select.innerHTML = `<option value="">Sélectionner un joueur</option>`;
@@ -443,18 +624,19 @@ function updatePlayerOptions(index) {
 function updateLineupSpot(index, playerId) {
   console.log(`Updating lineup spot ${index} with player ID: ${playerId}`);
   const select = document.getElementById(`player-${index}`);
+  const currentLineup = getCurrentLineup();
 
   if (!playerId) {
-    lineup[index] = null;
+    currentLineup[index] = null;
     select.value = ""; // Mettre à jour la valeur du select
   } else {
     const player = players.find((p) => p.id === playerId);
     if (player) {
-      lineup[index] = {
+      currentLineup[index] = {
         id: player.id,
         name: player.name,
         innings: Array.from({ length: MAX_INNINGS }, () =>
-          createDefaultStats()
+          createDefaultStats(),
         ),
         isSubstitute: document.getElementById(`sub-${index}`)?.checked || false,
       };
@@ -462,19 +644,21 @@ function updateLineupSpot(index, playerId) {
     }
   }
 
+  setCurrentLineup(currentLineup);
   // Mettre à jour tous les autres menus déroulants pour refléter la nouvelle sélection
   updateAllPlayerLists();
 }
 
 function updateAllPlayerLists() {
   console.log("Updating all player lists");
+  const currentLineup = getCurrentLineup();
   for (let i = 0; i < DEFAULT_LINEUP_SIZE; i++) {
     const select = document.getElementById(`player-${i}`);
     const currentValue = select.value;
     const isSubstitute = document.getElementById(`sub-${i}`)?.checked || false;
 
     // Sauvegarder la valeur actuelle et recréer les options
-    const currentPlayerId = lineup[i]?.id;
+    const currentPlayerId = currentLineup[i]?.id;
     const availablePlayers = isSubstitute
       ? getSubstitutePlayers(currentPlayerId)
       : getAvailablePlayers(currentPlayerId);
@@ -540,11 +724,13 @@ function addPlayerToLineup() {
   if (!playerId) return;
 
   const player = players.find((p) => p.id === playerId);
-  if (player && !lineup.find((p) => p.id === playerId)) {
-    lineup.push({
+  const currentLineup = getCurrentLineup();
+  if (player && !currentLineup.find((p) => p.id === playerId)) {
+    currentLineup.push({
       id: player.id,
       name: player.name,
     });
+    setCurrentLineup(currentLineup);
     updateLineupDisplay();
   }
 }
@@ -570,13 +756,14 @@ function generatePlayerOptions(currentSpot) {
   const team = teams.find((t) => t.name === selectedTeam);
   if (!team) return "";
 
+  const currentLineup = getCurrentLineup();
   return team.players
     .filter((playerId) => {
       // Un joueur est disponible s'il n'est pas déjà dans le lineup
       // ou s'il est le joueur actuellement sélectionné à cette position
-      return !lineup.some(
+      return !currentLineup.some(
         (player, index) =>
-          player && player.id === playerId && index !== currentSpot
+          player && player.id === playerId && index !== currentSpot,
       );
     })
     .map((playerId) => {
@@ -588,13 +775,16 @@ function generatePlayerOptions(currentSpot) {
 }
 
 function removeFromLineup(index) {
-  lineup = lineup.filter((_, i) => i !== index);
+  const currentLineup = getCurrentLineup();
+  const newLineup = currentLineup.filter((_, i) => i !== index);
+  setCurrentLineup(newLineup);
   updateLineupDisplay();
 }
 
 function generateJson() {
+  const currentLineup = getCurrentLineup();
   // Filtrer les joueurs null du lineup
-  const cleanLineup = lineup.filter((player) => player !== null);
+  const cleanLineup = currentLineup.filter((player) => player !== null);
 
   // Créer un tableau pour stocker les manches
   const innings = [];
@@ -649,7 +839,7 @@ async function saveJson() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: data,
-      }
+      },
     );
     const result = await response.json();
     alert(result.message);
