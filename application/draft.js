@@ -158,6 +158,13 @@ async function initDraft() {
 
 function renderRatingAdjustment() {
   console.log("Rendering rating adjustment interface");
+  //hide other items
+  document.getElementById("round-order").style.display = "none";
+  document.getElementById("draft-history").style.display = "none";
+  document.getElementById("captain-selection").style.display = "none";
+  document.getElementById("player-pool").style.display = "none";
+  document.getElementById("draft-controls").style.display = "none";
+
   const container = document.getElementById("rating-adjustment");
   const columnsContainer = document.getElementById("rating-columns");
   columnsContainer.innerHTML = "";
@@ -291,7 +298,6 @@ async function saveRatingsAndStartDraft() {
 
   // Hide rating adjustment and start draft
   document.getElementById("rating-adjustment").style.display = "none";
-  console.log("Set None");
   renderDraft();
 }
 
