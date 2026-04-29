@@ -12,6 +12,8 @@ if not exist "env\Scripts\python.exe" (
   call "env\Scripts\activate.bat"
   echo Installing Flask...
   pip install flask
+  echo Installing Flask-CORS...
+  pip install flask-cors
 ) else (
   call "env\Scripts\activate.bat"
 )
