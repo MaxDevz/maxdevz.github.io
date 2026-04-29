@@ -154,7 +154,7 @@ export const app = {
 
         //calculate days difference by dividing total milliseconds in a day
         var days_difference = Math.round(
-          time_difference / (1000 * 60 * 60 * 24)
+          time_difference / (1000 * 60 * 60 * 24),
         );
         var daysLeft = "";
         switch (days_difference) {
@@ -172,7 +172,7 @@ export const app = {
         <div class="nextGame">
           <div class="date nextGame">Prochain Match - ${nextGameDate.toLocaleDateString(
             CONSTANTS.LOCALE,
-            CONSTANTS.DATE_OPTIONS
+            CONSTANTS.DATE_OPTIONS,
           )}</div>
           <span>${daysLeft}</span>
         </div>
@@ -197,7 +197,7 @@ export const app = {
         pageHtml += `<div class="date-card">
         <div class="date">${gameDate.toLocaleDateString(
           CONSTANTS.LOCALE,
-          CONSTANTS.DATE_OPTIONS
+          CONSTANTS.DATE_OPTIONS,
         )}</div>
         <div class="card-container">`;
 
@@ -238,7 +238,7 @@ export const app = {
 
     if (game.rescheduled || game.game_number) {
       pageHtml += `<span class="game-note">${this.generateGameNote(
-        game
+        game,
       )}</span>`;
     }
 
@@ -246,10 +246,10 @@ export const app = {
           <div id="confrontation" class="confrontation ${
             game.reported ? "reported" : ""
           }" ${
-      game.reported || game.home == "TBD" || game.away == "TBD"
-        ? ""
-        : "onclick=\"app.selectGame('" + date + "_" + game.time + "')\""
-    }>
+            game.reported || game.home == "TBD" || game.away == "TBD"
+              ? ""
+              : "onclick=\"app.selectGame('" + date + "_" + game.time + "')\""
+          }>
             <div class="reported">Partie reportée : ${game.reported}</div>
             <div id="teams" class="teams">`;
     pageHtml += this.generateTeamDisplay(
@@ -257,14 +257,14 @@ export const app = {
       game.away_position,
       awayStats.points,
       homeStats.points,
-      seasonSelected
+      seasonSelected,
     );
     pageHtml += this.generateTeamDisplay(
       game.home,
       game.home_position,
       homeStats.points,
       awayStats.points,
-      seasonSelected
+      seasonSelected,
     );
     pageHtml += `</div>`;
 
@@ -341,7 +341,7 @@ export const app = {
 
     if (game.rescheduled || game.game_number) {
       pageHtml += `<span class="game-note">${this.generateGameNote(
-        game
+        game,
       )}</span>`;
     }
 
@@ -449,8 +449,8 @@ export const app = {
           <td>
             <div class="team">
               <a class="team-link" href="?page=stats&season=${seasonSelected}&team=${
-        team.name
-      }">
+                team.name
+              }">
                 <img
                   title="${this.formatTeamName(team.name)}"
                   alt="Logo"
@@ -494,8 +494,8 @@ export const app = {
           <td>${team.ptsFor ? team.ptsFor : "-"}</td>
           <td>${team.ptsAgainst ? team.ptsAgainst : "-"}</td>
           <td class="${diff > 0 ? "positive" : diff < 0 ? "negative" : ""}">${
-        diff ? diff : "-"
-      }</td>`;
+            diff ? diff : "-"
+          }</td>`;
       pageHtml += `</tr>`;
     });
 
@@ -561,8 +561,8 @@ export const app = {
                       <div class="address">${
                         sponsor.address
                       }<a target="_blank" href="https://www.google.ca/maps/place/${
-        sponsor.address
-      }"><i class="fas fa-map-marker-alt"></i></a></div>
+                        sponsor.address
+                      }"><i class="fas fa-map-marker-alt"></i></a></div>
                       ${
                         sponsor.site
                           ? `<a target="_blank" href="${sponsor.site}">${sponsor.site}</a>`
@@ -618,7 +618,7 @@ export const app = {
       seasonSelected == 2023
         ? "*La première partie de la saison n'est pas inclut dans le TDB et la MDP ainsi que les PP"
         : null,
-      true
+      true,
     );
 
     this.setPageHtml(pageHtml);
@@ -628,7 +628,7 @@ export const app = {
   createStatsTable(note, asBorderTop) {
     if (!this.isGamePage()) {
       playersStats = new Map(
-        [...playersStats].sort((a, b) => this.sortByColumn(a, b))
+        [...playersStats].sort((a, b) => this.sortByColumn(a, b)),
       );
     }
 
@@ -685,8 +685,8 @@ export const app = {
                 isNaN(id) ? id.replace("_S", "") : id
               }">
                 ${player.name}${
-            player.captain ? `<span class="captain">C</span>` : ""
-          }
+                  player.captain ? `<span class="captain">C</span>` : ""
+                }
               </a>
             </td>
           <tr>`;
@@ -700,7 +700,7 @@ export const app = {
           pageHtml += `<th ${
             column.short == "Cote" ? 'class="rating"' : ""
           } title="${column.description}" ${this.isSorted(
-            column.short
+            column.short,
           )} onclick="app.sortBy('${column.short}')">${column.short}</th>`;
         }
       });
@@ -741,7 +741,7 @@ export const app = {
           <td ${this.isSorted("P")}>${player.P}</td>
           <td ${this.isSorted("CS")}>${player.CS}</td>
           <td ${this.isSorted("MAB")}>${this.formatDecimal(
-            player.CS / player.AB
+            player.CS / player.AB,
           )}</td>
           <td ${this.isSorted("PB")}>${player.PB}</td>
           <td ${this.isSorted("%MDP")}>${this.formatDecimal(pmdp)}</td>
@@ -809,7 +809,7 @@ export const app = {
       sortedColumn = "RANG";
 
       playersStats = new Map(
-        [...playersStats].sort((a, b) => this.sortByColumn(a, b))
+        [...playersStats].sort((a, b) => this.sortByColumn(a, b)),
       );
     }
 
@@ -818,9 +818,9 @@ export const app = {
     pageHtml = this.createPageTitle(
       `Sommaire - ${gameDate.toLocaleDateString(
         CONSTANTS.LOCALE,
-        CONSTANTS.DATE_OPTIONS
+        CONSTANTS.DATE_OPTIONS,
       )} - ${timeSelected}`,
-      false
+      false,
     );
 
     pageHtml += `<div>
@@ -843,7 +843,7 @@ export const app = {
         seasonSelected == 2023
           ? "*La première partie de la saison n'est pas inclut dans le TDB et la MDP ainsi que les PP"
           : null,
-        false
+        false,
       );
     }
 
@@ -897,8 +897,8 @@ export const app = {
           isNaN(id) ? id.replace("_S", "") : id
         }">
                     ${player.name}${
-          player.captain ? `<span class="captain">C</span>` : ""
-        }
+                      player.captain ? `<span class="captain">C</span>` : ""
+                    }
               </a>
         </td>
       <tr>`;
@@ -945,8 +945,8 @@ export const app = {
         }">BB</span>
       </div>
       <span class="points ${attendance.PP ? "activated" : ""}">${
-      attendance.PP ? attendance.PP : ""
-    } PP</span>
+        attendance.PP ? attendance.PP : ""
+      } PP</span>
       <img
         onclick=""
         title="${attendance.bags}"
@@ -996,7 +996,7 @@ export const app = {
         seasonJSON.teams.forEach((team) => {
           this.createLineupCard(
             this.generateBestLineup(lineupMap.get(team.name)),
-            false
+            false,
           );
         });
         pageHtml += `</div>`;
@@ -1005,7 +1005,7 @@ export const app = {
 
         this.createLineupCard(
           this.generateBestLineup(lineupMap.get(teamFiltered)),
-          random
+          random,
         );
       }
     }
@@ -1040,7 +1040,7 @@ export const app = {
         pageHtml += `<div class="date-card">
         <div class="date">${gameDate.toLocaleDateString(
           CONSTANTS.LOCALE,
-          CONSTANTS.DATE_OPTIONS
+          CONSTANTS.DATE_OPTIONS,
         )}</div>
         <div class="card-container">`;
 
@@ -1094,11 +1094,11 @@ export const app = {
                   <div class="round">
                     <div class="semi-final">${this.createTeams(
                       seasonJSON.playoffs[0].games[0],
-                      false
+                      false,
                     )}</div>
                     <div class="semi-final">${this.createTeams(
                       seasonJSON.playoffs[0].games[1],
-                      false
+                      false,
                     )}</div>
                   </div>
                   <div class="bracket-connector">
@@ -1112,9 +1112,9 @@ export const app = {
                       seasonJSON.playoffs[4]
                         ? seasonJSON.playoffs[4].games[0]
                         : seasonJSON.playoffs[3]
-                        ? seasonJSON.playoffs[3].games[0]
-                        : seasonJSON.playoffs[2].games[0],
-                      true
+                          ? seasonJSON.playoffs[3].games[0]
+                          : seasonJSON.playoffs[2].games[0],
+                      true,
                     )}</div>
                   </div>
                 </div>`;
@@ -1134,7 +1134,7 @@ export const app = {
                   />
                   <div>
                     <div class="team-name">${this.formatTeamName(
-                      game.home
+                      game.home,
                     )}</div>
                     <div class="team-record">${this.getTeamRecord(game.home)}
                     </div>
@@ -1154,7 +1154,7 @@ export const app = {
                   />
                   <div>
                     <div class="team-name">${this.formatTeamName(
-                      game.away
+                      game.away,
                     )}</div>
                     <div class="team-record">${this.getTeamRecord(game.away)}
                     </div>
@@ -1264,8 +1264,8 @@ export const app = {
               alt="Logo"
               class="playerTeam"
               src="${CONSTANTS.IMG_PATH}/logo/${playerSeasons
-      .get(lastPlayedSeason)
-      .team.toLowerCase()}.png"
+                .get(lastPlayedSeason)
+                .team.toLowerCase()}.png"
             />
         </div>  
         <div class="fullName">
@@ -1281,8 +1281,10 @@ export const app = {
           </div>
           <div class="lastName">
             ${lastName} ${
-      infoActualSeason.captain ? `<span class="captain-badge">C</span>` : ""
-    }
+              infoActualSeason.captain
+                ? `<span class="captain-badge">C</span>`
+                : ""
+            }
     ${
       activeSeason == lastPlayedSeason
         ? '<span class="actif">Actif</span>'
@@ -1826,7 +1828,7 @@ export const app = {
                 <div class="team">
                 <div class="team-link" onclick="app.selectTeam('${player.team.replaceAll(
                   "'",
-                  "\\'"
+                  "\\'",
                 )}')">
                     <img
                       title="${imgTitle}"
@@ -1846,12 +1848,12 @@ export const app = {
                 isNaN(player.id) ? player.id.replace("_S", "") : player.id
               }">
                     ${player.name}${
-          player.captain ? `<span class="captain">C</span>` : ""
-        }
+                      player.captain ? `<span class="captain">C</span>` : ""
+                    }
               </a>
             </td>
             <td class="lineup-stats">${this.formatDecimal(
-              player.CS / player.AB
+              player.CS / player.AB,
             )}</td>
             <td class="lineup-stats">${this.formatDecimal(pmdp + mdp)}</td>
             <tr>`;
@@ -1890,7 +1892,7 @@ export const app = {
 
     sortedColumn = "PPP";
     teamLineup = [...teamLineup].sort((a, b) =>
-      this.sortByColumn([0, a], [0, b])
+      this.sortByColumn([0, a], [0, b]),
     );
 
     bestLineup[3] = teamLineup.shift();
@@ -1898,7 +1900,7 @@ export const app = {
 
     sortedColumn = "MAB";
     teamLineup = [...teamLineup].sort((a, b) =>
-      this.sortByColumn([0, a], [0, b])
+      this.sortByColumn([0, a], [0, b]),
     );
 
     bestLineup[0] = teamLineup.shift();
@@ -1918,19 +1920,19 @@ export const app = {
     pageHtml += `<div class="team-selection">`;
     pageHtml += `<button onclick="app.selectTeam('${game.home.replaceAll(
       "'",
-      "\\'"
+      "\\'",
     )}')" ${
       teamFiltered == game.home ? 'class="activated"' : ""
     }><div class="side-name">Local</div>${this.formatTeamName(
-      game.home
+      game.home,
     )} </button>`;
     pageHtml += `<button onclick="app.selectTeam('${game.away.replaceAll(
       "'",
-      "\\'"
+      "\\'",
     )}')" ${
       teamFiltered == game.away ? 'class="activated"' : ""
     }><div class="side-name">Visiteur</div>${this.formatTeamName(
-      game.away
+      game.away,
     )} </button>`;
 
     pageHtml += `</div>`;
@@ -1949,7 +1951,7 @@ export const app = {
       const gameRescheduled = new Date(game.rescheduled + "T00:00");
       note = `(Reprise du ${gameRescheduled.toLocaleDateString(
         CONSTANTS.LOCALE,
-        CONSTANTS.DATE_OPTIONS
+        CONSTANTS.DATE_OPTIONS,
       )})`;
     }
 
@@ -1992,7 +1994,7 @@ export const app = {
           <div>
             <div class="team-name">${this.formatTeamName(team)}</div>
             <div class="team-record">${this.getTeamRecord(
-              team
+              team,
             )} ${this.formatPosition(position)}</div>
           </div>
         </a>
@@ -2130,7 +2132,7 @@ export const app = {
       var hitterMap = playersStats.get(
         this.getTeamPlayers(team).includes(playerId)
           ? playerId
-          : playerId + "_S"
+          : playerId + "_S",
       );
       if (!this.isGamePage()) {
         hitterMap.PJ += 1;
@@ -2146,7 +2148,7 @@ export const app = {
     const readStats = async (team) => {
       if (this.shouldReadStats(date, game)) {
         const response = await fetch(
-          this.formatPath(seasonSelected, `${team}/${date}_${game.time}`)
+          this.formatPath(seasonSelected, `${team}/${date}_${game.time}`),
         );
         return response.ok ? await response.json() : defaultGame;
       }
@@ -2237,8 +2239,8 @@ export const app = {
     const stats = await fetch(
       this.formatPath(
         seasonSelected,
-        `stats_${isPlayoffs ? "playoff" : "season"}_${seasonSelected}`
-      )
+        `stats_${isPlayoffs ? "playoff" : "season"}_${seasonSelected}`,
+      ),
     );
 
     if (!stats.ok) {
@@ -2335,7 +2337,7 @@ export const app = {
   async getPlayerInfo(id) {
     if (!playersInfo) {
       const seasonInfo = await fetch(
-        this.formatPath(seasonSelected, `players_${seasonSelected}`)
+        this.formatPath(seasonSelected, `players_${seasonSelected}`),
       );
       if (!seasonInfo.ok) {
         const message = `An error has occured: ${seasonInfo.status}`;
@@ -2374,7 +2376,7 @@ export const app = {
   async setSeasonJSON(seasonToLoad) {
     if (!seasonJSON || seasonJSON.name != seasonToLoad) {
       const seasonInfo = await fetch(
-        this.formatPath(seasonToLoad, `season_${seasonToLoad}`)
+        this.formatPath(seasonToLoad, `season_${seasonToLoad}`),
       );
       if (!seasonInfo.ok) {
         const message = `An error has occured: ${seasonInfo.status}`;

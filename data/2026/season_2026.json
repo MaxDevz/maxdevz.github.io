@@ -1,7 +1,7 @@
 {
   "name": "2026",
-  "winner": "",
-  "season_winner": "",
+  "winner": "placeholder-winner",
+  "season_winner": "placeholder",
   "teams": [
     {
       "final": 0,
