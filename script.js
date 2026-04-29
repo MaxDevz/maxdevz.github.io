@@ -1239,6 +1239,16 @@ export const app = {
     }
 
     seasonSelected = activeSeason;
+    playersInfo = null;
+    const selectedSeasonInfo = await this.getPlayerInfo(id);
+    const firstSeason = seasons && seasons.length ? seasons[0] : seasonSelected;
+    const isActiveInLastAvailableSeason = await this.isPlayerInSeasonRoster(
+      id,
+      firstSeason,
+    );
+    if (selectedSeasonInfo) {
+      infoActualSeason = selectedSeasonInfo;
+    }
 
     const fullName = playerGeneralInfo.name;
     const splitName = fullName.split(" ");
@@ -1286,7 +1296,7 @@ export const app = {
                 : ""
             }
     ${
-      activeSeason == lastPlayedSeason
+      isActiveInLastAvailableSeason
         ? '<span class="actif">Actif</span>'
         : `<span class="inactif">Inactif</span>`
     }
@@ -2348,6 +2358,19 @@ export const app = {
     }
 
     return playersInfo.players.find((player) => player.id == id);
+  },
+
+  async isPlayerInSeasonRoster(id, season) {
+    const response = await fetch(this.formatPath(season, `season_${season}`));
+    if (!response.ok) {
+      console.error(
+        `Unable to load season file for ${season}: ${response.status}`,
+      );
+      return false;
+    }
+
+    const seasonData = await response.json();
+    return seasonData.teams.some((team) => team.players.includes(+id));
   },
 
   setSeason() {
