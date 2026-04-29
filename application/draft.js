@@ -327,8 +327,8 @@ function removeRatingChangeIndicator(playerElement) {
 async function saveRatingsAndStartDraft() {
   // Ratings are already updated via drag-and-drop
 
-  // Remove the 'name' field added during loading, keep only original fields
-  const cleanPlayers = yearPlayers.map(({ name, ...rest }) => rest);
+  // Remove transient fields added during loading, keep only original JSON fields
+  const cleanPlayers = yearPlayers.map(({ name, originalRating, ...rest }) => rest);
 
   // Save to server
   try {
