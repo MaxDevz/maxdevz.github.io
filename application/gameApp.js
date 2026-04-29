@@ -62,6 +62,156 @@ function clearGameState() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
+function resetGameState() {
+  clearGameState();
+
+  selectedTeam = "";
+  selectedVisitorTeam = "";
+  homeLineup = [];
+  awayLineup = [];
+  currentTab = "home";
+  currentPlayerIndex = -1;
+  currentInningIndex = -1;
+
+  const teamSelect = document.getElementById("team-select");
+  const visitorSelect = document.getElementById("team-select-visiteur");
+  if (teamSelect) teamSelect.value = "";
+  if (visitorSelect) visitorSelect.value = "";
+
+  updateTeamSelects();
+
+  document
+    .querySelectorAll(".tab-button")
+    .forEach((btn) => btn.classList.remove("active"));
+  const homeTabButton = document.querySelector(
+    `.tab-button[onclick="switchTab('home')"]`,
+  );
+  if (homeTabButton) homeTabButton.classList.add("active");
+
+  setupDateDefaults();
+  updateLineupDisplay();
+  updateActiveInningInfo();
+  document.getElementById("output").textContent = "";
+}
+
+function calculateScore(lineup) {
+  if (!Array.isArray(lineup)) return 0;
+  return lineup.reduce((total, player) => {
+    if (!player || !Array.isArray(player.innings)) return total;
+    return (
+      total +
+      player.innings.reduce(
+        (inningTotal, inning) =>
+          inning?.bags === "4B" ? inningTotal + 1 : inningTotal,
+        0,
+      )
+    );
+  }, 0);
+}
+
+function calculateInningPoints(lineup, inningIndex) {
+  if (!Array.isArray(lineup)) return 0;
+  return lineup.reduce((total, player) => {
+    if (!player || !Array.isArray(player.innings)) return total;
+    return player.innings[inningIndex]?.bags === "4B" ? total + 1 : total;
+  }, 0);
+}
+
+function countErrors(lineup) {
+  if (!Array.isArray(lineup)) return 0;
+  return lineup.reduce((total, player) => {
+    if (!player || !Array.isArray(player.innings)) return total;
+    return (
+      total +
+      player.innings.reduce(
+        (inningTotal, inning) => (inning?.ERR ? inningTotal + 1 : inningTotal),
+        0,
+      )
+    );
+  }, 0);
+}
+
+function countCC(lineup) {
+  if (!Array.isArray(lineup)) return 0;
+  return lineup.reduce((total, player) => {
+    if (!player || !Array.isArray(player.innings)) return total;
+    return (
+      total +
+      player.innings.reduce(
+        (inningTotal, inning) => (inning?.CC ? inningTotal + 1 : inningTotal),
+        0,
+      )
+    );
+  }, 0);
+}
+
+function getActiveTeamName() {
+  return currentTab === "home" ? "Local" : "Visiteur";
+}
+
+function countActiveOuts() {
+  if (currentPlayerIndex === -1 || currentInningIndex === -1) return 0;
+  const currentLineup = getCurrentLineup();
+  if (!Array.isArray(currentLineup)) return 0;
+  return currentLineup.reduce((total, player) => {
+    if (!player || !Array.isArray(player.innings)) return total;
+    return player.innings[currentInningIndex]?.R ? total + 1 : total;
+  }, 0);
+}
+
+function updateActiveInningInfo() {
+  const activeTeamLabel = document.getElementById("active-team-label");
+  const activeInningLabel = document.getElementById("active-inning-label");
+  const activeOutLabel = document.getElementById("active-out-label");
+  const activeTeamName = getActiveTeamName();
+  const activeInning =
+    currentInningIndex === -1 ? "N/A" : currentInningIndex + 1;
+  const outCount = countActiveOuts();
+
+  if (activeTeamLabel)
+    activeTeamLabel.textContent = `Équipe active: ${activeTeamName}`;
+  if (activeInningLabel)
+    activeInningLabel.textContent = `Manche active: ${activeInning}`;
+  if (activeOutLabel) activeOutLabel.textContent = `Out (R): ${outCount}`;
+}
+
+function updateScoreDisplay() {
+  const homeTotal = calculateScore(homeLineup);
+  const awayTotal = calculateScore(awayLineup);
+  const homeErrTotal = countErrors(awayLineup);
+  const awayErrTotal = countErrors(homeLineup);
+  const homeCCTotal = countCC(homeLineup);
+  const awayCCTotal = countCC(awayLineup);
+
+  for (let inning = 1; inning <= MAX_INNINGS; inning++) {
+    const homeInningCell = document.getElementById(`home-inning-${inning}`);
+    const awayInningCell = document.getElementById(`away-inning-${inning}`);
+    const homeInningPoints = calculateInningPoints(homeLineup, inning - 1);
+    const awayInningPoints = calculateInningPoints(awayLineup, inning - 1);
+
+    if (homeInningCell) homeInningCell.textContent = homeInningPoints;
+    if (awayInningCell) awayInningCell.textContent = awayInningPoints;
+  }
+
+  const homeScoreElement = document.getElementById("home-score");
+  const awayScoreElement = document.getElementById("away-score");
+  const homeErrElement = document.getElementById("home-err-total");
+  const awayErrElement = document.getElementById("away-err-total");
+  const homeCCElement = document.getElementById("home-cc-total");
+  const awayCCElement = document.getElementById("away-cc-total");
+  const homeTotalElement = document.getElementById("home-total");
+  const awayTotalElement = document.getElementById("away-total");
+
+  if (homeScoreElement) homeScoreElement.textContent = homeTotal;
+  if (awayScoreElement) awayScoreElement.textContent = awayTotal;
+  if (homeErrElement) homeErrElement.textContent = homeErrTotal;
+  if (awayErrElement) awayErrElement.textContent = awayErrTotal;
+  if (homeCCElement) homeCCElement.textContent = homeCCTotal;
+  if (awayCCElement) awayCCElement.textContent = awayCCTotal;
+  if (homeTotalElement) homeTotalElement.textContent = homeTotal;
+  if (awayTotalElement) awayTotalElement.textContent = awayTotal;
+}
+
 async function init() {
   await loadAllPlayers();
   await loadYearPlayers(YEAR);
@@ -97,6 +247,13 @@ async function init() {
     }
 
     updateTeamSelects();
+    document
+      .querySelectorAll(".tab-button")
+      .forEach((btn) => btn.classList.remove("active"));
+    const activeButton = document.querySelector(
+      `.tab-button[onclick="switchTab('${currentTab}')"]`,
+    );
+    if (activeButton) activeButton.classList.add("active");
   }
 
   updateLineupDisplay(); // Ajout de cette ligne pour afficher la liste vide au démarrage
@@ -202,6 +359,7 @@ function loadTeamPlayers() {
   homeLineup = [];
   awayLineup = [];
   updateLineupDisplay();
+  saveGameState();
 }
 
 function updateTeamSelects() {
@@ -242,12 +400,13 @@ function getCurrentLineup() {
 }
 
 function setCurrentLineup(newLineup) {
-  saveGameState();
   if (currentTab === "home") {
     homeLineup = newLineup;
   } else {
     awayLineup = newLineup;
   }
+  saveGameState();
+  updateScoreDisplay();
 }
 
 function getCurrentTeam() {
@@ -263,9 +422,9 @@ function switchTab(tab) {
   document
     .querySelector(`.tab-button[onclick="switchTab('${tab}')"]`)
     .classList.add("active");
-  // Update lineup display
-
+  saveGameState();
   updateLineupDisplay();
+  updateActiveInningInfo();
 }
 function getAvailablePlayers(currentPlayerId) {
   const team = teams.find((t) => t.name === getCurrentTeam());
@@ -336,9 +495,12 @@ function updateLineupDisplay() {
     select.onchange = (e) => updateLineupSpot(i, parseInt(e.target.value));
     select.innerHTML = `<option value="">Sélectionner un joueur</option>`;
 
-    // Ajouter les options des joueurs disponibles
-    const availablePlayers = getAvailablePlayers();
     const currentLineup = getCurrentLineup();
+    const isSubstitute = currentLineup[i]?.isSubstitute || false;
+    const availablePlayers = isSubstitute
+      ? getSubstitutePlayers(currentLineup[i]?.id)
+      : getAvailablePlayers(currentLineup[i]?.id);
+
     availablePlayers.forEach((playerId) => {
       const player = players.find((p) => p.id === playerId);
       if (player) {
@@ -354,6 +516,10 @@ function updateLineupDisplay() {
                                         </option>`;
       }
     });
+
+    if (currentLineup[i]?.id) {
+      select.value = currentLineup[i].id;
+    }
 
     const subCheckbox = document.createElement("input");
     subCheckbox.type = "checkbox";
@@ -381,20 +547,25 @@ function updateLineupDisplay() {
       cell.className = "inning-cell";
       cell.id = `inning-${i}-${j}`;
 
+      const playerStats =
+        currentLineup[i]?.innings?.[j] || createDefaultStats();
+      const baseState = playerStats.bags || "field";
+      if (i === currentPlayerIndex && j === currentInningIndex) {
+        cell.classList.add("selected");
+      }
+
       const img = document.createElement("img");
-      img.src = `../img/field.png`;
+      img.src = `../img/${baseState}.png`;
       img.className = "base-image";
-      img.dataset.currentBase = "field";
+      img.dataset.currentBase = baseState;
       img.onclick = () => {
-        currentPlayerIndex = i;
-        currentInningIndex = j;
+        selectPlayerInning(i, j);
         rotateBase(img);
         updateStatsForCurrentPlayer();
       };
 
       cell.appendChild(img);
 
-      const currentLineup = getCurrentLineup();
       STATS_OPTIONS.forEach((stat) => {
         const statButton = document.createElement("button");
         statButton.className = "stat-button";
@@ -402,14 +573,9 @@ function updateLineupDisplay() {
         statButton.dataset.stat = stat;
         const statKey = statMap[statButton.textContent];
         const currentBase = img.dataset.currentBase;
-        if (
-          statKey &&
-          currentLineup[i]?.innings?.[j]?.[statKey] &&
-          currentBase !== "field"
-        ) {
+        if (statKey && playerStats[statKey] && currentBase !== "field") {
           statButton.classList.add("active");
         }
-        // Disable the button if current base is field
         statButton.disabled = currentBase === "field";
         statButton.onclick = () => toggleStatForInning(i, j, stat);
         statsContainer.appendChild(statButton);
@@ -420,10 +586,9 @@ function updateLineupDisplay() {
       rButton.className = "stat-button";
       rButton.textContent = "R";
       const currentBase = img.dataset.currentBase;
-      if (currentLineup[i]?.innings?.[j]?.R && currentBase !== "field") {
+      if (playerStats.R && currentBase !== "field") {
         rButton.classList.add("active");
       }
-      // Disable the R button if current base is field
       rButton.disabled = currentBase === "field";
       rButton.onclick = () => toggleRForInning(i, j);
       statsContainer.appendChild(rButton);
@@ -436,9 +601,13 @@ function updateLineupDisplay() {
 
     container.appendChild(row);
   }
+
+  updateScoreDisplay();
+  updateActiveInningInfo();
 }
 
 function toggleStatForInning(playerIndex, inningIndex, stat) {
+  selectPlayerInning(playerIndex, inningIndex);
   // Désactiver tous les boutons de stats pour cette manche
   const row = document.querySelectorAll(`.lineup .lineup-row`)[playerIndex];
   const inning_container =
@@ -481,9 +650,11 @@ function toggleStatForInning(playerIndex, inningIndex, stat) {
       .classList.add("active");
   }
   setCurrentLineup(currentLineup);
+  updateActiveInningInfo();
 }
 
 function toggleRForInning(playerIndex, inningIndex) {
+  selectPlayerInning(playerIndex, inningIndex);
   const currentLineup = getCurrentLineup();
   if (!currentLineup[playerIndex]) {
     currentLineup[playerIndex] = {
@@ -504,6 +675,7 @@ function toggleRForInning(playerIndex, inningIndex) {
     inning_container.querySelectorAll(".stat-button"),
   ).find((btn) => btn.textContent === "R");
   rButton.classList.toggle("active");
+  updateActiveInningInfo();
 }
 
 function getKeyByValue(object, value) {
@@ -535,33 +707,28 @@ function updateStatsForCurrentPlayer() {
   if (currentPlayerIndex === -1 || currentInningIndex === -1) return;
 
   const currentLineup = getCurrentLineup();
-  // Mettre à jour les stats du joueur pour la manche courante
+  if (!currentLineup[currentPlayerIndex]) return;
+
   if (!currentLineup[currentPlayerIndex].innings) {
     currentLineup[currentPlayerIndex].innings = [];
-  }
-
-  if (!currentLineup[currentPlayerIndex].innings[currentInningIndex]) {
-    currentLineup[currentPlayerIndex].innings[currentInningIndex] = {
-      bags: "field",
-      CS: false,
-      R: false,
-      S: false,
-      double: false,
-      triple: false,
-      PP: 0,
-      CC: false,
-      BB: false,
-      OPT: false,
-      ERR: false,
-      SAC: false,
-    };
   }
 
   const cell = document.querySelector(
     `#inning-${currentPlayerIndex}-${currentInningIndex} img`,
   );
-  currentLineup[currentPlayerIndex].innings[currentInningIndex].bags =
-    cell.dataset.currentBase;
+  const currentBase = cell?.dataset?.currentBase || "field";
+
+  if (currentBase === "field") {
+    currentLineup[currentPlayerIndex].innings[currentInningIndex] =
+      createDefaultStats();
+  } else {
+    if (!currentLineup[currentPlayerIndex].innings[currentInningIndex]) {
+      currentLineup[currentPlayerIndex].innings[currentInningIndex] =
+        createDefaultStats();
+    }
+    currentLineup[currentPlayerIndex].innings[currentInningIndex].bags =
+      currentBase;
+  }
 
   setCurrentLineup(currentLineup);
 }
@@ -574,11 +741,14 @@ function selectPlayerInning(playerIndex, inningIndex) {
 
   // Sélectionner la cellule courante
   const cell = document.getElementById(`inning-${playerIndex}-${inningIndex}`);
-  cell.classList.add("selected");
+  if (cell) {
+    cell.classList.add("selected");
+  }
 
   // Mettre à jour les stats pour cette cellule
   currentPlayerIndex = playerIndex;
   currentInningIndex = inningIndex;
+  updateActiveInningInfo();
 }
 
 function getPlayerStats(playerId) {
@@ -662,7 +832,6 @@ function updateAllPlayerLists() {
     const availablePlayers = isSubstitute
       ? getSubstitutePlayers(currentPlayerId)
       : getAvailablePlayers(currentPlayerId);
-
     select.innerHTML = `<option value="">Sélectionner un joueur</option>`;
 
     // Ajouter les options des joueurs
@@ -781,32 +950,26 @@ function removeFromLineup(index) {
   updateLineupDisplay();
 }
 
-function generateJson() {
-  const currentLineup = getCurrentLineup();
-  // Filtrer les joueurs null du lineup
-  const cleanLineup = currentLineup.filter((player) => player !== null);
+function buildGameData(lineup) {
+  const cleanLineup = Array.isArray(lineup)
+    ? lineup.filter((player) => player !== null)
+    : [];
 
-  // Créer un tableau pour stocker les manches
   const innings = [];
 
-  // Pour chaque manche (1-9)
   for (let inning = 0; inning < MAX_INNINGS; inning++) {
     const hitters = [];
     let hasValidStats = false;
 
-    // Pour chaque joueur dans le lineup
     cleanLineup.forEach((player) => {
       const stats = player.innings?.[inning] || createDefaultStats();
 
       if (stats.bags !== "field") {
-        // Ajouter l'id du joueur dans stats
-        stats.id = player.id;
-        hitters.push(stats);
+        hitters.push({ ...stats, id: player.id });
         hasValidStats = true;
       }
     });
 
-    // Ajouter la manche seulement si elle contient des stats valides
     if (hasValidStats) {
       innings.push({
         value: (inning + 1).toString(),
@@ -815,12 +978,15 @@ function generateJson() {
     }
   }
 
-  const gameData = {
+  return {
     lineup: cleanLineup.map((player) => player.id),
     innings: innings,
   };
+}
 
-  jsonOutput = JSON.stringify(gameData, null, 2);
+function generateJson(lineup = getCurrentLineup()) {
+  const gameData = buildGameData(lineup);
+  const jsonOutput = JSON.stringify(gameData, null, 2);
   document.getElementById("output").textContent = jsonOutput;
   return jsonOutput;
 }
@@ -828,21 +994,46 @@ function generateJson() {
 async function saveJson() {
   const gameDate = document.getElementById("game-date").value;
   const gameTime = document.getElementById("game-time").value;
-  const filename = `../data/2025/${selectedTeam}/${gameDate}_${gameTime}.json`;
+  if (!gameDate || !gameTime) {
+    alert("Veuillez sélectionner une date et une heure de match.");
+    return;
+  }
 
-  const data = generateJson();
+  const saves = [];
+
+  if (selectedTeam) {
+    const filename = `../data/2025/${selectedTeam}/${gameDate}_${gameTime}.json`;
+    const data = JSON.stringify(buildGameData(homeLineup), null, 2);
+    saves.push({ filename, data, team: "Local" });
+  }
+
+  if (selectedVisitorTeam) {
+    const filename = `../data/2025/${selectedVisitorTeam}/${gameDate}_${gameTime}.json`;
+    const data = JSON.stringify(buildGameData(awayLineup), null, 2);
+    saves.push({ filename, data, team: "Visiteur" });
+  }
+
+  if (saves.length === 0) {
+    alert("Veuillez sélectionner au moins une équipe avant de sauvegarder.");
+    return;
+  }
 
   try {
-    const response = await fetch(
-      `http://127.0.0.1:5000/save?filename=${filename}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: data,
-      },
+    const results = await Promise.all(
+      saves.map(async ({ filename, data, team }) => {
+        const response = await fetch(
+          `http://127.0.0.1:5000/save?filename=${filename}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: data,
+          },
+        );
+        const result = await response.json();
+        return `${team}: ${result.message}`;
+      }),
     );
-    const result = await response.json();
-    alert(result.message);
+    alert(results.join("\n"));
   } catch (error) {
     alert("Erreur lors de la sauvegarde: " + error);
   }

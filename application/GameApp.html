@@ -12,37 +12,103 @@
 
         <div class="game-info">
           <div class="game-details">
-            <div class="date-selection">
-              <label for="game-date">Date du match:</label>
-              <input type="date" id="game-date" />
-              <label for="game-time">Heure du match:</label>
-              <select id="game-time">
-                <option value="19h00">19h00</option>
-                <option value="20h30">20h30</option>
-              </select>
+            <div class="time-details">
+              <div class="date-selection">
+                <label for="game-date">Date du match:</label>
+                <input type="date" id="game-date" />
+              </div>
+              <div class="time-selection">
+                <label for="game-time">Heure du match:</label>
+                <select id="game-time">
+                  <option value="19h00">19h00</option>
+                  <option value="20h30">20h30</option>
+                </select>
+              </div>
             </div>
-            <div class="team-selection">
-              <label>Local:</label>
-              <select id="team-select" onchange="loadTeamPlayers()"></select>
-              <label>Visiteur:</label>
-              <select id="team-select-visiteur" onchange="loadTeamPlayers()"></select>
+            <div class="score-details">
+              <div class="score-inputs">
+                <div class="active-inning-info" id="active-inning-info">
+                  <span id="active-team-label">Équipe active: Local</span>
+                  <span id="active-inning-label">Manche active: N/A</span>
+                  <span id="active-out-label">Out (R): 0</span>
+                </div>
+              </div>
+              <div class="score-table-wrapper">
+                <table class="score-table" id="score-table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Équipe</th>
+                      <th>1</th>
+                      <th>2</th>
+                      <th>3</th>
+                      <th>4</th>
+                      <th>5</th>
+                      <th>6</th>
+                      <th>7</th>
+                      <th>8</th>
+                      <th>9</th>
+                      <th id="err-total">Err</th>
+                      <th>CC</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><label>Local</label></td>
+                      <td>
+                        <select id="team-select" onchange="loadTeamPlayers()"></select>
+                      </td>
+                      <td id="home-inning-1">0</td>
+                      <td id="home-inning-2">0</td>
+                      <td id="home-inning-3">0</td>
+                      <td id="home-inning-4">0</td>
+                      <td id="home-inning-5">0</td>
+                      <td id="home-inning-6">0</td>
+                      <td id="home-inning-7">0</td>
+                      <td id="home-inning-8">0</td>
+                      <td id="home-inning-9">0</td>
+                      <td id="home-err-total">0</td>
+                      <td id="home-cc-total">0</td>
+                      <td id="home-total">0</td>
+                    </tr>
+                    <tr>
+                      <td><label>Visiteur</label></td>
+                      <td>
+                        <select id="team-select-visiteur" onchange="loadTeamPlayers()"></select>
+                      </td>
+                      <td id="away-inning-1">0</td>
+                      <td id="away-inning-2">0</td>
+                      <td id="away-inning-3">0</td>
+                      <td id="away-inning-4">0</td>
+                      <td id="away-inning-5">0</td>
+                      <td id="away-inning-6">0</td>
+                      <td id="away-inning-7">0</td>
+                      <td id="away-inning-8">0</td>
+                      <td id="away-inning-9">0</td>
+                      <td id="away-err-total">0</td>
+                      <td id="away-cc-total">0</td>
+                      <td id="away-total">0</td>
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+            </div>
+            <div class="top-actions">
+              <button id="save-top-button" onclick="saveJson()">Générer et sauvegarder</button>
+              <button id="reset-top-button" onclick="resetGameState()">Réinitialiser</button>
             </div>
           </div>
-          <div class="score-inputs">
-            <label for="home-score">Score:</label>
+          <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('home')">Local</button>
+            <button class="tab-button" onclick="switchTab('away')">Visiteur</button>
           </div>
         </div>
         
 
-        <div class="tabs">
-          <button class="tab-button active" onclick="switchTab('home')">Local</button>
-          <button class="tab-button" onclick="switchTab('away')">Visiteur</button>
-        </div>
+        
 
         <div id="lineup-container" class="lineup"></div>
-
-        <button onclick="generateJson()">Générer JSON</button>
-        <button onclick="saveJson()">Sauvegarder</button>
       </div>
     </div>
 

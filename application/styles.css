@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  padding: 20px;
+  margin: 0;
 }
 
 .tabs {
@@ -14,20 +14,46 @@ body {
   background: #f9f9f9;
   cursor: pointer;
   border-radius: 4px 4px 0 0;
+  width: 50%;
 }
 
 .tab-button.active {
   background: #fff;
   border-bottom: 1px solid #fff;
+  font-style: italic;
 }
 
 .tab-button:not(.active) {
   background: #e9ecef;
 }
 
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#home-total,
+#away-total {
+  background-color: antiquewhite;
+  font-weight: bold;
+}
+
+#home-err-total,
+#away-err-total,
+#err-total {
+  border-left: 2px solid #888;
+}
+
+.score-table th,
+.score-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
 .container {
   display: flex;
-  gap: 20px;
 }
 
 .field-container {
@@ -84,14 +110,18 @@ body {
 }
 
 .game-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 20px;
+  width: 100vw;
   position: sticky;
   background: #f5f5f5;
   top: 0;
   z-index: 1;
+}
+
+.game-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
 }
 
 .stats-grid {
@@ -143,7 +173,7 @@ body {
 .lineup {
   display: flex;
   flex-direction: column;
-  margin: 20px 0;
+  margin: 20px;
 }
 
 .lineup-player {
@@ -212,21 +242,9 @@ body {
 }
 
 .date-selection,
+.time-selection,
 .team-selection {
-  margin-bottom: 20px;
-}
-
-.date-selection input,
-.date-selection select,
-.team-selection input,
-.team-selection select {
-  padding: 8px;
-  margin-right: 10px;
-}
-
-.date-selection,
-.team-selection {
-  margin-bottom: 20px;
+  margin: 10px;
 }
 
 .spot-container {
@@ -279,6 +297,31 @@ body {
   color: #666;
 }
 
+.top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+}
+
+.top-actions button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #ffffff;
+  background: #4caf50;
+}
+
+#reset-top-button {
+  background: #f44336;
+}
+
+.top-actions button:hover {
+  opacity: 0.95;
+}
+
 .lineup-header {
   display: grid;
   grid-template-columns: 300px repeat(9, 1fr);
@@ -321,6 +364,28 @@ body {
 
 .inning-cell:hover {
   background: #e0e0e0;
+}
+
+.inning-cell.selected {
+  border-color: #4caf50;
+  box-shadow: inset 0 0 0 2px rgba(76, 175, 80, 0.35);
+}
+
+.active-inning-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+
+.active-inning-info span {
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
 }
 
 .base-image {
