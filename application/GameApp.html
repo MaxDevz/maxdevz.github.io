@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<ht lang="en">
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +9,6 @@
   <body>
     <div class="container">
       <div class="game-controls">
-
         <div class="game-info">
           <div class="game-details">
             <div class="time-details">
@@ -57,7 +56,10 @@
                     <tr>
                       <td><label>Local</label></td>
                       <td>
-                        <select id="team-select" onchange="loadTeamPlayers()"></select>
+                        <select
+                          id="team-select"
+                          onchange="loadTeamPlayers()"
+                        ></select>
                       </td>
                       <td id="home-inning-1">0</td>
                       <td id="home-inning-2">0</td>
@@ -75,7 +77,10 @@
                     <tr>
                       <td><label>Visiteur</label></td>
                       <td>
-                        <select id="team-select-visiteur" onchange="loadTeamPlayers()"></select>
+                        <select
+                          id="team-select-visiteur"
+                          onchange="loadTeamPlayers()"
+                        ></select>
                       </td>
                       <td id="away-inning-1">0</td>
                       <td id="away-inning-2">0</td>
@@ -92,21 +97,26 @@
                     </tr>
                   </tbody>
                 </table>
-                </div>
+              </div>
             </div>
             <div class="top-actions">
-              <button id="save-top-button" onclick="saveJson()">Générer et sauvegarder</button>
-              <button id="reset-top-button" onclick="resetGameState()">Réinitialiser</button>
+              <button id="save-top-button" onclick="saveJson()">
+                Générer et sauvegarder
+              </button>
+              <button id="reset-top-button" onclick="resetGameState()">
+                Réinitialiser
+              </button>
             </div>
           </div>
           <div class="tabs">
-            <button class="tab-button active" onclick="switchTab('home')">Local</button>
-            <button class="tab-button" onclick="switchTab('away')">Visiteur</button>
+            <button class="tab-button active" onclick="switchTab('home')">
+              Local
+            </button>
+            <button class="tab-button" onclick="switchTab('away')">
+              Visiteur
+            </button>
           </div>
         </div>
-        
-
-        
 
         <div id="lineup-container" class="lineup"></div>
       </div>

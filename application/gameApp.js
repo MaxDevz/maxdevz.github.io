@@ -1002,13 +1002,13 @@ async function saveJson() {
   const saves = [];
 
   if (selectedTeam) {
-    const filename = `../data/2025/${selectedTeam}/${gameDate}_${gameTime}.json`;
+    const filename = `../data/${YEAR}/${selectedTeam}/${gameDate}_${gameTime}.json`;
     const data = JSON.stringify(buildGameData(homeLineup), null, 2);
     saves.push({ filename, data, team: "Local" });
   }
 
   if (selectedVisitorTeam) {
-    const filename = `../data/2025/${selectedVisitorTeam}/${gameDate}_${gameTime}.json`;
+    const filename = `../data/${YEAR}/${selectedVisitorTeam}/${gameDate}_${gameTime}.json`;
     const data = JSON.stringify(buildGameData(awayLineup), null, 2);
     saves.push({ filename, data, team: "Visiteur" });
   }
