@@ -30,13 +30,6 @@
     },
     {
       "captain": true,
-      "id": 5,
-      "number": 5,
-      "pos": "CCG",
-      "rating": 25
-    },
-    {
-      "captain": false,
       "id": 6,
       "number": 10,
       "pos": "CCD",
@@ -219,13 +212,6 @@
     },
     {
       "captain": false,
-      "id": 52,
-      "number": 0,
-      "pos": "2B",
-      "rating": 25
-    },
-    {
-      "captain": false,
       "id": 53,
       "number": 7,
       "pos": "C",
@@ -307,6 +293,20 @@
       "number": 0,
       "pos": "",
       "rating": 21
+    },
+    {
+      "captain": false,
+      "id": 84,
+      "number": 0,
+      "pos": "",
+      "rating": 21
+    },
+    {
+      "captain": false,
+      "id": 85,
+      "number": 0,
+      "pos": "",
+      "rating": 20
     }
   ]
 }
