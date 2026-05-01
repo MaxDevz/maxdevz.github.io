@@ -1265,6 +1265,7 @@ export const app = {
         <div class="playerHeadshot">
             <img
                 id="headshot"
+                onclick="app.changeHeadshot(${id})"
                 title="${fullName}"
                 alt="Logo"
                 class="headshot"
@@ -1560,6 +1561,42 @@ export const app = {
   selectGameSummary(value) {
     gameSummary = value;
     this.loadPage();
+  },
+
+  async changeHeadshot(id) {
+    console.log("Change headshot for player id: " + id);
+    let img = document.getElementById("headshot");
+    // Use getAttribute for reliable path comparison
+    const headshotSrc = img.getAttribute("src");
+    const filenameWithExtension = headshotSrc.split("/").pop(); // "1.png"
+    const filename = filenameWithExtension.split(".").shift();
+    img.src = await this.nextImage(id, filename);
+  },
+
+  async nextImage(id, headshotSrc) {
+    console.log("Current headshot source: " + headshotSrc);
+    let nextImageId = id;
+    if (headshotSrc == id) {
+      nextImageId = `${id}_1`;
+    }
+    if (headshotSrc.includes("_")) {
+      let value = headshotSrc.split("_").pop();
+      value++;
+      nextImageId = `${id}_${value}`;
+    }
+    console.log("Next image id: " + nextImageId);
+    return await this.validateImage(id, nextImageId);
+  },
+
+  async validateImage(id, nextImageId) {
+    console.log("Validate image with id: " + nextImageId);
+    var hasNextImage = await this.loadImage(nextImageId);
+    var imageName = hasNextImage ? nextImageId : id;
+    if (imageName === id) {
+      var hasImage = await this.loadImage(id);
+      imageName = hasImage ? id : "placeholder_headshot";
+    }
+    return `${CONSTANTS.IMG_PATH}/headshots/${imageName}.jpg`;
   },
 
   selectTeam(team) {
