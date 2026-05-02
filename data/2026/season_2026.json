@@ -5,7 +5,19 @@
     {
       "final": 0,
       "name": "bar_le_cocotier",
-      "players": [3, 20],
+      "players": [
+        3,
+        20,
+        45,
+        77,
+        16,
+        35,
+        13,
+        37,
+        49,
+        84,
+        44
+      ],
       "ptsAgainst": 0,
       "ptsFor": 0,
       "record": "0-0-0",
@@ -14,7 +26,19 @@
     {
       "final": 0,
       "name": "la_bouchée_d'or",
-      "players": [9, 10],
+      "players": [
+        9,
+        10,
+        7,
+        27,
+        21,
+        61,
+        47,
+        83,
+        56,
+        22,
+        24
+      ],
       "ptsAgainst": 0,
       "ptsFor": 0,
       "record": "0-0-0",
@@ -23,7 +47,19 @@
     {
       "final": 0,
       "name": "buffet_frédéric",
-      "players": [57, 6],
+      "players": [
+        57,
+        6,
+        4,
+        76,
+        58,
+        29,
+        14,
+        78,
+        53,
+        41,
+        85
+      ],
       "ptsAgainst": 0,
       "ptsFor": 0,
       "record": "0-0-0",
@@ -32,7 +68,19 @@
     {
       "final": 0,
       "name": "centrale_auto_SM",
-      "players": [1, 2],
+      "players": [
+        1,
+        2,
+        17,
+        8,
+        30,
+        54,
+        39,
+        59,
+        43,
+        55,
+        31
+      ],
       "ptsAgainst": 0,
       "ptsFor": 0,
       "record": "0-0-0",
