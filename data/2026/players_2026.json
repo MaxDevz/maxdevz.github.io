@@ -296,17 +296,17 @@
     },
     {
       "captain": false,
-      "id": 84,
-      "number": 0,
-      "pos": "",
-      "rating": 21
-    },
-    {
-      "captain": false,
       "id": 85,
       "number": 0,
       "pos": "",
       "rating": 19
+    },
+    {
+      "captain": false,
+      "id": 86,
+      "number": 0,
+      "pos": "",
+      "rating": 21
     }
   ]
 }
