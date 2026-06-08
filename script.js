@@ -319,12 +319,12 @@ export const app = {
             <tr>
               <th>${awayStats.points}</th>
               <th>${awayStats.hits}</th>
-              <th>${awayStats.errors}</th>
+              <th>${homeStats.errors}</th>
             </tr>
             <tr>
               <th>${homeStats.points}</th>
               <th>${homeStats.hits}</th>
-              <th>${homeStats.errors}</th>
+              <th>${awayStats.errors}</th>
             </tr>
           </table>
         </div>`;

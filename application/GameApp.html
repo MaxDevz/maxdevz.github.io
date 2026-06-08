@@ -27,7 +27,7 @@
             <div class="score-details">
               <div class="score-inputs">
                 <div class="active-inning-info" id="active-inning-info">
-                  <span id="active-team-label">Équipe active: Local</span>
+                  <span id="active-team-label">Équipe active: Visiteur</span>
                   <span id="active-inning-label">Manche active: N/A</span>
                   <span id="active-out-label">Out (R): 0</span>
                 </div>
@@ -54,10 +54,10 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td><label>Local</label></td>
+                      <td><label>Visiteur</label></td>
                       <td>
                         <select
-                          id="team-select"
+                          id="team-select-visiteur"
                           onchange="loadTeamPlayers()"
                         ></select>
                       </td>
@@ -75,10 +75,10 @@
                       <td id="home-total">0</td>
                     </tr>
                     <tr>
-                      <td><label>Visiteur</label></td>
+                      <td><label>Local</label></td>
                       <td>
                         <select
-                          id="team-select-visiteur"
+                          id="team-select"
                           onchange="loadTeamPlayers()"
                         ></select>
                       </td>
@@ -109,11 +109,11 @@
             </div>
           </div>
           <div class="tabs">
-            <button class="tab-button active" onclick="switchTab('home')">
-              Local
-            </button>
-            <button class="tab-button" onclick="switchTab('away')">
+            <button class="tab-button active" onclick="switchTab('away')">
               Visiteur
+            </button>
+            <button class="tab-button" onclick="switchTab('home')">
+              Local
             </button>
           </div>
         </div>

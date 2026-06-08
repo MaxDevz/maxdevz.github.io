@@ -11,7 +11,7 @@ let selectedVisitorTeam = "";
 let currentPlayerIndex = -1;
 let currentInningIndex = -1;
 
-const YEAR = 2025;
+const YEAR = 2026;
 const BASES_ORDER = ["field", "0B", "1B", "2B", "3B", "4B"];
 const DEFAULT_LINEUP_SIZE = 11;
 const MAX_INNINGS = 9;
@@ -204,8 +204,8 @@ function updateScoreDisplay() {
 
   if (homeScoreElement) homeScoreElement.textContent = homeTotal;
   if (awayScoreElement) awayScoreElement.textContent = awayTotal;
-  if (homeErrElement) homeErrElement.textContent = homeErrTotal;
-  if (awayErrElement) awayErrElement.textContent = awayErrTotal;
+  if (homeErrElement) homeErrElement.textContent = awayErrTotal;
+  if (awayErrElement) awayErrElement.textContent = homeErrTotal;
   if (homeCCElement) homeCCElement.textContent = homeCCTotal;
   if (awayCCElement) awayCCElement.textContent = awayCCTotal;
   if (homeTotalElement) homeTotalElement.textContent = homeTotal;
