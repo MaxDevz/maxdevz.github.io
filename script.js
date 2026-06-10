@@ -12,6 +12,7 @@ var gameSummary = true;
 var isPlayoffs = false;
 var subStats = false;
 var randomLineup = false;
+var leaderSelection = {};
 
 var players;
 var seasons;
@@ -92,6 +93,9 @@ export const app = {
         break;
       case "player":
         this.createPlayerPage();
+        break;
+      case "leaders":
+        this.createLeaders();
         break;
       case "rules":
         this.createRules();
@@ -384,7 +388,7 @@ export const app = {
       pageHtml += `<div class="relative"><img
                     title="Photo des gagnants de la saison ${seasonSelected}"
                     class="season-winner-img"
-                    src="${CONSTANTS.IMG_PATH}/winners/season_winner_${seasonSelected}.jpg"
+                    src="${CONSTANTS.IMG_PATH}/winners/season_winner_${seasonSelected}.png"
                     />
                     <div class="first-badge">1er</div></div>`;
     }
@@ -590,6 +594,13 @@ export const app = {
     await this.createStatsSeasonOrPlayoffsMap();
     await this.initializeStats();
 
+    // Lire le paramètre stat de l'URL pour mettre à jour sortedColumn avant d'afficher le dropdown
+    const urlParams = new URLSearchParams(window.location.search);
+    const statParam = urlParams.get("stat");
+    if (statParam && statParam !== sortedColumn) {
+      sortedColumn = statParam;
+    }
+
     // Uncomment Export JSON in logs
     /*var statsArrayJson = [];
     playersStats.forEach((value, key) => {
@@ -625,7 +636,342 @@ export const app = {
     console.log("Create Stats Delay: " + (new Date() - dateStart));
   },
 
+  async createLeaders() {
+    await this.createStatsSeasonOrPlayoffsMap();
+    await this.initializeStats();
+
+    pageHtml = this.createPageTitle("MENEURS", true);
+    pageHtml += `<div class="leaders-container">`;
+
+    const leaderStats = [
+      { short: "MAB", title: "Moyenne au bâton • MAB", type: "Moy." },
+      { short: "CS", title: "Coups sûrs • CS", type: "Coups sûrs" },
+      { short: "P", title: "Points • P", type: "Points" },
+      { short: "CC", title: "Coups de circuit • CC", type: "Coups de circuit" },
+      { short: "PB", title: "Présences sur les buts • PB", type: "Présences" },
+      {
+        short: "%MDP",
+        title: "Moyenne de présence sur les buts • %MDP / OBP ",
+        type: "Moy.",
+      },
+      { short: "TDB", title: "Total de buts • TDB", type: "Total de buts" },
+      { short: "MDP", title: "Moyenne de puissance • MDP / SLG", type: "Moy." },
+      {
+        short: "PPP",
+        title: "Présences + puissance • PPP / OPS",
+        type: "Moy.",
+      },
+      { short: "S", title: "Simples", type: "Simples" },
+      { short: "2B", title: "Doubles", type: "Doubles" },
+      { short: "3B", title: "Triples", type: "Triples" },
+    ];
+
+    for (const stat of leaderStats) {
+      const topPlayers = this.getTopPlayersForStat(stat.short, 10);
+      if (topPlayers.length > 0) {
+        if (!leaderSelection[stat.short]) {
+          leaderSelection[stat.short] = topPlayers[0].id;
+        }
+        pageHtml += this.createLeaderSection(
+          stat,
+          topPlayers,
+          leaderSelection[stat.short],
+        );
+      }
+    }
+
+    pageHtml += `</div>`;
+    pageHtml += `<div class="legend"><div class="legend-title">Légende</div><div>`;
+    leaderStats.forEach((stat) => {
+      pageHtml += `<span class="legend-item">${stat.short}</span> = ${stat.title}`;
+    });
+    pageHtml += `</div></div>`;
+
+    this.setPageHtml(pageHtml);
+  },
+
+  getTopPlayersForStat(stat, count) {
+    const leaderPlayers = [];
+
+    playersStats.forEach((player, id) => {
+      if (!player.team || player.team == "tbd") {
+        return;
+      }
+      const value = this.getLeaderStatValue(player, stat);
+      leaderPlayers.push({ id, player, value });
+    });
+
+    leaderPlayers.sort((a, b) => {
+      if (b.value === a.value) {
+        return a.player.name.localeCompare(b.player.name, "fr");
+      }
+      return b.value - a.value;
+    });
+
+    return leaderPlayers.slice(0, count);
+  },
+  safeStatId(stat) {
+    return stat.replace(/[^a-zA-Z0-9]/g, "_");
+  },
+
+  getLeaderStatValue(player, stat) {
+    const tdb =
+      player.S +
+      player.double * 2 +
+      player.triple * 3 +
+      (seasonSelected == 2023
+        ? player.CC - (player.fristGame2023CC || 0)
+        : player.CC) *
+        4;
+    const atBats = player.AB ? player.AB : 0;
+    const plateAppearances = atBats + (player.BB ? player.BB : 0);
+    const pmdp = plateAppearances ? player.PB / plateAppearances : 0;
+    let mdp = atBats
+      ? seasonSelected == 2023
+        ? tdb / (atBats - (player.fristGame2023AB || 0))
+        : tdb / atBats
+      : 0;
+    mdp = mdp ? mdp : 0;
+
+    switch (stat) {
+      case "MAB":
+        return atBats ? player.CS / atBats : 0;
+      case "%MDP":
+        return pmdp;
+      case "TDB":
+        return tdb;
+      case "MDP":
+        return mdp;
+      case "PPP":
+        return pmdp + mdp;
+      case "R0B":
+        return player.RB || 0;
+      case "2B":
+        return player.double || 0;
+      case "3B":
+        return player.triple || 0;
+      default:
+        return player[stat] || 0;
+    }
+  },
+
+  createLeaderSection(stat, leaderPlayers, selectedPlayerId) {
+    const safeStat = this.safeStatId(stat.short);
+    const selected =
+      leaderPlayers.find((entry) => entry.id == selectedPlayerId) ||
+      leaderPlayers[0];
+    const player = selected.player;
+
+    const splitName = player.name.split(" ");
+    const firstName = splitName[0];
+    const lastName = splitName[1];
+
+    const value = selected.value;
+    const displayValue = this.formatLeaderDisplayValue(stat.short, value);
+    const playerId = isNaN(selected.id)
+      ? selected.id.replace("_S", "")
+      : selected.id;
+    const playerHref = `?page=player&id=${playerId}`;
+    const headshotSrc = `${CONSTANTS.IMG_PATH}/headshots/${playerId}.png`;
+    const teamLogoSrc = `${CONSTANTS.IMG_PATH}/logo/${player.team.toLowerCase()}.png`;
+
+    let listHtml = "";
+
+    // Calculer les rangs avec gestion des égalités
+    const ranks = [];
+    let currentRank = 1;
+    let previousValue = null;
+
+    // Première passe: compter les égalités pour chaque valeur
+    const valueCounts = new Map();
+    leaderPlayers.forEach((entry) => {
+      const count = valueCounts.get(entry.value) || 0;
+      valueCounts.set(entry.value, count + 1);
+    });
+
+    // Deuxième passe: calculer les rangs
+    leaderPlayers.forEach((entry, index) => {
+      if (index === 0) {
+        currentRank = 1;
+        previousValue = entry.value;
+      } else if (entry.value !== previousValue) {
+        currentRank = index + 1;
+        previousValue = entry.value;
+      }
+
+      const hasTies = valueCounts.get(entry.value) > 1;
+      const rankDisplay = hasTies ? `T${currentRank}` : `${currentRank}`;
+      ranks.push(rankDisplay);
+    });
+
+    leaderPlayers.forEach((entry, index) => {
+      const entryId = isNaN(entry.id) ? entry.id.replace("_S", "") : entry.id;
+      const entryValue = this.formatLeaderDisplayValue(stat.short, entry.value);
+      const activeClass = entry.id == selected.id ? "active" : "";
+      const rank = ranks[index];
+      listHtml += `<div
+          id="leader-list-item-${safeStat}-${entryId}"
+          class="leader-list-item ${activeClass}"
+          onmouseover="app.selectLeaderItem('${stat.short}','${entry.id}')"
+          onclick="app.selectLeaderItem('${stat.short}','${entry.id}')"
+        >
+          <div class="leader-list-rank">${rank}.</div>
+          <div class="leader-list-name">${entry.player.name}</div>
+          <div class="leader-list-value">${entryValue}</div>
+        </div>`;
+    });
+
+    return `
+      <div class="leader-stat-section">
+        <div class="leader-stat-head">
+          <div class="leader-stat-title">${stat.title}</div>
+        </div>
+        <div class="leader-section-inner">
+          <div class="leader-feature" id="leader-feature-${safeStat}">
+            <a class="leader-feature-link" href="${playerHref}">
+              <img
+                id="leader-photo-${safeStat}"
+                class="leader-photo"
+                alt="Photo de ${player.name}"
+                src="${headshotSrc}"
+                onerror="this.onerror=null;this.src='${CONSTANTS.IMG_PATH}/headshots/placeholder_headshot.png'"
+              />
+
+              <div class="leader-fullname">
+                <div class="leader-firstname">
+                  ${firstName}
+                </div>
+                <div class="leader-lastname">
+                  ${lastName}
+                </div>
+              </div>
+              <div class="leader-feature-team">
+                <img
+                  class="leader-team-logo round"
+                  title="${this.formatTeamName(player.team)}"
+                  alt="Logo ${this.formatTeamName(player.team)}"
+                  src="${teamLogoSrc}"
+                />
+                <span> • </span>
+                <span class="leader-feature-number">#${player.number ? player.number : "0"}</span>
+              </div>
+            </a>
+            <div class="leader-feature-stat">
+              <div class="leader-feature-value-type">${stat.type}</div>
+              <div class="leader-feature-value">${displayValue}</div>
+            </div>
+          </div>
+          <div class="leader-list" id="leader-list-${safeStat}">
+            ${listHtml}
+            <a class="leader-stats-link" href="?page=stats&season=${seasonSelected}&stat=${encodeURIComponent(stat.short)}">
+              Tous les Meneurs ►
+            </a>
+          </div>
+        </div>
+        
+      </div>`;
+  },
+
+  updateLeaderPreview(stat, playerId) {
+    let player = playersStats.get(playerId);
+    if (!player && !isNaN(playerId)) {
+      player = playersStats.get(Number(playerId));
+    }
+    if (!player) {
+      return;
+    }
+    const safeStat = this.safeStatId(stat);
+    const selectedId = isNaN(playerId) ? playerId.replace("_S", "") : playerId;
+    const headshot = document.getElementById(`leader-photo-${safeStat}`);
+
+    const featureLink = document.querySelector(
+      `#leader-feature-${safeStat} .leader-feature-link`,
+    );
+    const firstNameEl = document.querySelector(
+      `#leader-feature-${safeStat} .leader-firstname`,
+    );
+    const lastNameEl = document.querySelector(
+      `#leader-feature-${safeStat} .leader-lastname`,
+    );
+    const teamLogo = document.querySelector(
+      `#leader-feature-${safeStat} .leader-team-logo`,
+    );
+    const numberEl = document.querySelector(
+      `#leader-feature-${safeStat} .leader-feature-number`,
+    );
+    const valueEl = document.querySelector(
+      `#leader-feature-${safeStat} .leader-feature-value`,
+    );
+
+    if (featureLink) {
+      featureLink.href = `?page=player&id=${selectedId}`;
+    }
+    if (headshot) {
+      headshot.src = `${CONSTANTS.IMG_PATH}/headshots/${selectedId}.png`;
+      headshot.onerror = function () {
+        this.onerror = null;
+        this.src = `${CONSTANTS.IMG_PATH}/headshots/placeholder_headshot.png`;
+      };
+    }
+    const splitName = player.name.split(" ");
+    const firstName = splitName[0];
+    const lastName = splitName[1];
+
+    if (firstNameEl) firstNameEl.textContent = firstName;
+    if (lastNameEl) lastNameEl.textContent = lastName;
+    if (teamLogo)
+      teamLogo.src = `${CONSTANTS.IMG_PATH}/logo/${player.team.toLowerCase()}.png`;
+    if (numberEl)
+      numberEl.textContent = `#${player.number ? player.number : "0"}`;
+    if (valueEl)
+      valueEl.textContent = this.formatLeaderDisplayValue(
+        stat,
+        this.getLeaderStatValue(player, stat),
+      );
+  },
+
+  selectLeaderItem(stat, playerId) {
+    leaderSelection[stat] = playerId;
+    this.updateLeaderPreview(stat, playerId);
+    this.highlightLeaderListItem(stat, playerId);
+  },
+
+  restoreLeaderPreview(stat) {
+    const selectedId = leaderSelection[stat];
+    if (selectedId) {
+      this.updateLeaderPreview(stat, selectedId);
+      this.highlightLeaderListItem(stat, selectedId);
+    }
+  },
+
+  highlightLeaderListItem(stat, playerId) {
+    const safeStat = this.safeStatId(stat);
+    const list = document.getElementById(`leader-list-${safeStat}`);
+    if (!list) return;
+
+    list.querySelectorAll(".leader-list-item").forEach((item) => {
+      const normalizedId = playerId.replace("_S", "");
+      item.classList.toggle(
+        "active",
+        item.id === `leader-list-item-${safeStat}-${playerId}` ||
+          item.id === `leader-list-item-${safeStat}-${normalizedId}`,
+      );
+    });
+  },
+
+  formatLeaderDisplayValue(stat, value) {
+    if (stat === "MAB" || stat === "%MDP" || stat === "MDP" || stat === "PPP") {
+      return this.formatDecimal(value);
+    }
+    return value;
+  },
+
   createStatsTable(note, asBorderTop) {
+    if (!this.isGamePage()) {
+      playersStats = new Map(
+        [...playersStats].sort((a, b) => this.sortByColumn(a, b)),
+      );
+    }
     if (!this.isGamePage()) {
       playersStats = new Map(
         [...playersStats].sort((a, b) => this.sortByColumn(a, b)),
@@ -648,25 +994,52 @@ export const app = {
           <th class="name">Nom</th>
         </tr>`;
 
-      var index = 0;
-
+      const displayedPlayers = [];
       playersStats.forEach((player, id) => {
         if (
           (!teamFiltered && subStats == true) ||
           (!teamFiltered && subStats == false && !player.isSubstitute) ||
           teamFiltered == player.team
         ) {
-          index++;
+          displayedPlayers.push({ id, player });
+        }
+      });
 
-          var imgName = player.team.toLowerCase();
-          var imgTitle = this.formatTeamName(player.team);
-          if (player.isSubstitute) {
-            imgName = "liguebrasserieduboulevard_logo";
-            imgTitle = "Substitut";
-          }
+      const valueCounts = new Map();
+      displayedPlayers.forEach((entry) => {
+        const value = this.getStatsSortValue(entry.player);
+        const count = valueCounts.get(value) || 0;
+        valueCounts.set(value, count + 1);
+      });
 
-          pageHtml += `<tr>
-            <td class="rank">${index}</td>
+      let currentRank = 1;
+      let previousValue = null;
+      displayedPlayers.forEach((entry, index) => {
+        const value = this.getStatsSortValue(entry.player);
+        if (index === 0) {
+          currentRank = 1;
+          previousValue = value;
+        } else if (value !== previousValue) {
+          currentRank = index + 1;
+          previousValue = value;
+        }
+
+        const hasTies = valueCounts.get(value) > 1;
+        entry.rankDisplay = hasTies ? `T${currentRank}` : `${currentRank}`;
+      });
+
+      displayedPlayers.forEach((entry) => {
+        const player = entry.player;
+        const rank = entry.rankDisplay;
+        var imgName = player.team.toLowerCase();
+        var imgTitle = this.formatTeamName(player.team);
+        if (player.isSubstitute) {
+          imgName = "liguebrasserieduboulevard_logo";
+          imgTitle = "Substitut";
+        }
+
+        pageHtml += `<tr>
+            <td class="rank">${rank}</td>
             <td>
               <div class="team">
               <div>
@@ -682,7 +1055,7 @@ export const app = {
             </td>
             <td class="name">
               <a class="team-link" href="?page=player&id=${
-                isNaN(id) ? id.replace("_S", "") : id
+                isNaN(entry.id) ? entry.id.replace("_S", "") : entry.id
               }">
                 ${player.name}${
                   player.captain ? `<span class="captain">C</span>` : ""
@@ -690,7 +1063,6 @@ export const app = {
               </a>
             </td>
           <tr>`;
-        }
       });
 
       pageHtml += `</table></div><div class="sortable-columns"><table><tr class="header">`;
@@ -1269,7 +1641,7 @@ export const app = {
                 title="${fullName}"
                 alt="Logo"
                 class="headshot"
-                src="${CONSTANTS.IMG_PATH}/headshots/${imageName}.jpg"
+                src="${CONSTANTS.IMG_PATH}/headshots/${imageName}.png"
               />
            <img
               alt="Logo"
@@ -1596,7 +1968,7 @@ export const app = {
       var hasImage = await this.loadImage(id);
       imageName = hasImage ? id : "placeholder_headshot";
     }
-    return `${CONSTANTS.IMG_PATH}/headshots/${imageName}.jpg`;
+    return `${CONSTANTS.IMG_PATH}/headshots/${imageName}.png`;
   },
 
   selectTeam(team) {
@@ -1660,7 +2032,7 @@ export const app = {
     var column = document.getElementById("select-column").value;
     if (sortedColumn != column) {
       sortedColumn = column;
-      this.loadPage();
+      this.updateUrlAndLoad("stat", column);
     }
   },
 
@@ -1670,8 +2042,16 @@ export const app = {
     }
     if (sortedColumn != column) {
       sortedColumn = column;
-      this.loadPage();
+      this.updateUrlAndLoad("stat", column);
     }
+  },
+
+  updateUrlAndLoad(paramName, paramValue) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set(paramName, paramValue);
+    const newUrl = `?${urlParams.toString()}`;
+    window.history.pushState({ path: newUrl }, "", newUrl);
+    this.loadPage();
   },
 
   selectGame(date) {
@@ -1741,7 +2121,7 @@ export const app = {
       let img = new Image();
       img.onload = () => resolve(true);
       img.onerror = () => resolve(false);
-      img.src = `${CONSTANTS.IMG_PATH}/headshots/${id}.jpg`;
+      img.src = `${CONSTANTS.IMG_PATH}/headshots/${id}.png`;
     });
   },
 
@@ -1788,8 +2168,9 @@ export const app = {
 
   createSortBy() {
     pageHtml += `
-    <div class="sort-by">Trié par : 
-      <select name="select-column" id="select-column" onchange="app.sortByWithSelect()">`;
+    <div class="sort-by">
+      <div class="sort-by-select">Trié par : 
+        <select name="select-column" id="select-column" onchange="app.sortByWithSelect()">`;
 
     columns.forEach((column) => {
       if (column.sortable) {
@@ -1802,7 +2183,7 @@ export const app = {
       }
     });
 
-    pageHtml += `</select></div>`;
+    pageHtml += `</select></div></div>`;
   },
 
   createTeamFilter() {
@@ -2131,6 +2512,71 @@ export const app = {
     }
   },
 
+  getStatsSortValue(player) {
+    const fristGame2023CC = player.fristGame2023CC ? player.fristGame2023CC : 0;
+    const fristGame2023AB = player.fristGame2023AB ? player.fristGame2023AB : 0;
+    const tdb =
+      player.S +
+      player.double * 2 +
+      player.triple * 3 +
+      (seasonSelected == 2023 ? player.CC - fristGame2023CC : player.CC) * 4;
+    const pmdp = player.PB / (player.AB + player.BB);
+    var mdp =
+      seasonSelected == 2023
+        ? tdb / (player.AB - fristGame2023AB)
+        : tdb / player.AB;
+    mdp = mdp ? mdp : 0;
+
+    switch (sortedColumn) {
+      case "PJ":
+        return player.PJ;
+      case "AB":
+        return player.AB;
+      case "P":
+        return player.P;
+      case "CS":
+        return player.CS;
+      case "PB":
+        return player.PB;
+      case "%MDP":
+        return pmdp;
+      case "S":
+        return player.S;
+      case "2B":
+        return player.double;
+      case "3B":
+        return player.triple;
+      case "CC":
+        return player.CC;
+      case "GC":
+        return player.GC;
+      case "TDB":
+        return tdb;
+      case "MDP":
+        return mdp;
+      case "PPP":
+        return pmdp + mdp;
+      case "PP":
+        return player.PP;
+      case "BB":
+        return player.BB;
+      case "R0B":
+        return player.RB;
+      case "OPT":
+        return player.OPT;
+      case "E":
+        return player.ERR;
+      case "SAC":
+        return player.SAC;
+      case "RANG":
+        return player.order;
+      case "Cote":
+        return player.rating;
+      default:
+        return player.AB ? player.CS / player.AB : 0;
+    }
+  },
+
   isSorted(column) {
     return sortedColumn == column ||
       (column == "MAB" && !sortedColumn) ||
@@ -2249,6 +2695,7 @@ export const app = {
       playersStats.set(hitter.id, hitterMap);
     } else {
       var info = await this.getPlayerInfo(originalId);
+      const hasStats = Object.keys(hitter).some((k) => k !== "id");
       const stats = {
         name:
           this.getPlayerName(originalId) +
@@ -2259,22 +2706,22 @@ export const app = {
         team: teamName,
         number: isSubstitute ? 0 : info.number,
         PJ: 0,
-        AB: hitter.BB ? 0 : 1,
-        P: hitter.bags == "4B" ? 1 : 0,
-        PB: hitter.bags != "0B" ? 1 : 0,
-        CS: hitter.CS ? 1 : 0,
-        S: hitter.S ? 1 : 0,
-        double: hitter.double ? 1 : 0,
-        triple: hitter.triple ? 1 : 0,
-        CC: hitter.CC ? 1 : 0,
-        GC: (hitter.PP == 4) & hitter.CC ? 1 : 0,
-        PP: hitter.PP ? hitter.PP : 0,
-        R: hitter.R ? 1 : 0,
-        BB: hitter.BB ? 1 : 0,
-        RB: hitter.bags == "0B" && hitter.R ? 1 : 0,
-        OPT: hitter.OPT ? 1 : 0,
-        ERR: hitter.ERR ? 1 : 0,
-        SAC: hitter.SAC ? 1 : 0,
+        AB: hasStats ? (hitter.BB ? 0 : 1) : 0,
+        P: hasStats ? (hitter.bags == "4B" ? 1 : 0) : 0,
+        PB: hasStats ? (hitter.bags != "0B" ? 1 : 0) : 0,
+        CS: hasStats ? (hitter.CS ? 1 : 0) : 0,
+        S: hasStats ? (hitter.S ? 1 : 0) : 0,
+        double: hasStats ? (hitter.double ? 1 : 0) : 0,
+        triple: hasStats ? (hitter.triple ? 1 : 0) : 0,
+        CC: hasStats ? (hitter.CC ? 1 : 0) : 0,
+        GC: hasStats ? ((hitter.PP == 4) & hitter.CC ? 1 : 0) : 0,
+        PP: hasStats ? (hitter.PP ? hitter.PP : 0) : 0,
+        R: hasStats ? (hitter.R ? 1 : 0) : 0,
+        BB: hasStats ? (hitter.BB ? 1 : 0) : 0,
+        RB: hasStats ? (hitter.bags == "0B" && hitter.R ? 1 : 0) : 0,
+        OPT: hasStats ? (hitter.OPT ? 1 : 0) : 0,
+        ERR: hasStats ? (hitter.ERR ? 1 : 0) : 0,
+        SAC: hasStats ? (hitter.SAC ? 1 : 0) : 0,
         isSubstitute: isSubstitute,
       };
       playersStats.set(hitter.id, stats);
@@ -2341,6 +2788,9 @@ export const app = {
 
     var playoffs = document.getElementById("playoffs");
     playoffs.href = `/?page=playoffs&season=${seasonSelected}`;
+
+    var leaders = document.getElementById("leaders");
+    leaders.href = `/?page=leaders&season=${seasonSelected}`;
   },
 
   setPageHtml(html) {

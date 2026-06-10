@@ -62,7 +62,7 @@
   {
     "value": "",
     "short": "%MDP",
-    "description": "Moyenne de présence sur les buts",
+    "description": "Moyenne de présence sur les buts (OBP)",
     "sortable": true
   },
   {
@@ -104,13 +104,13 @@
   {
     "value": "",
     "short": "MDP",
-    "description": "Moyenne de puissance",
+    "description": "Moyenne de puissance (SLG)",
     "sortable": true
   },
   {
     "value": "",
     "short": "PPP",
-    "description": "Présences plus puissance",
+    "description": "Présences plus puissance (OPS)",
     "sortable": true
   },
   {
