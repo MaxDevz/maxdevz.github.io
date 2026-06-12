@@ -5,7 +5,7 @@ let yearPlayers = [];
 let teams = [];
 let homeLineup = [];
 let awayLineup = [];
-let currentTab = "home"; // "home" or "away"
+let currentTab = "away"; // "home" or "away"
 let selectedTeam = "";
 let selectedVisitorTeam = "";
 let currentPlayerIndex = -1;
@@ -69,7 +69,7 @@ function resetGameState() {
   selectedVisitorTeam = "";
   homeLineup = [];
   awayLineup = [];
-  currentTab = "home";
+  currentTab = "away";
   currentPlayerIndex = -1;
   currentInningIndex = -1;
 
@@ -83,10 +83,10 @@ function resetGameState() {
   document
     .querySelectorAll(".tab-button")
     .forEach((btn) => btn.classList.remove("active"));
-  const homeTabButton = document.querySelector(
-    `.tab-button[onclick="switchTab('home')"]`,
+  const awayTabButton = document.querySelector(
+    `.tab-button[onclick="switchTab('away')"]`,
   );
-  if (homeTabButton) homeTabButton.classList.add("active");
+  if (awayTabButton) awayTabButton.classList.add("active");
 
   setupDateDefaults();
   updateLineupDisplay();
@@ -204,8 +204,8 @@ function updateScoreDisplay() {
 
   if (homeScoreElement) homeScoreElement.textContent = homeTotal;
   if (awayScoreElement) awayScoreElement.textContent = awayTotal;
-  if (homeErrElement) homeErrElement.textContent = awayErrTotal;
-  if (awayErrElement) awayErrElement.textContent = homeErrTotal;
+  if (homeErrElement) homeErrElement.textContent = homeErrTotal;
+  if (awayErrElement) awayErrElement.textContent = awayErrTotal;
   if (homeCCElement) homeCCElement.textContent = homeCCTotal;
   if (awayCCElement) awayCCElement.textContent = awayCCTotal;
   if (homeTotalElement) homeTotalElement.textContent = homeTotal;
@@ -227,7 +227,7 @@ async function init() {
     selectedVisitorTeam = savedState.selectedVisitorTeam;
     homeLineup = savedState.homeLineup || [];
     awayLineup = savedState.awayLineup || [];
-    currentTab = savedState.currentTab || "home";
+    currentTab = savedState.currentTab || "away";
     currentPlayerIndex = savedState.currentPlayerIndex || -1;
     currentInningIndex = savedState.currentInningIndex || -1;
 
