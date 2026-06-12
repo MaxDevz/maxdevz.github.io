@@ -101,3 +101,22 @@ The repository appears to be a league website and management tool:
   - `draft.js` for drafting players/teams locally
   - `gameApp.js` + `GameApp.py` for lineup/stats editing via a local Flask service
 - There is no package manager config; the app is built as static HTML/CSS/JS plus a simple Python helper.
+
+## Ranking update guidance
+
+For this project, ranking updates are based on the season JSON under `data/<year>/season_<year>.json`.
+
+- `season_<year>.json` contains a `teams` array with each team record:
+  - `record`: wins-losses-ties formatted as `W-L-T`
+  - `ptsFor`: points scored by the team
+  - `ptsAgainst`: points allowed by the team
+- New game results are stored per team in `data/<year>/<team-name>/<YYYY-MM-DD_HHhMM>.json`.
+  - Each game file contains `innings` and `hitters` events.
+  - In current logic, runs are counted from `bags === "4B"` entries.
+- To update the ranking, adjust the team's `record`, `ptsFor`, and `ptsAgainst` in `season_<year>.json` based on the latest completed matches.
+- The ranking page in `script.js` sorts teams by:
+  1. points from wins and ties (`PTS_BY_WIN`, `PTS_BY_TIE`)
+  2. number of wins
+  3. goal differential (`ptsFor - ptsAgainst`)
+
+This makes it easier to maintain accurate standings when new games are added.

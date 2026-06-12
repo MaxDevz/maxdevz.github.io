@@ -388,7 +388,7 @@ export const app = {
       pageHtml += `<div class="relative"><img
                     title="Photo des gagnants de la saison ${seasonSelected}"
                     class="season-winner-img"
-                    src="${CONSTANTS.IMG_PATH}/winners/season_winner_${seasonSelected}.png"
+                    src="${CONSTANTS.IMG_PATH}/winners/season_winner_${seasonSelected}.jpg"
                     />
                     <div class="first-badge">1er</div></div>`;
     }
