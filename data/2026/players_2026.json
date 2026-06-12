@@ -80,7 +80,7 @@
     {
       "captain": false,
       "id": 14,
-      "number": 0,
+      "number": 10,
       "pos": "CCD",
       "rating": 23
     },
@@ -220,7 +220,7 @@
     {
       "captain": false,
       "id": 53,
-      "number": 0,
+      "number": 7,
       "pos": "C",
       "rating": 21
     },
@@ -248,7 +248,7 @@
     {
       "captain": true,
       "id": 57,
-      "number": 0,
+      "number": 14,
       "pos": "1B, 2B",
       "rating": 24
     },
@@ -304,7 +304,7 @@
     {
       "captain": false,
       "id": 85,
-      "number": 0,
+      "number": 4,
       "pos": "",
       "rating": 19
     },
