@@ -86,7 +86,7 @@
       ]
     },
     {
-      "date": "2026-06-24",
+      "date": "2026-07-01",
       "games": [
         {
           "away": "centrale_auto_SM",
@@ -96,21 +96,6 @@
         {
           "away": "buffet_frédéric",
           "home": "bar_le_cocotier",
-          "time": "20h30"
-        }
-      ]
-    },
-    {
-      "date": "2026-07-01",
-      "games": [
-        {
-          "away": "bar_le_cocotier",
-          "home": "la_bouchée_d'or",
-          "time": "19h00"
-        },
-        {
-          "away": "centrale_auto_SM",
-          "home": "buffet_frédéric",
           "time": "20h30"
         }
       ]
@@ -119,13 +104,13 @@
       "date": "2026-07-08",
       "games": [
         {
-          "away": "centrale_auto_SM",
-          "home": "bar_le_cocotier",
+          "away": "bar_le_cocotier",
+          "home": "la_bouchée_d'or",
           "time": "19h00"
         },
         {
-          "away": "buffet_frédéric",
-          "home": "la_bouchée_d'or",
+          "away": "centrale_auto_SM",
+          "home": "buffet_frédéric",
           "time": "20h30"
         }
       ]
@@ -134,13 +119,13 @@
       "date": "2026-07-15",
       "games": [
         {
-          "away": "bar_le_cocotier",
-          "home": "buffet_frédéric",
+          "away": "centrale_auto_SM",
+          "home": "bar_le_cocotier",
           "time": "19h00"
         },
         {
-          "away": "la_bouchée_d'or",
-          "home": "centrale_auto_SM",
+          "away": "buffet_frédéric",
+          "home": "la_bouchée_d'or",
           "time": "20h30"
         }
       ]
@@ -149,13 +134,13 @@
       "date": "2026-07-22",
       "games": [
         {
-          "away": "buffet_frédéric",
-          "home": "centrale_auto_SM",
+          "away": "bar_le_cocotier",
+          "home": "buffet_frédéric",
           "time": "19h00"
         },
         {
           "away": "la_bouchée_d'or",
-          "home": "bar_le_cocotier",
+          "home": "centrale_auto_SM",
           "time": "20h30"
         }
       ]
@@ -164,6 +149,21 @@
       "date": "2026-07-29",
       "games": [
         {
+          "away": "buffet_frédéric",
+          "home": "centrale_auto_SM",
+          "time": "19h00"
+        },
+        {
+          "away": "la_bouchée_d'or",
+          "home": "bar_le_cocotier",
+          "time": "20h30"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-05",
+      "games": [
+        {
           "away": "la_bouchée_d'or",
           "home": "buffet_frédéric",
           "time": "19h00"
@@ -176,7 +176,7 @@
       ]
     },
     {
-      "date": "2026-08-05",
+      "date": "2026-08-12",
       "games": [
         {
           "away": "centrale_auto_SM",
@@ -191,7 +191,7 @@
       ]
     },
     {
-      "date": "2026-08-12",
+      "date": "2026-08-19",
       "games": [
         {
           "away": "bar_le_cocotier",
@@ -206,7 +206,7 @@
       ]
     },
     {
-      "date": "2026-08-19",
+      "date": "2026-08-26",
       "games": [
         {
           "away": "centrale_auto_SM",
