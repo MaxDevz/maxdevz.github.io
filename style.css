@@ -778,7 +778,8 @@ td.name {
 
 .stats .calendar-logo,
 .summary .calendar-logo,
-.lineup .calendar-logo {
+.lineup .calendar-logo,
+.replacement-page .calendar-logo {
   width: 30px;
 }
 
@@ -866,6 +867,36 @@ td.name {
 .ranking table td,
 .ranking table tr {
   padding: 5px;
+}
+
+.replacement-list-title {
+  font-weight: bold;
+  padding: 5px 0px;
+}
+.replacement-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.replacement-card {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+.replacement-card-name {
+  padding: 0px 10px;
+}
+
+.replacement-list {
+  border-radius: 15px;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  padding: 10px;
+  margin: 20px 0px;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
 }
 
 .date {

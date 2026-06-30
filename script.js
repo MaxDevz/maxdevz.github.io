@@ -13,6 +13,7 @@ var isPlayoffs = false;
 var subStats = false;
 var randomLineup = false;
 var leaderSelection = {};
+var selectedReplacementPlayerId = "";
 
 var players;
 var seasons;
@@ -64,6 +65,7 @@ export const app = {
     window.app = app;
 
     app.setTeamFiltered();
+    app.setSelectedReplacementPlayer();
     app.setGameDateTime();
     app.loadPage();
   },
@@ -87,6 +89,9 @@ export const app = {
         break;
       case "lineup":
         this.createLineup();
+        break;
+      case "replacements":
+        this.createReplacements();
         break;
       case "playoffs":
         this.createPlayoffs();
@@ -583,6 +588,222 @@ export const app = {
     pageHtml += `</div>`;
 
     this.setPageHtml(pageHtml);
+  },
+
+  // ****************************
+  // REPLACEMENTS
+  // ****************************
+
+  async createReplacements() {
+    pageHtml = this.createPageTitle("REMPLAÇANTS", false);
+    pageHtml += `<div class="replacement-page">`;
+
+    const rosterPlayers = this.getSeasonRosterPlayers();
+    const selectedPlayerId =
+      selectedReplacementPlayerId || rosterPlayers[0]?.id?.toString() || "";
+
+    if (selectedPlayerId) {
+      selectedReplacementPlayerId = selectedPlayerId;
+    }
+
+    pageHtml += `
+      <div class="replacement-selector">
+        <select id="replacement-player" onchange="app.onReplacementPlayerChange()">
+          <option value="">Choisir un joueur</option>
+          ${rosterPlayers
+            .map(
+              (player) => `
+                <option value="${player.id}" ${
+                  player.id.toString() === selectedPlayerId ? "selected" : ""
+                }> 
+                  <img
+                  title=""
+                  alt="Logo"
+                  class="calendar-logo"
+                  src="${CONSTANTS.IMG_PATH}/logo/${this.getTeamNameByPlayerId(player.id)}.png"
+                /> 
+              ${player.name}</option>
+              `,
+            )
+            .join("")}
+        </select>
+      </div>`;
+
+    if (selectedPlayerId) {
+      const replacementData =
+        await this.getReplacementCandidates(selectedPlayerId);
+
+      if (replacementData.error) {
+        pageHtml += `<div class="replacement-empty">${replacementData.error}</div>`;
+      } else {
+        if (replacementData.candidates.length > 0) {
+          pageHtml += `<div class="replacement-list"> 
+            <div class="replacement-list-title">Remplaçants disponibles avec la même cote</div>
+          `;
+          replacementData.candidates.forEach((candidate) => {
+            pageHtml += `
+              <div class="replacement-card">
+                <div class="team">
+                  <img
+                    title="${candidate.team}"
+                    alt="Logo"
+                    class="calendar-logo"
+                    src="${CONSTANTS.IMG_PATH}/logo/${candidate.team}.png"
+                  />
+                </div>
+                <div class="replacement-card-name">${candidate.name} (${candidate.rating})</div>
+              </div>`;
+          });
+          pageHtml += `</div>`;
+        } else {
+          pageHtml += `<div class="replacement-empty">Aucun joueur disponible avec cette cote pour ce match.</div>`;
+        }
+      }
+    } else {
+      pageHtml += `<div class="replacement-empty">Choisissez un joueur absent pour voir les remplaçants possibles.</div>`;
+    }
+
+    pageHtml += `</div>`;
+    this.setPageHtml(pageHtml);
+  },
+
+  getSeasonRosterPlayers() {
+    return seasonJSON.teams
+      .flatMap((team) =>
+        team.players.map((playerId) => ({
+          id: playerId,
+          team: team.name,
+        })),
+      )
+      .map((player) => {
+        const generalInfo = this.getPlayerGeneralInfo(player.id);
+        return generalInfo
+          ? {
+              id: player.id,
+              name: generalInfo.name,
+              team: player.team,
+            }
+          : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.name.localeCompare(b.name, "fr"));
+  },
+
+  getTeamNameByPlayerId(playerId) {
+    const team = seasonJSON.teams.find((team) =>
+      team.players.includes(Number(playerId)),
+    );
+    return team ? team.name : "";
+  },
+
+  getNextGameForTeam(teamName) {
+    const now = Date.now();
+
+    for (const date of seasonJSON.schedule || []) {
+      const gameDate = new Date(date.date + "T23:59");
+      if (now <= gameDate) {
+        const matchingGame = date.games.find(
+          (game) => game.home === teamName || game.away === teamName,
+        );
+        if (matchingGame) {
+          return {
+            date: date.date,
+            home: matchingGame.home,
+            away: matchingGame.away,
+          };
+        }
+      }
+    }
+
+    return null;
+  },
+
+  async getReplacementCandidates(absentPlayerId) {
+    const absentPlayer = this.getPlayerGeneralInfo(absentPlayerId);
+    const absentSeasonInfo = await this.getPlayerInfo(absentPlayerId);
+
+    if (!absentPlayer || !absentSeasonInfo) {
+      return {
+        error: "Ce joueur n'est pas disponible dans la saison sélectionnée.",
+      };
+    }
+
+    const absentTeam = this.getTeamNameByPlayerId(absentPlayerId);
+    if (!absentTeam) {
+      return { error: "Aucune équipe n'a été trouvée pour ce joueur." };
+    }
+
+    const upcomingGame = this.getNextGameForTeam(absentTeam);
+    if (!upcomingGame) {
+      return { error: "Aucun match à venir n'a été trouvé pour cette équipe." };
+    }
+
+    const opponentTeam =
+      upcomingGame.home === absentTeam ? upcomingGame.away : upcomingGame.home;
+
+    const candidates = [];
+    for (const team of seasonJSON.teams) {
+      if (team.name === absentTeam || team.name === opponentTeam) {
+        continue;
+      }
+
+      for (const playerId of team.players) {
+        const candidateInfo = await this.getPlayerInfo(playerId);
+        if (!candidateInfo) {
+          continue;
+        }
+
+        if (candidateInfo.rating === absentSeasonInfo.rating) {
+          const candidateGeneralInfo = this.getPlayerGeneralInfo(playerId);
+          if (candidateGeneralInfo) {
+            candidates.push({
+              id: playerId,
+              name: candidateGeneralInfo.name,
+              team: team.name,
+              rating: candidateInfo.rating,
+              number: candidateInfo.number,
+              pos: candidateInfo.pos,
+            });
+          }
+        }
+      }
+    }
+
+    candidates.sort((a, b) => {
+      return (
+        a.team.localeCompare(b.team, "fr") || a.name.localeCompare(b.name, "fr")
+      );
+    });
+
+    return {
+      absentPlayer,
+      absentPlayerRating: absentSeasonInfo.rating,
+      absentTeam,
+      opponentTeam,
+      upcomingGame,
+      candidates,
+    };
+  },
+
+  onReplacementPlayerChange() {
+    const selectedPlayer = document.getElementById("replacement-player").value;
+    selectedReplacementPlayerId = selectedPlayer;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (selectedPlayer) {
+      urlParams.set("player", selectedPlayer);
+    } else {
+      urlParams.delete("player");
+    }
+
+    const newUrl = `?${urlParams.toString()}`;
+    window.history.replaceState({ path: newUrl }, "", newUrl);
+    this.loadPage();
+  },
+
+  setSelectedReplacementPlayer() {
+    const urlParams = new URLSearchParams(window.location.search);
+    selectedReplacementPlayerId = urlParams.get("player") || "";
   },
 
   // ****************************
@@ -2007,6 +2228,14 @@ export const app = {
     var page = urlParams.get("page");
     var season = document.getElementById("season").value;
     var url = page ? `/?page=${page}&season=${season}` : `/?season=${season}`;
+
+    if (page === "replacements") {
+      const player = urlParams.get("player");
+      if (player) {
+        url += `&player=${player}`;
+      }
+    }
+
     window.location.replace(url);
   },
 
