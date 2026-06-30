@@ -616,12 +616,6 @@ export const app = {
                 <option value="${player.id}" ${
                   player.id.toString() === selectedPlayerId ? "selected" : ""
                 }> 
-                  <img
-                  title=""
-                  alt="Logo"
-                  class="calendar-logo"
-                  src="${CONSTANTS.IMG_PATH}/logo/${this.getTeamNameByPlayerId(player.id)}.png"
-                /> 
               ${player.name}</option>
               `,
             )
@@ -645,10 +639,10 @@ export const app = {
               <div class="replacement-card">
                 <div class="team">
                   <img
-                    title="${candidate.team}"
+                    title="${candidate.team.toLowerCase()}"
                     alt="Logo"
                     class="calendar-logo"
-                    src="${CONSTANTS.IMG_PATH}/logo/${candidate.team}.png"
+                    src="${CONSTANTS.IMG_PATH}/logo/${candidate.team.toLowerCase()}.png"
                   />
                 </div>
                 <div class="replacement-card-name">${candidate.name} (${candidate.rating})</div>
