@@ -14,6 +14,7 @@ var subStats = false;
 var randomLineup = false;
 var leaderSelection = {};
 var selectedReplacementPlayerId = "";
+var replacementRatingIncrement = 0;
 
 var players;
 var seasons;
@@ -621,18 +622,33 @@ export const app = {
             )
             .join("")}
         </select>
+        <div class="replacement-checkbox-container">
+          <label class="replacement-checkbox">
+            <span>Écart max de cote</span>
+            <input
+              type="number"
+              id="replacement-rating-increment"
+              min="0"
+              step="1"
+              value="${replacementRatingIncrement}"
+              onchange="app.onReplacementRatingIncrementChange()"
+            />
+          </label>
+        </div>
       </div>`;
 
     if (selectedPlayerId) {
-      const replacementData =
-        await this.getReplacementCandidates(selectedPlayerId);
+      const replacementData = await this.getReplacementCandidates(
+        selectedPlayerId,
+        replacementRatingIncrement,
+      );
 
       if (replacementData.error) {
         pageHtml += `<div class="replacement-empty">${replacementData.error}</div>`;
       } else {
         if (replacementData.candidates.length > 0) {
           pageHtml += `<div class="replacement-list"> 
-            <div class="replacement-list-title">Remplaçants disponibles avec la même cote</div>
+            <div class="replacement-list-title">${replacementRatingIncrement > 0 ? `Remplaçants disponibles jusqu'à ${replacementRatingIncrement} cote(s) en dessous` : "Remplaçants disponibles avec la même cote"}</div>
           `;
           replacementData.candidates.forEach((candidate) => {
             pageHtml += `
@@ -650,7 +666,7 @@ export const app = {
           });
           pageHtml += `</div>`;
         } else {
-          pageHtml += `<div class="replacement-empty">Aucun joueur disponible avec cette cote pour ce match.</div>`;
+          pageHtml += `<div class="replacement-empty">Aucun joueur disponible dans cet écart de cote pour ce match.</div>`;
         }
       }
     } else {
@@ -712,7 +728,7 @@ export const app = {
     return null;
   },
 
-  async getReplacementCandidates(absentPlayerId) {
+  async getReplacementCandidates(absentPlayerId, ratingIncrement = 0) {
     const absentPlayer = this.getPlayerGeneralInfo(absentPlayerId);
     const absentSeasonInfo = await this.getPlayerInfo(absentPlayerId);
 
@@ -747,7 +763,19 @@ export const app = {
           continue;
         }
 
-        if (candidateInfo.rating === absentSeasonInfo.rating) {
+        const absentRating = Number(absentSeasonInfo.rating);
+        const candidateRating = Number(candidateInfo.rating);
+        const maxIncrement = Math.max(0, Number(ratingIncrement) || 0);
+        const ratingGap =
+          Number.isFinite(absentRating) && Number.isFinite(candidateRating)
+            ? absentRating - candidateRating
+            : null;
+        const matchesRating =
+          ratingGap === null
+            ? candidateInfo.rating === absentSeasonInfo.rating
+            : ratingGap >= 0 && ratingGap <= maxIncrement;
+
+        if (matchesRating) {
           const candidateGeneralInfo = this.getPlayerGeneralInfo(playerId);
           if (candidateGeneralInfo) {
             candidates.push({
@@ -765,7 +793,9 @@ export const app = {
 
     candidates.sort((a, b) => {
       return (
-        a.team.localeCompare(b.team, "fr") || a.name.localeCompare(b.name, "fr")
+        Number(b.rating) - Number(a.rating) ||
+        a.team.localeCompare(b.team, "fr") ||
+        a.name.localeCompare(b.name, "fr")
       );
     });
 
@@ -790,6 +820,28 @@ export const app = {
       urlParams.delete("player");
     }
 
+    if (replacementRatingIncrement > 0) {
+      urlParams.set("ratingIncrement", replacementRatingIncrement.toString());
+    } else {
+      urlParams.delete("ratingIncrement");
+    }
+
+    const newUrl = `?${urlParams.toString()}`;
+    window.history.replaceState({ path: newUrl }, "", newUrl);
+    this.loadPage();
+  },
+
+  onReplacementRatingIncrementChange() {
+    const incrementInput = document.getElementById("replacement-rating-increment");
+    replacementRatingIncrement = Math.max(0, Number(incrementInput.value) || 0);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (replacementRatingIncrement > 0) {
+      urlParams.set("ratingIncrement", replacementRatingIncrement.toString());
+    } else {
+      urlParams.delete("ratingIncrement");
+    }
+
     const newUrl = `?${urlParams.toString()}`;
     window.history.replaceState({ path: newUrl }, "", newUrl);
     this.loadPage();
@@ -798,6 +850,10 @@ export const app = {
   setSelectedReplacementPlayer() {
     const urlParams = new URLSearchParams(window.location.search);
     selectedReplacementPlayerId = urlParams.get("player") || "";
+    const incrementParam = urlParams.get("ratingIncrement");
+    replacementRatingIncrement = Number.isFinite(Number(incrementParam))
+      ? Math.max(0, Number(incrementParam))
+      : 0;
   },
 
   // ****************************
