@@ -321,6 +321,13 @@
       "number": 10,
       "pos": "",
       "rating": 21
+    },
+    {
+      "captain": false,
+      "id": 88,
+      "number": 10,
+      "pos": "",
+      "rating": 22
     }
   ]
 }
