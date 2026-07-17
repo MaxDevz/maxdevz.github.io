@@ -1379,21 +1379,42 @@ body {
 }
 
 #sidebarMenu {
-  height: 100%;
+  height: calc(100% - 60px);
+  top: 60px;
   position: fixed;
   left: 0;
   width: 250px;
-  margin-top: 60px;
   transform: translateX(-250px);
   transition: transform 250ms ease-in-out;
   background: #333;
   z-index: 50;
   box-shadow: 10px 0 17px rgba(0, 0, 0, 0.35);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #222;
+}
+
+#sidebarMenu::-webkit-scrollbar {
+  width: 6px;
+}
+
+#sidebarMenu::-webkit-scrollbar-track {
+  background: #222;
+}
+
+#sidebarMenu::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+#sidebarMenu::-webkit-scrollbar-thumb:hover {
+  background: #f1de0d;
 }
 
 .sidebarMenuInner {
   margin: 0;
-  padding: 0;
+  padding: 0 0 20px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1488,6 +1509,10 @@ body {
 
 input[type="checkbox"]:checked ~ #sidebarMenu {
   transform: translateX(0);
+}
+
+.sidebarOverlay {
+  display: none;
 }
 
 input[type="checkbox"] {
@@ -1602,6 +1627,22 @@ ol > li::marker {
 
 /* Responsive Styles */
 @media screen and (max-width: 767px) {
+  .sidebarOverlay {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"]:checked ~ .sidebarOverlay {
+    display: block;
+  }
+
   .confrontation:has(.teamNextGame) {
     width: min-content;
   }
