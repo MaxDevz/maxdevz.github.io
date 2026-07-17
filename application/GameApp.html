@@ -10,6 +10,16 @@
     <div class="container">
       <div class="game-controls">
         <div class="game-info">
+          <div class="mode-selection">
+            <label for="free-mode-toggle">
+              <input
+                type="checkbox"
+                id="free-mode-toggle"
+                onchange="toggleFreeMode()"
+              />
+              Mode libre (équipes et joueurs personnalisés)
+            </label>
+          </div>
           <div class="game-details">
             <div class="time-details">
               <div class="date-selection">
@@ -18,10 +28,16 @@
               </div>
               <div class="time-selection">
                 <label for="game-time">Heure du match:</label>
-                <select id="game-time">
+                <select id="game-time-select" onchange="saveGameState()">
                   <option value="19h00">19h00</option>
                   <option value="20h30">20h30</option>
                 </select>
+                <input
+                  type="time"
+                  id="game-time-input"
+                  style="display: none"
+                  onchange="saveGameState()"
+                />
               </div>
             </div>
             <div class="score-details">
@@ -60,6 +76,14 @@
                           id="team-select-visiteur"
                           onchange="loadTeamPlayers()"
                         ></select>
+                        <input
+                          type="text"
+                          id="team-name-input-visiteur"
+                          class="team-name-input"
+                          placeholder="Nom de l'équipe visiteuse"
+                          style="display: none"
+                          oninput="updateCustomTeamName('away', this.value)"
+                        />
                       </td>
                       <td id="away-inning-1">0</td>
                       <td id="away-inning-2">0</td>
@@ -81,6 +105,14 @@
                           id="team-select"
                           onchange="loadTeamPlayers()"
                         ></select>
+                        <input
+                          type="text"
+                          id="team-name-input"
+                          class="team-name-input"
+                          placeholder="Nom de l'équipe locale"
+                          style="display: none"
+                          oninput="updateCustomTeamName('home', this.value)"
+                        />
                       </td>
                       <td id="home-inning-1">0</td>
                       <td id="home-inning-2">0</td>
@@ -103,22 +135,33 @@
               <button id="save-top-button" onclick="saveJson()">
                 Générer et sauvegarder
               </button>
+              <button id="load-top-button" onclick="loadGameJson()">
+                Charger une partie
+              </button>
               <button id="reset-top-button" onclick="resetGameState()">
                 Réinitialiser
               </button>
             </div>
           </div>
           <div class="tabs">
-            <button class="tab-button active" onclick="switchTab('away')">
+            <button
+              class="tab-button active"
+              id="tab-button-away"
+              onclick="switchTab('away')"
+            >
               Visiteur
             </button>
-            <button class="tab-button" onclick="switchTab('home')">
+            <button
+              class="tab-button"
+              id="tab-button-home"
+              onclick="switchTab('home')"
+            >
               Local
             </button>
           </div>
         </div>
 
-        <div id="lineup-container" class="lineup"></div>
+        <div id="lineup-container" class="lineup"></div></div>
       </div>
     </div>
 

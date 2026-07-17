@@ -10,6 +10,7 @@ let selectedTeam = "";
 let selectedVisitorTeam = "";
 let currentPlayerIndex = -1;
 let currentInningIndex = -1;
+let freeMode = false;
 
 const YEAR = 2026;
 const BASES_ORDER = ["field", "0B", "1B", "2B", "3B", "4B"];
@@ -31,10 +32,37 @@ const statMap = {
 // LocalStorage management
 const STORAGE_KEY = "gameApp_state";
 
+function formatTimeForFilename(timeValue) {
+  // Convertit "19:00" (input type=time) en "19h00" (format utilisé pour les noms de fichiers)
+  return (timeValue || "").replace(":", "h");
+}
+
+function formatTimeForInput(timeLabel) {
+  // Convertit "19h00" en "19:00" (format attendu par input type=time)
+  return (timeLabel || "").replace("h", ":");
+}
+
+function getGameTime() {
+  if (freeMode) {
+    const input = document.getElementById("game-time-input");
+    return formatTimeForFilename(input?.value || "");
+  }
+  return document.getElementById("game-time-select")?.value || "";
+}
+
+function setGameTime(formattedValue) {
+  if (!formattedValue) return;
+  const select = document.getElementById("game-time-select");
+  const input = document.getElementById("game-time-input");
+  if (select) select.value = formattedValue;
+  if (input) input.value = formatTimeForInput(formattedValue);
+}
+
 function saveGameState() {
   const state = {
     gameDate: document.getElementById("game-date")?.value || "",
-    gameTime: document.getElementById("game-time")?.value || "19h00",
+    gameTime: getGameTime() || "19h00",
+    freeMode,
     selectedTeam,
     selectedVisitorTeam,
     homeLineup,
@@ -75,8 +103,14 @@ function resetGameState() {
 
   const teamSelect = document.getElementById("team-select");
   const visitorSelect = document.getElementById("team-select-visiteur");
+  const teamNameInput = document.getElementById("team-name-input");
+  const teamNameInputVisitor = document.getElementById(
+    "team-name-input-visiteur",
+  );
   if (teamSelect) teamSelect.value = "";
   if (visitorSelect) visitorSelect.value = "";
+  if (teamNameInput) teamNameInput.value = "";
+  if (teamNameInputVisitor) teamNameInputVisitor.value = "";
 
   updateTeamSelects();
 
@@ -89,9 +123,95 @@ function resetGameState() {
   if (awayTabButton) awayTabButton.classList.add("active");
 
   setupDateDefaults();
+  updateTabLabels();
   updateLineupDisplay();
   updateActiveInningInfo();
   document.getElementById("output").textContent = "";
+}
+
+function applyFreeModeUI() {
+  const selectLocal = document.getElementById("team-select");
+  const selectVisitor = document.getElementById("team-select-visiteur");
+  const inputLocal = document.getElementById("team-name-input");
+  const inputVisitor = document.getElementById("team-name-input-visiteur");
+  const timeSelect = document.getElementById("game-time-select");
+  const timeInput = document.getElementById("game-time-input");
+  const toggle = document.getElementById("free-mode-toggle");
+
+  if (selectLocal) selectLocal.style.display = freeMode ? "none" : "";
+  if (selectVisitor) selectVisitor.style.display = freeMode ? "none" : "";
+  if (inputLocal) inputLocal.style.display = freeMode ? "" : "none";
+  if (inputVisitor) inputVisitor.style.display = freeMode ? "" : "none";
+  if (timeSelect) timeSelect.style.display = freeMode ? "none" : "";
+  if (timeInput) timeInput.style.display = freeMode ? "" : "none";
+  if (toggle) toggle.checked = freeMode;
+}
+
+function toggleFreeMode() {
+  const previousGameTime = getGameTime();
+  freeMode = document.getElementById("free-mode-toggle").checked;
+
+  // Réinitialiser la sélection des équipes et les lineups: les deux modes
+  // ont des structures de données incompatibles (id d'équipe vs nom libre).
+  selectedTeam = "";
+  selectedVisitorTeam = "";
+  homeLineup = [];
+  awayLineup = [];
+
+  document.getElementById("team-select").value = "";
+  document.getElementById("team-select-visiteur").value = "";
+  document.getElementById("team-name-input").value = "";
+  document.getElementById("team-name-input-visiteur").value = "";
+
+  applyFreeModeUI();
+  setGameTime(previousGameTime);
+  updateTeamSelects();
+  updateTabLabels();
+  updateLineupDisplay();
+  saveGameState();
+}
+
+function updateCustomTeamName(tab, name) {
+  if (tab === "home") {
+    selectedTeam = name;
+  } else {
+    selectedVisitorTeam = name;
+  }
+  updateTabLabels();
+  saveGameState();
+}
+
+function updateCustomLineupName(index, name) {
+  const currentLineup = getCurrentLineup();
+  const trimmedName = name.trim();
+
+  if (!trimmedName) {
+    currentLineup[index] = null;
+  } else {
+    const existing = currentLineup[index];
+    currentLineup[index] = {
+      id: existing?.id ?? -(index + 1),
+      name: trimmedName,
+      innings:
+        existing?.innings ||
+        Array.from({ length: MAX_INNINGS }, () => createDefaultStats()),
+      isCustom: true,
+    };
+  }
+
+  setCurrentLineup(currentLineup);
+}
+
+function slugifyTeamName(name) {
+  return (
+    (name || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "") || "equipe"
+  );
 }
 
 function calculateScore(lineup) {
@@ -223,6 +343,7 @@ async function init() {
   // Restore from localStorage if available
   const savedState = loadGameState();
   if (savedState) {
+    freeMode = savedState.freeMode || false;
     selectedTeam = savedState.selectedTeam;
     selectedVisitorTeam = savedState.selectedVisitorTeam;
     homeLineup = savedState.homeLineup || [];
@@ -236,17 +357,29 @@ async function init() {
       document.getElementById("game-date").value = savedState.gameDate;
     }
     if (savedState.gameTime) {
-      document.getElementById("game-time").value = savedState.gameTime;
+      setGameTime(savedState.gameTime);
     }
-    if (savedState.selectedTeam) {
-      document.getElementById("team-select").value = savedState.selectedTeam;
-    }
-    if (savedState.selectedVisitorTeam) {
-      document.getElementById("team-select-visiteur").value =
-        savedState.selectedVisitorTeam;
+
+    applyFreeModeUI();
+
+    if (freeMode) {
+      document.getElementById("team-name-input").value =
+        savedState.selectedTeam || "";
+      document.getElementById("team-name-input-visiteur").value =
+        savedState.selectedVisitorTeam || "";
+    } else {
+      if (savedState.selectedTeam) {
+        document.getElementById("team-select").value =
+          savedState.selectedTeam;
+      }
+      if (savedState.selectedVisitorTeam) {
+        document.getElementById("team-select-visiteur").value =
+          savedState.selectedVisitorTeam;
+      }
     }
 
     updateTeamSelects();
+    updateTabLabels();
     document
       .querySelectorAll(".tab-button")
       .forEach((btn) => btn.classList.remove("active"));
@@ -330,6 +463,27 @@ function formatTeamName(name) {
     .join(" ");
 }
 
+function updateTabLabels() {
+  const awayButton = document.getElementById("tab-button-away");
+  const homeButton = document.getElementById("tab-button-home");
+
+  if (awayButton) {
+    const awayName = freeMode
+      ? selectedVisitorTeam
+      : formatTeamName(selectedVisitorTeam || "");
+    awayButton.textContent = selectedVisitorTeam
+      ? `Visiteur (${awayName})`
+      : "Visiteur";
+  }
+
+  if (homeButton) {
+    const homeName = freeMode
+      ? selectedTeam
+      : formatTeamName(selectedTeam || "");
+    homeButton.textContent = selectedTeam ? `Local (${homeName})` : "Local";
+  }
+}
+
 function loadTeamPlayers() {
   const previousSelectedTeam = selectedTeam;
   selectedTeam = document.getElementById("team-select").value;
@@ -358,6 +512,7 @@ function loadTeamPlayers() {
   // Reset lineups when teams change
   homeLineup = [];
   awayLineup = [];
+  updateTabLabels();
   updateLineupDisplay();
   saveGameState();
 }
@@ -490,21 +645,33 @@ function updateLineupDisplay() {
     positionSpan.textContent = `${i + 1} - `;
     playerSection.appendChild(positionSpan);
 
-    const select = document.createElement("select");
-    select.id = `player-${i}`;
-    select.onchange = (e) => updateLineupSpot(i, parseInt(e.target.value));
-    select.innerHTML = `<option value="">Sélectionner un joueur</option>`;
-
     const currentLineup = getCurrentLineup();
-    const isSubstitute = currentLineup[i]?.isSubstitute || false;
-    const availablePlayers = isSubstitute
-      ? getSubstitutePlayers(currentLineup[i]?.id)
-      : getAvailablePlayers(currentLineup[i]?.id);
 
-    availablePlayers.forEach((playerId) => {
-      const player = players.find((p) => p.id === playerId);
-      if (player) {
-        select.innerHTML += `
+    if (freeMode) {
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.id = `player-${i}`;
+      nameInput.className = "player-name-input";
+      nameInput.placeholder = "Nom du joueur";
+      nameInput.value = currentLineup[i]?.name || "";
+      nameInput.oninput = (e) => updateCustomLineupName(i, e.target.value);
+
+      playerSection.appendChild(nameInput);
+    } else {
+      const select = document.createElement("select");
+      select.id = `player-${i}`;
+      select.onchange = (e) => updateLineupSpot(i, parseInt(e.target.value));
+      select.innerHTML = `<option value="">Sélectionner un joueur</option>`;
+
+      const isSubstitute = currentLineup[i]?.isSubstitute || false;
+      const availablePlayers = isSubstitute
+        ? getSubstitutePlayers(currentLineup[i]?.id)
+        : getAvailablePlayers(currentLineup[i]?.id);
+
+      availablePlayers.forEach((playerId) => {
+        const player = players.find((p) => p.id === playerId);
+        if (player) {
+          select.innerHTML += `
                                         <option value="${player.id}" 
                                                         ${
                                                           currentLineup[i]
@@ -514,22 +681,23 @@ function updateLineupDisplay() {
                                                         }>
                                                 ${player.name}
                                         </option>`;
+        }
+      });
+
+      if (currentLineup[i]?.id) {
+        select.value = currentLineup[i].id;
       }
-    });
 
-    if (currentLineup[i]?.id) {
-      select.value = currentLineup[i].id;
+      const subCheckbox = document.createElement("input");
+      subCheckbox.type = "checkbox";
+      subCheckbox.id = `sub-${i}`;
+      subCheckbox.className = "sub-checkbox";
+      subCheckbox.onchange = () => updatePlayerOptions(i);
+
+      playerSection.appendChild(select);
+      playerSection.appendChild(subCheckbox);
+      playerSection.appendChild(document.createTextNode("Sub"));
     }
-
-    const subCheckbox = document.createElement("input");
-    subCheckbox.type = "checkbox";
-    subCheckbox.id = `sub-${i}`;
-    subCheckbox.className = "sub-checkbox";
-    subCheckbox.onchange = () => updatePlayerOptions(i);
-
-    playerSection.appendChild(select);
-    playerSection.appendChild(subCheckbox);
-    playerSection.appendChild(document.createTextNode("Sub"));
 
     row.appendChild(playerSection);
 
@@ -950,7 +1118,7 @@ function removeFromLineup(index) {
   updateLineupDisplay();
 }
 
-function buildGameData(lineup) {
+function buildGameData(lineup, includeNames = false) {
   const cleanLineup = Array.isArray(lineup)
     ? lineup.filter((player) => player !== null)
     : [];
@@ -978,14 +1146,23 @@ function buildGameData(lineup) {
     }
   }
 
-  return {
+  const gameData = {
     lineup: cleanLineup.map((player) => player.id),
     innings: innings,
   };
+
+  if (includeNames) {
+    gameData.players = {};
+    cleanLineup.forEach((player) => {
+      gameData.players[player.id] = player.name;
+    });
+  }
+
+  return gameData;
 }
 
 function generateJson(lineup = getCurrentLineup()) {
-  const gameData = buildGameData(lineup);
+  const gameData = buildGameData(lineup, freeMode);
   const jsonOutput = JSON.stringify(gameData, null, 2);
   document.getElementById("output").textContent = jsonOutput;
   return jsonOutput;
@@ -993,7 +1170,7 @@ function generateJson(lineup = getCurrentLineup()) {
 
 async function saveJson() {
   const gameDate = document.getElementById("game-date").value;
-  const gameTime = document.getElementById("game-time").value;
+  const gameTime = getGameTime();
   if (!gameDate || !gameTime) {
     alert("Veuillez sélectionner une date et une heure de match.");
     return;
@@ -1002,14 +1179,24 @@ async function saveJson() {
   const saves = [];
 
   if (selectedTeam) {
-    const filename = `../data/${YEAR}/${selectedTeam}/${gameDate}_${gameTime}.json`;
-    const data = JSON.stringify(buildGameData(homeLineup), null, 2);
+    const teamFolder = freeMode
+      ? `custom/${slugifyTeamName(selectedTeam)}`
+      : selectedTeam;
+    const filename = `../data/${YEAR}/${teamFolder}/${gameDate}_${gameTime}.json`;
+    const gameData = buildGameData(homeLineup, freeMode);
+    if (freeMode) gameData.team = selectedTeam;
+    const data = JSON.stringify(gameData, null, 2);
     saves.push({ filename, data, team: "Local" });
   }
 
   if (selectedVisitorTeam) {
-    const filename = `../data/${YEAR}/${selectedVisitorTeam}/${gameDate}_${gameTime}.json`;
-    const data = JSON.stringify(buildGameData(awayLineup), null, 2);
+    const teamFolder = freeMode
+      ? `custom/${slugifyTeamName(selectedVisitorTeam)}`
+      : selectedVisitorTeam;
+    const filename = `../data/${YEAR}/${teamFolder}/${gameDate}_${gameTime}.json`;
+    const gameData = buildGameData(awayLineup, freeMode);
+    if (freeMode) gameData.team = selectedVisitorTeam;
+    const data = JSON.stringify(gameData, null, 2);
     saves.push({ filename, data, team: "Visiteur" });
   }
 
@@ -1037,6 +1224,106 @@ async function saveJson() {
   } catch (error) {
     alert("Erreur lors de la sauvegarde: " + error);
   }
+}
+
+function buildLineupFromGameData(data, teamName) {
+  const ids = Array.isArray(data?.lineup) ? data.lineup : [];
+  const nameMap = data?.players || {};
+  const team = teams.find((t) => t.name === teamName);
+  const teamPlayerIds = team ? new Set(team.players) : new Set();
+
+  return ids.map((id) => {
+    const innings = Array.from({ length: MAX_INNINGS }, (_, inningIndex) => {
+      const inning = Array.isArray(data?.innings)
+        ? data.innings.find((inn) => inn.value === (inningIndex + 1).toString())
+        : null;
+      const hitter = inning?.hitters?.find((h) => h.id === id);
+      if (!hitter) return createDefaultStats();
+      const { id: _hitterId, ...stats } = hitter;
+      return { ...createDefaultStats(), ...stats };
+    });
+
+    const lineupPlayer = { id, innings };
+
+    if (freeMode) {
+      lineupPlayer.name = nameMap[id] || `Joueur ${id}`;
+      lineupPlayer.isCustom = true;
+    } else {
+      const player = players.find((p) => p.id === id);
+      lineupPlayer.name = player ? player.name : nameMap[id] || `#${id}`;
+      lineupPlayer.isSubstitute = !teamPlayerIds.has(id);
+    }
+
+    return lineupPlayer;
+  });
+}
+
+async function loadGameJson() {
+  const gameDate = document.getElementById("game-date").value;
+  const gameTime = getGameTime();
+  if (!gameDate || !gameTime) {
+    alert("Veuillez sélectionner une date et une heure de match.");
+    return;
+  }
+
+  const loads = [];
+
+  if (selectedTeam) {
+    const teamFolder = freeMode
+      ? `custom/${slugifyTeamName(selectedTeam)}`
+      : selectedTeam;
+    loads.push({
+      filename: `${YEAR}/${teamFolder}/${gameDate}_${gameTime}.json`,
+      teamName: selectedTeam,
+      side: "home",
+      label: "Local",
+    });
+  }
+
+  if (selectedVisitorTeam) {
+    const teamFolder = freeMode
+      ? `custom/${slugifyTeamName(selectedVisitorTeam)}`
+      : selectedVisitorTeam;
+    loads.push({
+      filename: `${YEAR}/${teamFolder}/${gameDate}_${gameTime}.json`,
+      teamName: selectedVisitorTeam,
+      side: "away",
+      label: "Visiteur",
+    });
+  }
+
+  if (loads.length === 0) {
+    alert("Veuillez sélectionner au moins une équipe avant de charger.");
+    return;
+  }
+
+  const results = await Promise.all(
+    loads.map(async ({ filename, teamName, side, label }) => {
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:5000/load?filename=${filename}`,
+        );
+        if (!response.ok) {
+          return `${label}: aucune partie trouvée pour cette date/heure.`;
+        }
+        const data = await response.json();
+        const lineup = buildLineupFromGameData(data, teamName);
+        if (side === "home") {
+          homeLineup = lineup;
+        } else {
+          awayLineup = lineup;
+        }
+        return `${label}: partie chargée.`;
+      } catch (error) {
+        return `${label}: erreur lors du chargement (${error}).`;
+      }
+    }),
+  );
+
+  updateLineupDisplay();
+  updateScoreDisplay();
+  saveGameState();
+  alert(results.join("\n"));
 }
 
 init();

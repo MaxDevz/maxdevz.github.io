@@ -124,6 +124,29 @@ body {
   padding: 20px;
 }
 
+.mode-selection {
+  width: 100%;
+  text-align: center;
+  padding: 5px 0 10px;
+}
+
+.mode-selection label {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.team-name-input {
+  padding: 4px;
+  margin-top: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.player-name-input {
+  flex: 1;
+  padding: 5px;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -316,6 +339,10 @@ body {
 
 #reset-top-button {
   background: #f44336;
+}
+
+#load-top-button {
+  background: #2196f3;
 }
 
 .top-actions button:hover {
