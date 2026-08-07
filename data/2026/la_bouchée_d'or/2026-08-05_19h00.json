@@ -1,26 +1,27 @@
 {
   "lineup": [
-    45,
-    16,
-    2,
+    10,
+    47,
+    9,
+    7,
     20,
-    13,
-    37,
-    77,
-    49,
-    44,
-    43,
-    3
+    21,
+    27,
+    24,
+    56,
+    87,
+    61,
+    83
   ],
   "innings": [
     {
       "value": "1",
       "hitters": [
         {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": true,
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
           "double": false,
           "triple": false,
           "CC": false,
@@ -29,7 +30,7 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 45
+          "id": 10
         },
         {
           "bags": "0B",
@@ -44,70 +45,10 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 16
+          "id": 47
         },
         {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 2
-        },
-        {
-          "bags": "3B",
-          "CS": true,
-          "R": true,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 20
-        },
-        {
-          "bags": "3B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 13
-        },
-        {
-          "bags": "2B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 37
-        },
-        {
-          "bags": "1B",
+          "bags": "0B",
           "CS": false,
           "R": true,
           "S": false,
@@ -115,26 +56,11 @@
           "triple": false,
           "CC": false,
           "BB": false,
-          "OPT": true,
+          "OPT": false,
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 77
-        },
-        {
-          "bags": "1B",
-          "CS": false,
-          "R": false,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": true,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 49
+          "id": 9
         }
       ]
     },
@@ -142,10 +68,10 @@
       "value": "2",
       "hitters": [
         {
-          "bags": "0B",
-          "CS": false,
+          "bags": "1B",
+          "CS": true,
           "R": true,
-          "S": false,
+          "S": true,
           "double": false,
           "triple": false,
           "CC": false,
@@ -154,7 +80,22 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 44
+          "id": 7
+        },
+        {
+          "bags": "1B",
+          "CS": false,
+          "R": false,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": true,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 20
         },
         {
           "bags": "0B",
@@ -169,7 +110,7 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 43
+          "id": 27
         },
         {
           "bags": "0B",
@@ -184,12 +125,127 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 3
+          "id": 24
         }
       ]
     },
     {
       "value": "3",
+      "hitters": [
+        {
+          "bags": "1B",
+          "CS": true,
+          "R": false,
+          "S": true,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 56
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 87
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 61
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 83
+        }
+      ]
+    },
+    {
+      "value": "4",
+      "hitters": [
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 10
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 47
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 9
+        }
+      ]
+    },
+    {
+      "value": "5",
       "hitters": [
         {
           "bags": "4B",
@@ -204,102 +260,7 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 45
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 16
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": true,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 2
-        },
-        {
-          "bags": "1B",
-          "CS": true,
-          "R": true,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 20
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 13
-        },
-        {
-          "bags": "1B",
-          "CS": false,
-          "R": false,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": true,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 37
-        }
-      ]
-    },
-    {
-      "value": "4",
-      "hitters": [
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": true,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 77
+          "id": 7
         },
         {
           "bags": "4B",
@@ -314,10 +275,10 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 49
+          "id": 21
         },
         {
-          "bags": "4B",
+          "bags": "2B",
           "CS": false,
           "R": false,
           "S": false,
@@ -329,48 +290,13 @@
           "ERR": true,
           "SAC": false,
           "PP": 0,
-          "id": 44
+          "id": 27
         },
         {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 43
-        },
-        {
-          "bags": "4B",
+          "bags": "1B",
           "CS": true,
-          "R": false,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": true,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 3
-        }
-      ]
-    },
-    {
-      "value": "5",
-      "hitters": [
-        {
-          "bags": "0B",
-          "CS": false,
           "R": true,
-          "S": false,
+          "S": true,
           "double": false,
           "triple": false,
           "CC": false,
@@ -379,22 +305,7 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 45
-        },
-        {
-          "bags": "2B",
-          "CS": true,
-          "R": false,
-          "S": false,
-          "double": true,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 16
+          "id": 24
         },
         {
           "bags": "0B",
@@ -409,7 +320,7 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 2
+          "id": 56
         },
         {
           "bags": "0B",
@@ -424,7 +335,7 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 20
+          "id": 87
         }
       ]
     },
@@ -444,150 +355,10 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 13
-        },
-        {
-          "bags": "2B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 37
+          "id": 10
         },
         {
           "bags": "1B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 77
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 49
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 44
-        }
-      ]
-    },
-    {
-      "value": "7",
-      "hitters": [
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 45
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": false,
-          "double": true,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 16
-        },
-        {
-          "bags": "2B",
-          "CS": true,
-          "R": false,
-          "S": false,
-          "double": true,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 2
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 20
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 13
-        },
-        {
-          "bags": "4B",
           "CS": false,
           "R": false,
           "S": false,
@@ -599,10 +370,40 @@
           "ERR": true,
           "SAC": false,
           "PP": 0,
-          "id": 43
+          "id": 47
         },
         {
-          "bags": "4B",
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 9
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 61
+        },
+        {
+          "bags": "3B",
           "CS": true,
           "R": false,
           "S": true,
@@ -614,263 +415,12 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 3
+          "id": 83
         }
       ]
     },
     {
-      "value": "8",
-      "hitters": [
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 37
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 77
-        },
-        {
-          "bags": "2B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 49
-        },
-        {
-          "bags": "1B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 44
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 43
-        }
-      ]
-    },
-    {
-      "value": "9",
-      "hitters": [
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 45
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 16
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": false,
-          "double": true,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 2
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 20
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": false,
-          "double": true,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 13
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 37
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 77
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 49
-        },
-        {
-          "bags": "0B",
-          "CS": false,
-          "R": true,
-          "S": false,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 44
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": false,
-          "double": true,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 43
-        },
-        {
-          "bags": "4B",
-          "CS": true,
-          "R": false,
-          "S": true,
-          "double": false,
-          "triple": false,
-          "CC": false,
-          "BB": false,
-          "OPT": false,
-          "ERR": false,
-          "SAC": false,
-          "PP": 0,
-          "id": 3
-        }
-      ]
-    },
-    {
-      "value": "9",
-      "pass": 2,
+      "value": "7",
       "hitters": [
         {
           "bags": "4B",
@@ -885,7 +435,22 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 3
+          "id": 7
+        },
+        {
+          "bags": "1B",
+          "CS": true,
+          "R": true,
+          "S": true,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 21
         },
         {
           "bags": "0B",
@@ -900,7 +465,242 @@
           "ERR": false,
           "SAC": false,
           "PP": 0,
-          "id": 45
+          "id": 27
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 24
+        }
+      ]
+    },
+    {
+      "value": "8",
+      "hitters": [
+        {
+          "bags": "1B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": true,
+          "SAC": false,
+          "PP": 0,
+          "id": 56
+        },
+        {
+          "bags": "1B",
+          "CS": false,
+          "R": false,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": true,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 87
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 61
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 83
+        }
+      ]
+    },
+    {
+      "value": "9",
+      "hitters": [
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 10
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 47
+        },
+        {
+          "bags": "4B",
+          "CS": true,
+          "R": false,
+          "S": false,
+          "double": true,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 9
+        },
+        {
+          "bags": "4B",
+          "CS": true,
+          "R": false,
+          "S": true,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 7
+        },
+        {
+          "bags": "4B",
+          "CS": true,
+          "R": false,
+          "S": true,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 21
+        },
+        {
+          "bags": "4B",
+          "CS": true,
+          "R": false,
+          "S": true,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 27
+        },
+        {
+          "bags": "3B",
+          "CS": true,
+          "R": false,
+          "S": true,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 24
+        },
+        {
+          "bags": "2B",
+          "CS": true,
+          "R": false,
+          "S": true,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 56
+        },
+        {
+          "bags": "1B",
+          "CS": false,
+          "R": false,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": true,
+          "SAC": false,
+          "PP": 0,
+          "id": 87
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": 61
         }
       ]
     }

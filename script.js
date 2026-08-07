@@ -282,12 +282,15 @@ export const app = {
           <table class="innings">
             <tr class="header">`;
 
-    for (let i = 0; i < homeStatsJson.innings.length; i++) {
+    const homeInningsByReal = this.groupInningsByValue(homeStatsJson.innings);
+    const awayInningsByReal = this.groupInningsByValue(awayStatsJson.innings);
+
+    for (let i = 0; i < homeInningsByReal.length; i++) {
       pageHtml += `<th>${i + 1}</th>`;
     }
     pageHtml += `</tr><tr>`;
 
-    awayStatsJson.innings.forEach((inning, index, array) => {
+    awayInningsByReal.forEach((inning, index, array) => {
       var points = 0;
       if (index === array.length - 1 && inning.hitters.length == 0) {
         points = "X";
@@ -303,7 +306,7 @@ export const app = {
     });
     pageHtml += `</tr><tr>`;
 
-    homeStatsJson.innings.forEach((inning, index, array) => {
+    homeInningsByReal.forEach((inning, index, array) => {
       var points = 0;
       if (index === array.length - 1 && inning.hitters.length == 0) {
         points = "X";
@@ -1325,9 +1328,7 @@ export const app = {
               </div>
             </td>
             <td class="name">
-              <a class="team-link" href="?page=player&id=${
-                isNaN(entry.id) ? entry.id.replace("_S", "") : entry.id
-              }">
+              <a class="team-link" href="?page=player&id=${player.id}">
                 ${player.name}${
                   player.captain ? `<span class="captain">C</span>` : ""
                 }
@@ -1536,9 +1537,7 @@ export const app = {
           </div>
         </td>
         <td class="name">
-        <a class="team-link" href="?page=player&id=${
-          isNaN(id) ? id.replace("_S", "") : id
-        }">
+        <a class="team-link" href="?page=player&id=${player.id}">
                     ${player.name}${
                       player.captain ? `<span class="captain">C</span>` : ""
                     }
@@ -1557,10 +1556,12 @@ export const app = {
       const emptyPlayer = {
         bags: "field",
       };
+      const inningLabel =
+        inning.pass === 2 ? `${inning.value} (2)` : inning.value;
 
       pageHtml += `<table>
         <tr class="header">
-          <th>${inning.value}</th>
+          <th>${inningLabel}</th>
         </tr>`;
 
       for (let i = 0; i < stats.lineup.length; i++) {
@@ -2588,6 +2589,7 @@ export const app = {
         }
       } else {
         seasonPlayoffsStat.forEach((player) => {
+          player.stats.id = player.id;
           playersStats.set(player.id, player.stats);
         });
       }
@@ -2679,6 +2681,27 @@ export const app = {
     });
 
     return { points, hits, errors };
+  },
+
+  // Merges an inning's regular pass and its "batted around" 2nd pass (same
+  // `value`, `pass: 2`) into a single entry so the line score has one column
+  // per real inning.
+  groupInningsByValue(innings) {
+    if (!Array.isArray(innings)) return [];
+    const grouped = [];
+    const indexByValue = new Map();
+
+    innings.forEach((inning) => {
+      if (indexByValue.has(inning.value)) {
+        const existing = grouped[indexByValue.get(inning.value)];
+        existing.hitters = existing.hitters.concat(inning.hitters);
+      } else {
+        indexByValue.set(inning.value, grouped.length);
+        grouped.push({ value: inning.value, hitters: [...inning.hitters] });
+      }
+    });
+
+    return grouped;
   },
 
   generateTeamDisplay(team, position, points, opponentPoints, seasonSelected) {
@@ -2952,7 +2975,14 @@ export const app = {
         teamName = "tbd";
       }
     }
-    var hitterMap = playersStats.get(hitter.id);
+
+    // A player can appear in both teams' box scores of the same game (e.g. subbing
+    // for the other team). Key those appearances separately so both are kept and
+    // rendered under their own team instead of one overwriting the other's team/order.
+    var mapKey =
+      this.isGamePage() && isSubstitute ? `${hitter.id}_${teamName}` : hitter.id;
+
+    var hitterMap = playersStats.get(mapKey);
 
     if (hitterMap) {
       if (!hitter.BB) hitterMap.AB += 1;
@@ -2971,11 +3001,12 @@ export const app = {
       if (hitter.OPT) hitterMap.OPT += 1;
       if (hitter.ERR) hitterMap.ERR += 1;
       if (hitter.SAC) hitterMap.SAC += 1;
-      playersStats.set(hitter.id, hitterMap);
+      playersStats.set(mapKey, hitterMap);
     } else {
       var info = await this.getPlayerInfo(originalId);
       const hasStats = Object.keys(hitter).some((k) => k !== "id");
       const stats = {
+        id: originalId,
         name:
           this.getPlayerName(originalId) +
           (isSubstitute ? "<span class='sub rank'>  Sub</span>" : ""),
@@ -3003,7 +3034,7 @@ export const app = {
         SAC: hasStats ? (hitter.SAC ? 1 : 0) : 0,
         isSubstitute: isSubstitute,
       };
-      playersStats.set(hitter.id, stats);
+      playersStats.set(mapKey, stats);
     }
   },
 

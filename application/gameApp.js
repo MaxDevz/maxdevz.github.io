@@ -10,7 +10,11 @@ let selectedTeam = "";
 let selectedVisitorTeam = "";
 let currentPlayerIndex = -1;
 let currentInningIndex = -1;
+let currentInningIsExtra = false;
 let freeMode = false;
+// Second at-bat columns for innings where the lineup batted around (index = inning - 1).
+let homeExtraPasses = [];
+let awayExtraPasses = [];
 
 const YEAR = 2026;
 const BASES_ORDER = ["field", "0B", "1B", "2B", "3B", "4B"];
@@ -67,6 +71,8 @@ function saveGameState() {
     selectedVisitorTeam,
     homeLineup,
     awayLineup,
+    homeExtraPasses,
+    awayExtraPasses,
     currentTab,
     currentPlayerIndex,
     currentInningIndex,
@@ -97,9 +103,12 @@ function resetGameState() {
   selectedVisitorTeam = "";
   homeLineup = [];
   awayLineup = [];
+  homeExtraPasses = [];
+  awayExtraPasses = [];
   currentTab = "away";
   currentPlayerIndex = -1;
   currentInningIndex = -1;
+  currentInningIsExtra = false;
 
   const teamSelect = document.getElementById("team-select");
   const visitorSelect = document.getElementById("team-select-visiteur");
@@ -157,6 +166,8 @@ function toggleFreeMode() {
   selectedVisitorTeam = "";
   homeLineup = [];
   awayLineup = [];
+  homeExtraPasses = [];
+  awayExtraPasses = [];
 
   document.getElementById("team-select").value = "";
   document.getElementById("team-select-visiteur").value = "";
@@ -214,54 +225,65 @@ function slugifyTeamName(name) {
   );
 }
 
+// Iterates every recorded at-bat for a player, across both the regular pass
+// and the extra (batted-around) pass, and calls back with the stat object.
+function forEachPlayerInningStat(player, callback) {
+  if (Array.isArray(player?.innings)) {
+    player.innings.forEach((stat, inningIndex) =>
+      callback(stat, inningIndex),
+    );
+  }
+  if (Array.isArray(player?.innings2)) {
+    player.innings2.forEach((stat, inningIndex) =>
+      callback(stat, inningIndex),
+    );
+  }
+}
+
 function calculateScore(lineup) {
   if (!Array.isArray(lineup)) return 0;
   return lineup.reduce((total, player) => {
-    if (!player || !Array.isArray(player.innings)) return total;
-    return (
-      total +
-      player.innings.reduce(
-        (inningTotal, inning) =>
-          inning?.bags === "4B" ? inningTotal + 1 : inningTotal,
-        0,
-      )
-    );
+    if (!player) return total;
+    let count = 0;
+    forEachPlayerInningStat(player, (stat) => {
+      if (stat?.bags === "4B") count++;
+    });
+    return total + count;
   }, 0);
 }
 
 function calculateInningPoints(lineup, inningIndex) {
   if (!Array.isArray(lineup)) return 0;
   return lineup.reduce((total, player) => {
-    if (!player || !Array.isArray(player.innings)) return total;
-    return player.innings[inningIndex]?.bags === "4B" ? total + 1 : total;
+    if (!player) return total;
+    let count = 0;
+    if (player.innings?.[inningIndex]?.bags === "4B") count++;
+    if (player.innings2?.[inningIndex]?.bags === "4B") count++;
+    return total + count;
   }, 0);
 }
 
 function countErrors(lineup) {
   if (!Array.isArray(lineup)) return 0;
   return lineup.reduce((total, player) => {
-    if (!player || !Array.isArray(player.innings)) return total;
-    return (
-      total +
-      player.innings.reduce(
-        (inningTotal, inning) => (inning?.ERR ? inningTotal + 1 : inningTotal),
-        0,
-      )
-    );
+    if (!player) return total;
+    let count = 0;
+    forEachPlayerInningStat(player, (stat) => {
+      if (stat?.ERR) count++;
+    });
+    return total + count;
   }, 0);
 }
 
 function countCC(lineup) {
   if (!Array.isArray(lineup)) return 0;
   return lineup.reduce((total, player) => {
-    if (!player || !Array.isArray(player.innings)) return total;
-    return (
-      total +
-      player.innings.reduce(
-        (inningTotal, inning) => (inning?.CC ? inningTotal + 1 : inningTotal),
-        0,
-      )
-    );
+    if (!player) return total;
+    let count = 0;
+    forEachPlayerInningStat(player, (stat) => {
+      if (stat?.CC) count++;
+    });
+    return total + count;
   }, 0);
 }
 
@@ -273,9 +295,10 @@ function countActiveOuts() {
   if (currentPlayerIndex === -1 || currentInningIndex === -1) return 0;
   const currentLineup = getCurrentLineup();
   if (!Array.isArray(currentLineup)) return 0;
+  const inningsKey = currentInningIsExtra ? "innings2" : "innings";
   return currentLineup.reduce((total, player) => {
-    if (!player || !Array.isArray(player.innings)) return total;
-    return player.innings[currentInningIndex]?.R ? total + 1 : total;
+    if (!player || !Array.isArray(player[inningsKey])) return total;
+    return player[inningsKey][currentInningIndex]?.R ? total + 1 : total;
   }, 0);
 }
 
@@ -285,7 +308,9 @@ function updateActiveInningInfo() {
   const activeOutLabel = document.getElementById("active-out-label");
   const activeTeamName = getActiveTeamName();
   const activeInning =
-    currentInningIndex === -1 ? "N/A" : currentInningIndex + 1;
+    currentInningIndex === -1
+      ? "N/A"
+      : `${currentInningIndex + 1}${currentInningIsExtra ? " (2e passage)" : ""}`;
   const outCount = countActiveOuts();
 
   if (activeTeamLabel)
@@ -348,6 +373,8 @@ async function init() {
     selectedVisitorTeam = savedState.selectedVisitorTeam;
     homeLineup = savedState.homeLineup || [];
     awayLineup = savedState.awayLineup || [];
+    homeExtraPasses = savedState.homeExtraPasses || [];
+    awayExtraPasses = savedState.awayExtraPasses || [];
     currentTab = savedState.currentTab || "away";
     currentPlayerIndex = savedState.currentPlayerIndex || -1;
     currentInningIndex = savedState.currentInningIndex || -1;
@@ -512,6 +539,8 @@ function loadTeamPlayers() {
   // Reset lineups when teams change
   homeLineup = [];
   awayLineup = [];
+  homeExtraPasses = [];
+  awayExtraPasses = [];
   updateTabLabels();
   updateLineupDisplay();
   saveGameState();
@@ -562,6 +591,26 @@ function setCurrentLineup(newLineup) {
   }
   saveGameState();
   updateScoreDisplay();
+}
+
+function getCurrentExtraPasses() {
+  return currentTab === "home" ? homeExtraPasses : awayExtraPasses;
+}
+
+function setCurrentExtraPasses(newExtraPasses) {
+  if (currentTab === "home") {
+    homeExtraPasses = newExtraPasses;
+  } else {
+    awayExtraPasses = newExtraPasses;
+  }
+  saveGameState();
+}
+
+function toggleExtraPass(inningIndex) {
+  const extraPasses = getCurrentExtraPasses().slice();
+  extraPasses[inningIndex] = !extraPasses[inningIndex];
+  setCurrentExtraPasses(extraPasses);
+  updateLineupDisplay();
 }
 
 function getCurrentTeam() {
@@ -619,14 +668,22 @@ function updateLineupDisplay() {
   container.innerHTML = "";
 
   // Créer l'en-tête des manches
+  const extraPasses = getCurrentExtraPasses();
   const headerRow = document.createElement("div");
   headerRow.className = "lineup-header";
   headerRow.innerHTML = `
                 <div class="player-info">Joueur</div>
-                ${Array.from(
-                  { length: MAX_INNINGS },
-                  (_, i) => `<div class="inning-header">${i + 1}</div>`,
-                ).join("")}
+                ${Array.from({ length: MAX_INNINGS }, (_, i) => {
+                  const isExtra = !!extraPasses[i];
+                  const toggleTitle = isExtra
+                    ? "Retirer le 2e passage de cette manche"
+                    : "Ajouter un 2e passage (l'alignement a fait le tour)";
+                  let html = `<div class="inning-header">${i + 1}<button type="button" class="extra-pass-toggle" onclick="toggleExtraPass(${i})" title="${toggleTitle}">${isExtra ? "\u2212" : "+"}</button></div>`;
+                  if (isExtra) {
+                    html += `<div class="inning-header inning-header-extra">${i + 1} (2)</div>`;
+                  }
+                  return html;
+                }).join("")}
         `;
   container.appendChild(headerRow);
 
@@ -701,70 +758,12 @@ function updateLineupDisplay() {
 
     row.appendChild(playerSection);
 
-    // Pour chaque manche (1-9)
+    // Pour chaque manche (1-9), avec un 2e passage optionnel si le lineup a fait le tour
     for (let j = 0; j < MAX_INNINGS; j++) {
-      const inningContainer = document.createElement("div");
-      inningContainer.className = "inning-container";
-
-      // Ajouter les boutons de stats
-      const statsContainer = document.createElement("div");
-      statsContainer.className = "stats-container";
-
-      // Ajouter l'image de base
-      const cell = document.createElement("div");
-      cell.className = "inning-cell";
-      cell.id = `inning-${i}-${j}`;
-
-      const playerStats =
-        currentLineup[i]?.innings?.[j] || createDefaultStats();
-      const baseState = playerStats.bags || "field";
-      if (i === currentPlayerIndex && j === currentInningIndex) {
-        cell.classList.add("selected");
+      row.appendChild(buildInningContainer(currentLineup, i, j, false));
+      if (extraPasses[j]) {
+        row.appendChild(buildInningContainer(currentLineup, i, j, true));
       }
-
-      const img = document.createElement("img");
-      img.src = `../img/${baseState}.png`;
-      img.className = "base-image";
-      img.dataset.currentBase = baseState;
-      img.onclick = () => {
-        selectPlayerInning(i, j);
-        rotateBase(img);
-        updateStatsForCurrentPlayer();
-      };
-
-      cell.appendChild(img);
-
-      STATS_OPTIONS.forEach((stat) => {
-        const statButton = document.createElement("button");
-        statButton.className = "stat-button";
-        statButton.textContent = stat;
-        statButton.dataset.stat = stat;
-        const statKey = statMap[statButton.textContent];
-        const currentBase = img.dataset.currentBase;
-        if (statKey && playerStats[statKey] && currentBase !== "field") {
-          statButton.classList.add("active");
-        }
-        statButton.disabled = currentBase === "field";
-        statButton.onclick = () => toggleStatForInning(i, j, stat);
-        statsContainer.appendChild(statButton);
-      });
-
-      // Modify the R button to also be disabled when base is field
-      const rButton = document.createElement("button");
-      rButton.className = "stat-button";
-      rButton.textContent = "R";
-      const currentBase = img.dataset.currentBase;
-      if (playerStats.R && currentBase !== "field") {
-        rButton.classList.add("active");
-      }
-      rButton.disabled = currentBase === "field";
-      rButton.onclick = () => toggleRForInning(i, j);
-      statsContainer.appendChild(rButton);
-
-      inningContainer.appendChild(statsContainer);
-      inningContainer.appendChild(cell);
-      inningContainer.appendChild(rButton);
-      row.appendChild(inningContainer);
     }
 
     container.appendChild(row);
@@ -774,12 +773,88 @@ function updateLineupDisplay() {
   updateActiveInningInfo();
 }
 
-function toggleStatForInning(playerIndex, inningIndex, stat) {
-  selectPlayerInning(playerIndex, inningIndex);
+function buildInningContainer(currentLineup, playerIndex, inningIndex, isExtra) {
+  const inningsKey = isExtra ? "innings2" : "innings";
+  const suffix = isExtra ? "-ex" : "";
+
+  const inningContainer = document.createElement("div");
+  inningContainer.className = "inning-container";
+
+  // Ajouter les boutons de stats
+  const statsContainer = document.createElement("div");
+  statsContainer.className = "stats-container";
+
+  // Ajouter l'image de base
+  const cell = document.createElement("div");
+  cell.className = "inning-cell";
+  cell.id = `inning-${playerIndex}-${inningIndex}${suffix}`;
+
+  const playerStats =
+    currentLineup[playerIndex]?.[inningsKey]?.[inningIndex] ||
+    createDefaultStats();
+  const baseState = playerStats.bags || "field";
+  if (
+    playerIndex === currentPlayerIndex &&
+    inningIndex === currentInningIndex &&
+    isExtra === currentInningIsExtra
+  ) {
+    cell.classList.add("selected");
+  }
+
+  const img = document.createElement("img");
+  img.src = `../img/${baseState}.png`;
+  img.className = "base-image";
+  img.dataset.currentBase = baseState;
+  img.onclick = () => {
+    selectPlayerInning(playerIndex, inningIndex, isExtra);
+    rotateBase(img);
+    updateStatsForCurrentPlayer();
+  };
+
+  cell.appendChild(img);
+
+  STATS_OPTIONS.forEach((stat) => {
+    const statButton = document.createElement("button");
+    statButton.className = "stat-button";
+    statButton.textContent = stat;
+    statButton.dataset.stat = stat;
+    const statKey = statMap[statButton.textContent];
+    const currentBase = img.dataset.currentBase;
+    if (statKey && playerStats[statKey] && currentBase !== "field") {
+      statButton.classList.add("active");
+    }
+    statButton.disabled = currentBase === "field";
+    statButton.onclick = () =>
+      toggleStatForInning(playerIndex, inningIndex, stat, isExtra);
+    statsContainer.appendChild(statButton);
+  });
+
+  // Modify the R button to also be disabled when base is field
+  const rButton = document.createElement("button");
+  rButton.className = "stat-button";
+  rButton.textContent = "R";
+  const currentBase = img.dataset.currentBase;
+  if (playerStats.R && currentBase !== "field") {
+    rButton.classList.add("active");
+  }
+  rButton.disabled = currentBase === "field";
+  rButton.onclick = () => toggleRForInning(playerIndex, inningIndex, isExtra);
+  statsContainer.appendChild(rButton);
+
+  inningContainer.appendChild(statsContainer);
+  inningContainer.appendChild(cell);
+  inningContainer.appendChild(rButton);
+  return inningContainer;
+}
+
+function toggleStatForInning(playerIndex, inningIndex, stat, isExtra = false) {
+  selectPlayerInning(playerIndex, inningIndex, isExtra);
+  const inningsKey = isExtra ? "innings2" : "innings";
   // Désactiver tous les boutons de stats pour cette manche
-  const row = document.querySelectorAll(`.lineup .lineup-row`)[playerIndex];
-  const inning_container =
-    row.querySelectorAll(`.inning-container`)[inningIndex];
+  const cell = document.getElementById(
+    `inning-${playerIndex}-${inningIndex}${isExtra ? "-ex" : ""}`,
+  );
+  const inning_container = cell.closest(".inning-container");
   inning_container.querySelectorAll(".stat-button").forEach((button) => {
     button.classList.remove("active");
   });
@@ -787,31 +862,36 @@ function toggleStatForInning(playerIndex, inningIndex, stat) {
   // Si on clique sur le même stat, le désactiver
   const statKey = statMap[stat];
   const currentLineup = getCurrentLineup();
-  if (currentLineup[playerIndex]?.innings?.[inningIndex]?.[statKey]) {
-    if (currentLineup[playerIndex]?.innings?.[inningIndex]) {
-      currentLineup[playerIndex].innings[inningIndex][statKey] = false;
-      if (CS_STATS.includes(stat)) {
-        currentLineup[playerIndex].innings[inningIndex].CS = false;
-      }
+  if (!currentLineup[playerIndex]) {
+    currentLineup[playerIndex] = {
+      innings: Array.from({ length: MAX_INNINGS }, () => createDefaultStats()),
+    };
+  }
+  if (!currentLineup[playerIndex][inningsKey]) {
+    currentLineup[playerIndex][inningsKey] = Array.from(
+      { length: MAX_INNINGS },
+      () => createDefaultStats(),
+    );
+  }
+  if (!currentLineup[playerIndex][inningsKey][inningIndex]) {
+    currentLineup[playerIndex][inningsKey][inningIndex] = createDefaultStats();
+  }
+
+  if (currentLineup[playerIndex][inningsKey][inningIndex][statKey]) {
+    currentLineup[playerIndex][inningsKey][inningIndex][statKey] = false;
+    if (CS_STATS.includes(stat)) {
+      currentLineup[playerIndex][inningsKey][inningIndex].CS = false;
     }
   } else {
     // Sinon, activer le nouveau stat
-    if (!currentLineup[playerIndex]) {
-      currentLineup[playerIndex] = {
-        innings: Array.from({ length: MAX_INNINGS }, () =>
-          createDefaultStats(),
-        ),
-      };
-    }
-
     Object.values(statMap).forEach((key) => {
-      currentLineup[playerIndex].innings[inningIndex][key] =
+      currentLineup[playerIndex][inningsKey][inningIndex][key] =
         key === statKey ? true : false;
     });
 
     if (CS_STATS.includes(stat))
-      currentLineup[playerIndex].innings[inningIndex].CS = true;
-    else currentLineup[playerIndex].innings[inningIndex].CS = false;
+      currentLineup[playerIndex][inningsKey][inningIndex].CS = true;
+    else currentLineup[playerIndex][inningsKey][inningIndex].CS = false;
 
     inning_container
       .querySelector(`[data-stat="${stat}"]`)
@@ -821,24 +901,35 @@ function toggleStatForInning(playerIndex, inningIndex, stat) {
   updateActiveInningInfo();
 }
 
-function toggleRForInning(playerIndex, inningIndex) {
-  selectPlayerInning(playerIndex, inningIndex);
+function toggleRForInning(playerIndex, inningIndex, isExtra = false) {
+  selectPlayerInning(playerIndex, inningIndex, isExtra);
+  const inningsKey = isExtra ? "innings2" : "innings";
   const currentLineup = getCurrentLineup();
   if (!currentLineup[playerIndex]) {
     currentLineup[playerIndex] = {
       innings: Array.from({ length: MAX_INNINGS }, () => createDefaultStats()),
     };
   }
+  if (!currentLineup[playerIndex][inningsKey]) {
+    currentLineup[playerIndex][inningsKey] = Array.from(
+      { length: MAX_INNINGS },
+      () => createDefaultStats(),
+    );
+  }
+  if (!currentLineup[playerIndex][inningsKey][inningIndex]) {
+    currentLineup[playerIndex][inningsKey][inningIndex] = createDefaultStats();
+  }
 
-  const currentValue = currentLineup[playerIndex].innings[inningIndex].R;
-  currentLineup[playerIndex].innings[inningIndex].R = !currentValue;
+  const currentValue = currentLineup[playerIndex][inningsKey][inningIndex].R;
+  currentLineup[playerIndex][inningsKey][inningIndex].R = !currentValue;
 
   setCurrentLineup(currentLineup);
 
   // Update visual
-  const row = document.querySelectorAll(`.lineup-row`)[playerIndex];
-  const inning_container =
-    row.querySelectorAll(`.inning-container`)[inningIndex];
+  const cell = document.getElementById(
+    `inning-${playerIndex}-${inningIndex}${isExtra ? "-ex" : ""}`,
+  );
+  const inning_container = cell.closest(".inning-container");
   const rButton = Array.from(
     inning_container.querySelectorAll(".stat-button"),
   ).find((btn) => btn.textContent === "R");
@@ -877,38 +968,41 @@ function updateStatsForCurrentPlayer() {
   const currentLineup = getCurrentLineup();
   if (!currentLineup[currentPlayerIndex]) return;
 
-  if (!currentLineup[currentPlayerIndex].innings) {
-    currentLineup[currentPlayerIndex].innings = [];
+  const inningsKey = currentInningIsExtra ? "innings2" : "innings";
+  if (!currentLineup[currentPlayerIndex][inningsKey]) {
+    currentLineup[currentPlayerIndex][inningsKey] = [];
   }
 
   const cell = document.querySelector(
-    `#inning-${currentPlayerIndex}-${currentInningIndex} img`,
+    `#inning-${currentPlayerIndex}-${currentInningIndex}${currentInningIsExtra ? "-ex" : ""} img`,
   );
   const currentBase = cell?.dataset?.currentBase || "field";
 
   if (currentBase === "field") {
-    currentLineup[currentPlayerIndex].innings[currentInningIndex] =
+    currentLineup[currentPlayerIndex][inningsKey][currentInningIndex] =
       createDefaultStats();
   } else {
-    if (!currentLineup[currentPlayerIndex].innings[currentInningIndex]) {
-      currentLineup[currentPlayerIndex].innings[currentInningIndex] =
+    if (!currentLineup[currentPlayerIndex][inningsKey][currentInningIndex]) {
+      currentLineup[currentPlayerIndex][inningsKey][currentInningIndex] =
         createDefaultStats();
     }
-    currentLineup[currentPlayerIndex].innings[currentInningIndex].bags =
+    currentLineup[currentPlayerIndex][inningsKey][currentInningIndex].bags =
       currentBase;
   }
 
   setCurrentLineup(currentLineup);
 }
 
-function selectPlayerInning(playerIndex, inningIndex) {
+function selectPlayerInning(playerIndex, inningIndex, isExtra = false) {
   // Désélectionner toute autre cellule active
   document
     .querySelectorAll(".inning-cell")
     .forEach((cell) => cell.classList.remove("selected"));
 
   // Sélectionner la cellule courante
-  const cell = document.getElementById(`inning-${playerIndex}-${inningIndex}`);
+  const cell = document.getElementById(
+    `inning-${playerIndex}-${inningIndex}${isExtra ? "-ex" : ""}`,
+  );
   if (cell) {
     cell.classList.add("selected");
   }
@@ -916,6 +1010,7 @@ function selectPlayerInning(playerIndex, inningIndex) {
   // Mettre à jour les stats pour cette cellule
   currentPlayerIndex = playerIndex;
   currentInningIndex = inningIndex;
+  currentInningIsExtra = isExtra;
   updateActiveInningInfo();
 }
 
@@ -1118,7 +1213,7 @@ function removeFromLineup(index) {
   updateLineupDisplay();
 }
 
-function buildGameData(lineup, includeNames = false) {
+function buildGameData(lineup, includeNames = false, extraPasses = []) {
   const cleanLineup = Array.isArray(lineup)
     ? lineup.filter((player) => player !== null)
     : [];
@@ -1144,6 +1239,29 @@ function buildGameData(lineup, includeNames = false) {
         hitters: hitters,
       });
     }
+
+    // Second at-bat column for innings where the lineup batted around.
+    if (extraPasses[inning]) {
+      const extraHitters = [];
+      let hasExtraStats = false;
+
+      cleanLineup.forEach((player) => {
+        const stats = player.innings2?.[inning] || createDefaultStats();
+
+        if (stats.bags !== "field") {
+          extraHitters.push({ ...stats, id: player.id });
+          hasExtraStats = true;
+        }
+      });
+
+      if (hasExtraStats) {
+        innings.push({
+          value: (inning + 1).toString(),
+          pass: 2,
+          hitters: extraHitters,
+        });
+      }
+    }
   }
 
   const gameData = {
@@ -1162,7 +1280,7 @@ function buildGameData(lineup, includeNames = false) {
 }
 
 function generateJson(lineup = getCurrentLineup()) {
-  const gameData = buildGameData(lineup, freeMode);
+  const gameData = buildGameData(lineup, freeMode, getCurrentExtraPasses());
   const jsonOutput = JSON.stringify(gameData, null, 2);
   document.getElementById("output").textContent = jsonOutput;
   return jsonOutput;
@@ -1183,7 +1301,7 @@ async function saveJson() {
       ? `custom/${slugifyTeamName(selectedTeam)}`
       : selectedTeam;
     const filename = `../data/${YEAR}/${teamFolder}/${gameDate}_${gameTime}.json`;
-    const gameData = buildGameData(homeLineup, freeMode);
+    const gameData = buildGameData(homeLineup, freeMode, homeExtraPasses);
     if (freeMode) gameData.team = selectedTeam;
     const data = JSON.stringify(gameData, null, 2);
     saves.push({ filename, data, team: "Local" });
@@ -1194,7 +1312,7 @@ async function saveJson() {
       ? `custom/${slugifyTeamName(selectedVisitorTeam)}`
       : selectedVisitorTeam;
     const filename = `../data/${YEAR}/${teamFolder}/${gameDate}_${gameTime}.json`;
-    const gameData = buildGameData(awayLineup, freeMode);
+    const gameData = buildGameData(awayLineup, freeMode, awayExtraPasses);
     if (freeMode) gameData.team = selectedVisitorTeam;
     const data = JSON.stringify(gameData, null, 2);
     saves.push({ filename, data, team: "Visiteur" });
@@ -1235,7 +1353,10 @@ function buildLineupFromGameData(data, teamName) {
   return ids.map((id) => {
     const innings = Array.from({ length: MAX_INNINGS }, (_, inningIndex) => {
       const inning = Array.isArray(data?.innings)
-        ? data.innings.find((inn) => inn.value === (inningIndex + 1).toString())
+        ? data.innings.find(
+            (inn) =>
+              inn.value === (inningIndex + 1).toString() && inn.pass !== 2,
+          )
         : null;
       const hitter = inning?.hitters?.find((h) => h.id === id);
       if (!hitter) return createDefaultStats();
@@ -1243,7 +1364,20 @@ function buildLineupFromGameData(data, teamName) {
       return { ...createDefaultStats(), ...stats };
     });
 
-    const lineupPlayer = { id, innings };
+    const innings2 = Array.from({ length: MAX_INNINGS }, (_, inningIndex) => {
+      const inning = Array.isArray(data?.innings)
+        ? data.innings.find(
+            (inn) =>
+              inn.value === (inningIndex + 1).toString() && inn.pass === 2,
+          )
+        : null;
+      const hitter = inning?.hitters?.find((h) => h.id === id);
+      if (!hitter) return createDefaultStats();
+      const { id: _hitterId, ...stats } = hitter;
+      return { ...createDefaultStats(), ...stats };
+    });
+
+    const lineupPlayer = { id, innings, innings2 };
 
     if (freeMode) {
       lineupPlayer.name = nameMap[id] || `Joueur ${id}`;
@@ -1256,6 +1390,21 @@ function buildLineupFromGameData(data, teamName) {
 
     return lineupPlayer;
   });
+}
+
+function getExtraPassesFromGameData(data) {
+  const extraPasses = Array.from({ length: MAX_INNINGS }, () => false);
+  if (Array.isArray(data?.innings)) {
+    data.innings.forEach((inning) => {
+      if (inning.pass === 2) {
+        const inningIndex = parseInt(inning.value, 10) - 1;
+        if (inningIndex >= 0 && inningIndex < MAX_INNINGS) {
+          extraPasses[inningIndex] = true;
+        }
+      }
+    });
+  }
+  return extraPasses;
 }
 
 async function loadGameJson() {
@@ -1308,10 +1457,13 @@ async function loadGameJson() {
         }
         const data = await response.json();
         const lineup = buildLineupFromGameData(data, teamName);
+        const extraPasses = getExtraPassesFromGameData(data);
         if (side === "home") {
           homeLineup = lineup;
+          homeExtraPasses = extraPasses;
         } else {
           awayLineup = lineup;
+          awayExtraPasses = extraPasses;
         }
         return `${label}: partie chargée.`;
       } catch (error) {
