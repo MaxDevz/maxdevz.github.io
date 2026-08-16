@@ -15,9 +15,11 @@ var randomLineup = false;
 var leaderSelection = {};
 var selectedReplacementPlayerId = "";
 var replacementRatingIncrement = 0;
+var exposResultsCache = new Map();
 
 var players;
 var seasons;
+var exposYears;
 var defaultGame;
 var columns;
 var rules;
@@ -39,6 +41,9 @@ export const app = {
 
     response = await fetch(CONSTANTS.DATA_PATH + "/seasons.json");
     seasons = await response.json();
+
+    response = await fetch(CONSTANTS.DATA_PATH + "/expos_years.json");
+    exposYears = await response.json();
 
     response = await fetch(CONSTANTS.DATA_PATH + "/default_game.json");
     defaultGame = await response.json();
@@ -76,6 +81,7 @@ export const app = {
     var page = urlParams.get("page");
     var seasonParam = urlParams.get("season");
 
+    this.updateHeaderForPage(page);
     this.setLoadingSpinner("Chargement...");
 
     switch (page) {
@@ -96,6 +102,9 @@ export const app = {
         break;
       case "playoffs":
         this.createPlayoffs();
+        break;
+      case "expos":
+        this.createExposTournament();
         break;
       case "player":
         this.createPlayerPage();
@@ -121,6 +130,530 @@ export const app = {
           this.createCalendar();
         }
     }
+  },
+
+  updateHeaderForPage(page) {
+    const isExpos = page === "expos";
+    document.body.classList.toggle("expos-page", isExpos);
+
+    const toolbarLogo = document.querySelector(".toolbar img");
+    if (toolbarLogo) {
+      toolbarLogo.src = isExpos
+        ? `${CONSTANTS.IMG_PATH}/logo/Drummond_Expos_Logo.png`
+        : `${CONSTANTS.IMG_PATH}/logo/liguebrasserieduboulevard_logo.png`;
+    }
+
+    const toolbarLink = document.querySelector(".toolbar a");
+    if (toolbarLink) {
+      if (isExpos) {
+        toolbarLink.removeAttribute("href");
+      } else {
+        toolbarLink.setAttribute("href", "/");
+      }
+    }
+
+    const sidebarToggle = document.getElementById("openSidebarMenu");
+    if (sidebarToggle) {
+      sidebarToggle.disabled = isExpos;
+      if (isExpos) sidebarToggle.checked = false;
+    }
+  },
+
+  // ****************************
+  // EXPOS TOURNAMENT
+  // ****************************
+
+  async createExposTournament() {
+    const games = await this.resolveExposSchedule(
+      await this.readExposSchedule(),
+    );
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedGame = urlParams.get("game");
+
+    if (selectedGame) {
+      await this.createExposGame(games, selectedGame, urlParams.get("team"));
+      return;
+    }
+
+    const tabs = [
+      { id: "horaire", label: "Horaire & Résultats" },
+      { id: "classement", label: "Classement Pool" },
+      { id: "bracket", label: "Bracket" },
+      { id: "tirage", label: "Tirage prix" },
+    ];
+    const selectedTab = tabs.some((tab) => tab.id === urlParams.get("tab"))
+      ? urlParams.get("tab")
+      : "horaire";
+
+    pageHtml = this.createPageTitle("TOURNOI DES EXPOS", true, exposYears);
+    pageHtml += `<div class="expos-intro">Horaire, résultats et détails des parties du tournoi des Expos ${seasonSelected}.</div>`;
+
+    pageHtml += `<div class="expos-tabs">${tabs
+      .map(
+        (tab) =>
+          `<a class="expos-tab ${tab.id === selectedTab ? "active" : ""}" href="?page=expos&season=${seasonSelected}&tab=${tab.id}">${tab.label}</a>`,
+      )
+      .join("")}</div>`;
+
+    switch (selectedTab) {
+      case "classement":
+        pageHtml += await this.createExposClassementTab(games);
+        break;
+      case "bracket":
+        pageHtml += await this.createExposBracketTab(games);
+        break;
+      case "tirage":
+        pageHtml += this.createExposTirageTab();
+        break;
+      default:
+        pageHtml += await this.createExposHoraireTab(games);
+    }
+
+    this.setPageHtml(pageHtml);
+  },
+
+  async createExposHoraireTab(games) {
+    let html = `<div class="expos-section"><div class="expos-schedule">`;
+    let currentDate = "";
+    const isLocalHost = ["localhost", "127.0.0.1", "::1"].includes(
+      window.location.hostname,
+    );
+    for (const game of games) {
+      if (game.date !== currentDate) {
+        if (currentDate) html += `</div>`;
+        currentDate = game.date;
+        html += `<div class="expos-date"><h3>${game.dateLabel}</h3>`;
+      }
+
+      const result = await this.readExposGameResult(game);
+      const score = this.getExposScoreDisplay(result);
+      const gameAppParams = new URLSearchParams({
+        away: game.away,
+        home: game.home,
+        date: game.date,
+        time: game.time,
+        free: "1",
+      });
+      html += `<div class="expos-game ${result.length ? "has-result" : ""}">
+        <a class="expos-game-detail" href="?page=expos&season=${seasonSelected}&game=${game.number}">
+          <span class="expos-game-number">${game.number}</span>
+          <span class="expos-game-time">${game.time}</span>
+          <span class="expos-game-pool">${game.pool}</span>
+          <span class="expos-game-teams"><strong>${this.formatExposTeamDisplay(game.away, game.awayPositionLabel, game.awayPositionResolved)}</strong><span>c.</span><strong>${this.formatExposTeamDisplay(game.home, game.homePositionLabel, game.homePositionResolved)}</strong></span>
+          <span class="expos-game-score">${score}</span>
+        </a>
+        ${
+          isLocalHost
+            ? `<a class="expos-game-editor" href="./application/GameApp.html?${gameAppParams.toString()}" target="_blank" rel="noopener" title="Saisir ce match dans GameApp" aria-label="Saisir le match ${game.number} dans GameApp"><i class="fas fa-pen"></i></a>`
+            : ""
+        }
+      </div>`;
+    }
+    if (currentDate) html += `</div>`;
+    html += `</div></div>`;
+    return html;
+  },
+
+  async createExposClassementTab(games) {
+    let html = `<div class="expos-section"><div class="expos-pools">`;
+    for (const pool of ["Pool A", "Pool B", "Pool C", "Pool D"]) {
+      html += await this.createExposPoolTable(pool, games);
+    }
+    html += `</div></div>`;
+    return html;
+  },
+
+  async createExposBracketTab(games) {
+    const rounds = [
+      { label: "Éliminatoires", pools: ["Éliminatoire"] },
+      { label: "Quarts de finale", pools: ["Quart-Final"] },
+      { label: "Demi-finales", pools: ["Demi-Final"] },
+      { label: "Finale", pools: ["Final"] },
+    ];
+    let html = `<div class="expos-section"><div class="expos-bracket">`;
+
+    let previousRoundGameCount = 0;
+    for (const [roundIndex, round] of rounds.entries()) {
+      const roundGames = games.filter((game) => round.pools.includes(game.pool));
+      if (!roundGames.length) continue;
+
+      if (roundIndex > 0) {
+        html += this.createExposBracketConnector(
+          previousRoundGameCount,
+          roundGames.length,
+        );
+      }
+
+      html += `<section class="expos-bracket-round">
+        <h2>${round.label}</h2>
+        <div class="expos-bracket-games">`;
+      for (const game of roundGames) {
+        const results = await this.readExposGameResult(game);
+        const score = this.getExposScoreDisplay(results);
+        const hasResult = results.length > 0;
+        html += `<a class="expos-bracket-game ${hasResult ? "has-result" : ""}" href="?page=expos&season=${seasonSelected}&game=${game.number}">
+          <div class="expos-bracket-game-header"><span>Match ${game.number}</span><span>${game.dateLabel} · ${game.time}</span></div>
+          <div class="expos-bracket-team"><span>${this.formatExposTeamDisplay(game.away, game.awayPositionLabel, game.awayPositionResolved)}</span><strong>${hasResult ? score.split(" - ")[0] : ""}</strong></div>
+          <div class="expos-bracket-team"><span>${this.formatExposTeamDisplay(game.home, game.homePositionLabel, game.homePositionResolved)}</span><strong>${hasResult ? score.split(" - ")[1] ?? "" : ""}</strong></div>
+        </a>`;
+      }
+      html += `</div></section>`;
+      previousRoundGameCount = roundGames.length;
+    }
+
+    html += `</div></div>`;
+    return html;
+  },
+
+  createExposBracketConnector(sourceCount, targetCount) {
+    const paths = [];
+    for (let index = 0; index < sourceCount; index++) {
+      const sourceY = ((index + 0.5) / sourceCount) * 100;
+      const targetIndex = Math.min(
+        targetCount - 1,
+        Math.floor((index * targetCount) / sourceCount),
+      );
+      const targetY = ((targetIndex + 0.5) / targetCount) * 100;
+      paths.push(
+        `<path d="M -16 ${sourceY} H 18 V ${targetY} H 52" />`,
+      );
+    }
+
+    return `<div class="expos-bracket-connector" aria-hidden="true">
+      <svg viewBox="0 0 36 100" preserveAspectRatio="none">
+        ${paths.join("")}
+      </svg>
+    </div>`;
+  },
+
+  createExposTirageTab() {
+    return `<div class="expos-section expos-draw">
+      <p>Pour acheter des billets, informez-vous au bar ou auprès des joueurs des Expos.</p>
+      <img class="expos-draw-image" src="./img/expos/tirage_2026.jpg" alt="Tirage de prix des Expos 2026" />
+    </div>`;
+  },
+
+  async readExposSchedule() {
+    const response = await fetch(
+      `./data/${seasonSelected}/Horaire_tournoi_expos_${seasonSelected}.csv`,
+    );
+    const csv = await response.text();
+    const lines = csv.replace(/^\uFEFF/, "").trim().split(/\r?\n/);
+    return lines.slice(1).filter(Boolean).map((line) => {
+      const [date, number, time, pool, away, home] = line.split(";");
+      const dateParts = date.split("-");
+      const month = { janvier: 1, février: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, août: 8, septembre: 9, octobre: 10, novembre: 11, décembre: 12 }[dateParts[1]];
+      const isoDate = `${seasonSelected}-${String(month).padStart(2, "0")}-${dateParts[0].padStart(2, "0")}`;
+      const weekday = new Date(`${isoDate}T00:00`).toLocaleDateString(
+        CONSTANTS.LOCALE,
+        { weekday: "long" },
+      );
+      return { date: isoDate, dateLabel: `${dateParts[0]} ${dateParts[1]} <span class="expos-weekday">(${weekday})</span>`, number, time, pool, away, home };
+    });
+  },
+
+  async readExposGameResult(game) {
+    if (exposResultsCache.has(game.number)) {
+      return exposResultsCache.get(game.number);
+    }
+    const fileName = `${game.date}_${this.normalizeExposTime(game.time)}`;
+    const folders = ["expos", game.away, game.home].map((folder) =>
+      this.normalizeExposTeamFolder(folder),
+    );
+    const responses = await Promise.all(folders.map((folder) => {
+      const path = `./data/${seasonSelected}/custom/${folder}/${fileName}.json`;
+      return fetch(path);
+    }));
+    const results = [];
+    for (const response of responses) {
+      if (response.ok) results.push(await response.json());
+    }
+    exposResultsCache.set(game.number, results);
+    return results;
+  },
+
+  normalizeExposTeamFolder(name) {
+    return name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+  },
+
+  normalizeExposTime(time) {
+    const [hour, minutes = "00"] = time.replace("h", ":").split(":");
+    return `${hour.padStart(2, "0")}h${minutes.padStart(2, "0")}`;
+  },
+
+  getExposScore(stats) {
+    return stats?.innings?.reduce(
+      (score, inning) => score + inning.hitters.filter((hitter) => hitter.bags === "4B").length,
+      0,
+    ) ?? null;
+  },
+
+  getExposScoreDisplay(results) {
+    if (!results.length) return "À venir";
+    return results.map((result) => `${this.getExposScore(result) ?? 0}`).join(" - ");
+  },
+
+  formatExposTeamDisplay(team, positionLabel, isResolved) {
+    if (!positionLabel) return team;
+    if (!isResolved) return `<span class="expos-team-position expos-team-position-tbd">${team}</span>`;
+    return `${team} <span class="expos-team-position">(${positionLabel})</span>`;
+  },
+
+  resolveExposWinnerDisplay(game, side, number, winners) {
+    const originalLabel = `Gagnant Game ${number}`;
+    const winner = winners.get(number);
+    game[`${side}PositionLabel`] = originalLabel;
+    game[`${side}PositionResolved`] = Boolean(winner);
+    return winner || originalLabel;
+  },
+
+  async resolveExposSchedule(schedule) {
+    const games = schedule.map((game) => ({ ...game }));
+    const standingsByPool = new Map();
+
+    for (const pool of ["Pool A", "Pool B", "Pool C", "Pool D"]) {
+      standingsByPool.set(pool, await this.getExposPoolStandings(pool, games));
+    }
+
+    const getQualifiedTeam = (position, pool) => {
+      const standings = standingsByPool.get(pool);
+      const poolGames = games.filter((game) => game.pool === pool);
+      const team = standings[position - 1];
+      if (!team) return null;
+
+      const isPoolComplete = standings.every(
+        (standing) => standing.played === standings.length - 1,
+      );
+      if (isPoolComplete) return team.team;
+
+      const remainingGames = poolGames.filter(
+        (game) => game.away === team.team || game.home === team.team,
+      ).length - team.played;
+      const teamMinPoints = team.points;
+      const teamMaxPoints = team.points + remainingGames * CONSTANTS.PTS_BY_WIN;
+
+      const positionIsFixed = standings.every((opponent, opponentIndex) => {
+        if (opponent === team) return true;
+
+        const opponentRemainingGames = poolGames.filter(
+          (game) => game.away === opponent.team || game.home === opponent.team,
+        ).length - opponent.played;
+        const opponentMinPoints = opponent.points;
+        const opponentMaxPoints =
+          opponent.points + opponentRemainingGames * CONSTANTS.PTS_BY_WIN;
+
+        if (opponentIndex < position - 1) {
+          return opponentMinPoints > teamMaxPoints;
+        }
+        return teamMinPoints > opponentMaxPoints;
+      });
+
+      return positionIsFixed ? team.team : null;
+    };
+
+    const winners = new Map();
+    for (const game of games) {
+      game.away = game.away.replace(/(\d)(?:er|e) Pool ([A-D])/g, (_, position, pool) => {
+        const originalPosition = `${position}${position === "1" ? "er" : "e"} Pool ${pool}`;
+        const qualifiedTeam = getQualifiedTeam(Number(position), `Pool ${pool}`);
+        game.awayPositionLabel = originalPosition;
+        game.awayPositionResolved = Boolean(qualifiedTeam);
+        return qualifiedTeam || originalPosition;
+      });
+      game.home = game.home.replace(/(\d)(?:er|e) Pool ([A-D])/g, (_, position, pool) => {
+        const originalPosition = `${position}${position === "1" ? "er" : "e"} Pool ${pool}`;
+        const qualifiedTeam = getQualifiedTeam(Number(position), `Pool ${pool}`);
+        game.homePositionLabel = originalPosition;
+        game.homePositionResolved = Boolean(qualifiedTeam);
+        return qualifiedTeam || originalPosition;
+      });
+      game.away = game.away.replace(/Gagnant Game (\d+)/g, (_, number) =>
+        this.resolveExposWinnerDisplay(game, "away", number, winners),
+      );
+      game.home = game.home.replace(/Gagnant Game (\d+)/g, (_, number) =>
+        this.resolveExposWinnerDisplay(game, "home", number, winners),
+      );
+
+      if (game.pool !== "Éliminatoire" && game.pool !== "Quart-Final" && game.pool !== "Demi-Final" && game.pool !== "Final") continue;
+      const results = await this.readExposGameResult(game);
+      const scores = new Map(results.map((result) => [result.team, this.getExposScore(result)]));
+      const awayScore = scores.get(game.away);
+      const homeScore = scores.get(game.home);
+      if (awayScore !== undefined && homeScore !== undefined && awayScore !== homeScore) {
+        winners.set(game.number, awayScore > homeScore ? game.away : game.home);
+      }
+    }
+
+    return games;
+  },
+
+  async getExposPoolStandings(pool, games) {
+    const teams = [...new Set(games.filter((game) => game.pool === pool).flatMap((game) => [game.away, game.home]))];
+    const standings = new Map(teams.map((team) => [team, { team, played: 0, wins: 0, ties: 0, losses: 0, pointsFor: 0, pointsAgainst: 0, points: 0 }]));
+    for (const game of games.filter((entry) => entry.pool === pool)) {
+      const results = await this.readExposGameResult(game);
+      const scores = new Map(results.map((result) => [result.team, this.getExposScore(result)]));
+      const awayScore = scores.get(game.away);
+      const homeScore = scores.get(game.home);
+      if (awayScore === undefined || homeScore === undefined || awayScore === null || homeScore === null) continue;
+      const away = standings.get(game.away);
+      const home = standings.get(game.home);
+      away.played++;
+      home.played++;
+      away.pointsFor += awayScore;
+      away.pointsAgainst += homeScore;
+      home.pointsFor += homeScore;
+      home.pointsAgainst += awayScore;
+      if (awayScore > homeScore) {
+        away.wins++;
+        away.points += 2;
+        home.losses++;
+      } else if (homeScore > awayScore) {
+        home.wins++;
+        home.points += 2;
+        away.losses++;
+      } else {
+        away.ties++;
+        home.ties++;
+        away.points++;
+        home.points++;
+      }
+    }
+    return [...standings.values()].sort((a, b) =>
+      this.compareExposStandings(a, b),
+    );
+  },
+
+  compareExposStandings(a, b) {
+    const pointsDifference = b.points - a.points;
+    if (pointsDifference !== 0) return pointsDifference;
+
+    const differentialA = a.pointsFor - a.pointsAgainst;
+    const differentialB = b.pointsFor - b.pointsAgainst;
+    return differentialB - differentialA;
+  },
+
+  async createExposPoolTable(pool, games) {
+    const sortedStandings = await this.getExposPoolStandings(pool, games);
+    let html = `<div class="expos-pool"><h3>${pool}</h3><table><tr class="header"><th>Pos.</th><th>Équipe</th><th>PJ</th><th>V</th><th>N</th><th>D</th><th>PF</th><th>PC</th><th>+/-</th><th>PTS</th></tr>`;
+    sortedStandings.forEach((standing, index) => {
+      const differential = standing.pointsFor - standing.pointsAgainst;
+      const differentialLabel = differential > 0 ? `+${differential}` : differential || "-";
+      html += `<tr><td>${index + 1}</td><td>${standing.team}</td><td>${standing.played}</td><td>${standing.wins}</td><td>${standing.ties}</td><td>${standing.losses}</td><td>${standing.pointsFor}</td><td>${standing.pointsAgainst}</td><td>${differentialLabel}</td><td>${standing.points}</td></tr>`;
+    });
+    return `${html}</table></div>`;
+  },
+
+  async createExposGame(games, selectedNumber, selectedTeam) {
+    const game = games.find((entry) => entry.number === selectedNumber);
+    if (!game) {
+      pageHtml = this.createPageTitle("PARTIE INTROUVABLE", false);
+      this.setPageHtml(pageHtml);
+      return;
+    }
+    const results = await this.readExposGameResult(game);
+    const requestedTeam =
+      selectedTeam && results.some((result) => result.team === selectedTeam)
+        ? selectedTeam
+        : game.home;
+    const activeResult =
+      results.find((result) => result.team === requestedTeam) || results[0];
+    const activeTeam = activeResult?.team || requestedTeam;
+    const inningValues = [
+      ...new Set(
+        results.flatMap((result) =>
+          result.innings.map((inning) => inning.value),
+        ),
+      ),
+    ].sort((a, b) => Number(a) - Number(b));
+
+    pageHtml = this.createPageTitle(
+      `Sommaire - ${game.dateLabel} - ${game.time}`,
+      false,
+    );
+    pageHtml += `<a class="expos-back" href="?page=expos&season=${seasonSelected}">Retour à l'horaire</a><div class="expos-detail">
+      <div class="expos-detail-meta">Partie ${game.number} · ${game.pool}</div>
+      <h2>${game.away} <span>c.</span> ${game.home}</h2>`;
+    if (!results.length) {
+      pageHtml += `<p>Les résultats détaillés de cette partie ne sont pas encore disponibles.</p></div>`;
+    } else {
+      pageHtml += `<div class="score expos-scorecard"><table class="innings"><tr class="header"><th>Équipe</th>${inningValues.map((inning) => `<th>${inning}</th>`).join("")}<th>P</th></tr>`;
+      [game.away, game.home].forEach((team) => {
+        const result = results.find((entry) => entry.team === team);
+        pageHtml += `<tr><th>${team}</th>${inningValues.map((inning) => `<td>${this.getExposInningScore(result, inning)}</td>`).join("")}<th>${this.getExposScore(result) ?? 0}</th></tr>`;
+      });
+      pageHtml += `</table></div></div>`;
+      pageHtml += `<div class="team-selection expos-team-selection">
+        <button type="button" class="expos-team-button ${activeTeam === game.home ? "activated" : ""}" data-team="${game.home}" onclick="app.selectExposTeam(this.dataset.team)"><span class="side-name">Local</span>${game.home}</button>
+        <button type="button" class="expos-team-button ${activeTeam === game.away ? "activated" : ""}" data-team="${game.away}" onclick="app.selectExposTeam(this.dataset.team)"><span class="side-name">Visiteur</span>${game.away}</button>
+      </div>`;
+      results.forEach((result) => {
+        pageHtml += this.createExposTeamSummary(
+          result,
+          result.team === activeTeam,
+        );
+      });
+    }
+    this.setPageHtml(pageHtml);
+  },
+
+  createExposTeamSummary(result, isActive) {
+    let html = `<div class="summary no-border-radius-top expos-game-summary ${isActive ? "" : "hidden"}" data-team="${result.team}"><div class="unsortable-columns"><table><tr class="header"><th>RG</th><th class="name">Joueur</th></tr>`;
+    result.lineup.forEach((playerId, index) => {
+      html += `<tr><td class="rank">${index + 1}</td><td class="name">${result.players?.[playerId] || `Joueur ${playerId}`}</td></tr>`;
+    });
+    html += `</table></div><div class="sortable-columns">`;
+    result.innings.forEach((inning) => {
+      html += `<table><tr class="header"><th>${inning.value}</th></tr>`;
+      result.lineup.forEach((playerId) => {
+        const hitter = inning.hitters.find((entry) => entry.id === playerId);
+        html += `<tr><td>${this.createExposAttendance(hitter)}</td></tr>`;
+      });
+      html += `</table>`;
+    });
+    return `${html}</div></div>`;
+  },
+
+  selectExposTeam(team) {
+    document.querySelectorAll(".expos-team-button").forEach((button) => {
+      button.classList.toggle("activated", button.dataset.team === team);
+    });
+    document.querySelectorAll(".expos-game-summary").forEach((summary) => {
+      summary.classList.toggle("hidden", summary.dataset.team !== team);
+    });
+  },
+
+  getExposInningScore(result, inningValue) {
+    return result?.innings
+      .filter((inning) => inning.value === inningValue)
+      .reduce(
+        (score, inning) =>
+          score + inning.hitters.filter((hitter) => hitter.bags === "4B").length,
+        0,
+      ) ?? 0;
+  },
+
+  createExposAttendance(hitter) {
+    const attendance = hitter || { bags: "field" };
+    return `<div class="attendance-summary">
+      <div class="base">
+        <span class="single ${attendance.S ? "activated" : ""}">1B</span>
+        <span class="double ${attendance.double ? "activated" : ""}">2B</span>
+        <span class="triple ${attendance.triple ? "activated" : ""}">3B</span>
+        <span class="homerun ${attendance.CC ? "activated" : ""}">CC</span>
+        <span class="base-on-balls ${attendance.BB ? "activated" : ""}">BB</span>
+      </div>
+      <span class="points ${attendance.PP ? "activated" : ""}">${attendance.PP || ""} PP</span>
+      <img title="${attendance.bags}" alt="${attendance.bags}" class="attendance" src="${CONSTANTS.IMG_PATH}/${attendance.bags}.png" />
+      <div class="opt-sac"><span class="optional ${attendance.OPT ? "activated" : ""}">Opt.</span><span class="sacrifice ${attendance.SAC ? "activated" : ""}">Sac.</span></div>
+      <div class="out-error"><span class="error ${attendance.ERR ? "activated" : ""}">E</span><span class="out ${attendance.R ? "activated" : ""}">R</span></div>
+    </div>`;
   },
 
   // ****************************
@@ -2405,13 +2938,13 @@ export const app = {
     });
   },
 
-  createPageTitle(title, addSelect) {
+  createPageTitle(title, addSelect, seasonsList = seasons) {
     var html = `<div class="page-title">${title}`;
 
     if (addSelect) {
       html += `<select name="season" id="season" onchange="app.changeSeason()">`;
 
-      seasons.forEach((season) => {
+      seasonsList.forEach((season) => {
         html += `<option value="${season}">${season}</option>`;
       });
 
@@ -3101,6 +3634,9 @@ export const app = {
 
     var leaders = document.getElementById("leaders");
     leaders.href = `/?page=leaders&season=${seasonSelected}`;
+
+    var expos = document.getElementById("expos");
+    expos.href = `?page=expos&season=${seasonSelected}`;
   },
 
   setPageHtml(html) {

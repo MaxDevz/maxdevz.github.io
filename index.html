@@ -39,11 +39,23 @@
     <script type="module" src="./script.js"></script>
   </head>
   <body>
+    <script>
+      if (new URLSearchParams(window.location.search).get("page") === "expos") {
+        document.body.classList.add("expos-page");
+      }
+    </script>
     <div class="toolbar" role="banner">
       <a href="/">
         <img alt="Logo" src="./img/logo/liguebrasserieduboulevard_logo.png" />
       </a>
     </div>
+    <script>
+      if (document.body.classList.contains("expos-page")) {
+        const toolbarLink = document.querySelector(".toolbar a");
+        toolbarLink.removeAttribute("href");
+        toolbarLink.querySelector("img").src = "./img/logo/Drummond_Expos_Logo.png";
+      }
+    </script>
     <input
       type="checkbox"
       title="Menu"
@@ -114,6 +126,11 @@
         <li>
           <a id="sponsors" href="/?page=sponsors"
             ><div><i class="fas fa-heart"></i>Nos commanditaires</div></a
+          >
+        </li>
+        <li>
+          <a id="expos" href="/?page=expos&season=2026"
+            ><div><i class="fas fa-baseball-ball"></i>Tournoi des Expos</div></a
           >
         </li>
       </ul>

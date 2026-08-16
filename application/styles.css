@@ -349,6 +349,14 @@ body {
   opacity: 0.95;
 }
 
+.lineup-only-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 .lineup-header {
   display: flex;
   align-items: stretch;
@@ -408,6 +416,40 @@ body {
   box-shadow: inset 0 0 0 2px rgba(76, 175, 80, 0.35);
 }
 
+.inning-cell.inning-last-batter {
+  border-color: #ff9800;
+  box-shadow: inset 0 0 0 3px rgba(255, 152, 0, 0.6);
+}
+
+.inning-cell.inning-next-batter {
+  border-color: #2196f3;
+  box-shadow: inset 0 0 0 3px rgba(33, 150, 243, 0.6);
+}
+
+.inning-container-closed {
+  background: #f0f0f0;
+  opacity: 0.6;
+}
+
+.inning-container-closed .inning-cell {
+  cursor: not-allowed;
+}
+
+.inning-control-disabled {
+  cursor: not-allowed;
+}
+
+.points-limit-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.points-limit-control input {
+  width: 55px;
+  padding: 4px;
+}
+
 .active-inning-info {
   display: flex;
   align-items: center;
@@ -444,6 +486,11 @@ body {
   border-radius: 4px;
 }
 
+.inning-header-closed {
+  background: #ffcdd2;
+  border-radius: 4px;
+}
+
 .extra-pass-toggle {
   display: inline-flex;
   align-items: center;
@@ -461,6 +508,26 @@ body {
 }
 
 .extra-pass-toggle:hover {
+  background: #e0e0e0;
+}
+
+.inning-lock-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  padding: 0;
+  border: 1px solid #999;
+  border-radius: 50%;
+  background: white;
+  line-height: 1;
+  cursor: pointer;
+  font-size: 0.75em;
+}
+
+.inning-lock-toggle:hover {
   background: #e0e0e0;
 }
 

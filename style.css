@@ -133,8 +133,7 @@ table .header th {
 
 .winner-img {
   max-height: 550px;
-  max-width: 700px;
-
+  display: none;
   margin: 10px;
   margin-bottom: 100px;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.55);
@@ -1022,6 +1021,21 @@ td.name {
   height: 175px;
 }
 
+/* Hide the hamburger menu toggle on the Expos tournament page */
+body.expos-page .sidebarIconToggle {
+  display: none;
+}
+
+body.expos-page .toolbar img {
+  height: 150px;
+}
+
+body.expos-page .toolbar {
+  background-color: #20468F;
+  border-bottom: 8px solid white;
+  box-shadow: 0 0px 0 white, 0 8px 0 #B80B1F;
+}
+
 .content {
   display: flex;
   margin: 110px auto 32px;
@@ -1051,6 +1065,385 @@ svg.material-icons:not(:last-child) {
   flex-wrap: wrap;
   justify-content: center;
   margin-bottom: 16px;
+}
+
+.expos-section {
+  margin-bottom: 32px;
+}
+
+.expos-date{
+  margin: 15px;
+}
+
+.expos-intro,
+.expos-section,
+.expos-detail {
+  margin-bottom: 32px;
+  width: min(1100px, 100%);
+}
+
+.expos-intro {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.expos-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.expos-tab {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid #004a99;
+  color: #004a99;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.expos-tab:hover {
+  background: #e6f0fb;
+}
+
+.expos-tab.active {
+  background: #004a99;
+  color: white;
+}
+
+.expos-placeholder {
+  text-align: center;
+  padding: 24px;
+  color: #666;
+}
+
+.expos-draw {
+  text-align: center;
+}
+
+.expos-draw-image {
+  display: block;
+  width: min(700px, 100%);
+  max-height: 80vh;
+  margin: 0 auto 20px;
+  object-fit: contain;
+}
+
+.expos-draw p {
+  margin: 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.expos-bracket {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) 36px minmax(190px, 1fr) 36px minmax(190px, 1fr) 36px minmax(190px, 1fr);
+  gap: 16px;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+}
+
+.expos-bracket-connector {
+  display: flex;
+  align-items: stretch;
+  min-height: 0;
+  padding-top: 48px;
+  box-sizing: border-box;
+}
+
+.expos-bracket-connector svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.expos-bracket-connector path {
+  fill: none;
+  stroke: #8a9ab5;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.expos-bracket-round {
+  min-width: 0;
+}
+
+.expos-bracket-round h2 {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #004a99;
+  color: #004a99;
+  font-size: 1.05rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.expos-bracket-games {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 16px;
+  height: calc(100% - 48px);
+}
+
+.expos-bracket-game {
+  display: block;
+  padding: 10px;
+  border: 1px solid #b7b7b7;
+  border-radius: 8px;
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.expos-bracket-game:hover,
+.expos-bracket-game:focus-visible {
+  border-color: #004a99;
+  background: #e6f0fb;
+}
+
+.expos-bracket-game-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: #888;
+  font-size: 0.7rem;
+}
+
+.expos-bracket-team {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid #eee;
+  font-weight: bold;
+}
+
+.expos-bracket-team span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.expos-bracket-team strong {
+  min-width: 1.25em;
+  text-align: right;
+}
+
+.expos-section h2,
+.expos-detail h2 {
+  text-align: center;
+}
+
+.expos-date,
+.expos-pool,
+.expos-detail {
+  border: 1px solid #b7b7b7;
+  border-radius: 15px;
+  background: #fafafa;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.18);
+  padding: 12px;
+}
+
+.expos-date h3,
+.expos-pool h3 {
+  margin: 4px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: x-large;
+}
+
+.expos-weekday {
+  color: #888;
+  font-size: 0.75em;
+  font-weight: normal;
+}
+
+.expos-game {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid #ddd;
+  padding: 8px 4px;
+}
+
+.expos-game-detail {
+  display: grid;
+  grid-template-columns: 35px 70px 100px minmax(180px, 1fr) minmax(100px, auto);
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.expos-game:hover {
+  background: #e0e6ff;
+}
+
+.expos-game-editor {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 4px;
+  color: white;
+  background: #20468f;
+  text-decoration: none;
+}
+
+.expos-game-editor:hover,
+.expos-game-editor:focus-visible {
+  background: #b80b1f;
+}
+
+.expos-game-number,
+.expos-game-pool,
+.expos-game-time,
+.expos-game-score {
+  text-align: center;
+}
+
+.expos-game-pool,
+.expos-game-score,
+.expos-detail-meta {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.expos-game-teams {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.expos-team-position {
+  color: #888;
+  font-size: 0.75em;
+  font-weight: 400;
+}
+
+.expos-team-position-tbd {
+  font-size: inherit;
+}
+
+.expos-pools {
+  display: grid;
+  width: calc(100% - 24px);
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 16px;
+  margin: 0 12px;
+}
+
+.expos-pool table {
+  display: table;
+  width: 100%;
+}
+
+.expos-back {
+  display: block;
+  margin: 0 auto 16px;
+  text-align: center;
+  color: darkblue;
+}
+
+.expos-detail {
+  text-align: center;
+}
+
+.expos-detail-score {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 15px;
+}
+
+.expos-scorecard {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 0;
+  overflow-x: auto;
+}
+
+.expos-scorecard table {
+  width: auto;
+}
+
+.expos-team-selection {
+  display: flex;
+  width: min(1100px, 100%);
+  padding: 0;
+}
+
+.expos-team-button {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 5px;
+  color: inherit;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  text-transform: capitalize;
+  background-color: #eee;
+  box-shadow: inset 0 10px 10px rgba(0, 0, 0, 0.15);
+  border: none;
+  cursor: pointer;
+}
+
+.expos-team-button:first-child {
+  border-top-left-radius: 15px;
+}
+
+.expos-team-button:last-child {
+  border-top-right-radius: 15px;
+}
+
+.expos-team-button:hover {
+  color: #f1ad0d;
+  background-color: #fcffd9;
+}
+
+.expos-team-button.activated {
+  background-color: #fafafa;
+  border-top: 1px solid #b7b7b7;
+  box-shadow: 0 10px 17px rgba(0, 0, 0, 0.35);
+}
+
+.expos-team-button.activated .side-name {
+  color: #f1ad0d;
+}
+
+.expos-game-summary {
+    z-index: 100;
+  width: min(1100px, 100%);
+}
+
+.expos-game-summary.hidden {
+  display: none;
+}
+
+.expos-innings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.expos-innings div {
+  min-width: 90px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.expos-innings span {
+  display: block;
 }
 
 .leaders-container {
@@ -1309,6 +1702,10 @@ svg#logo {
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
+}
+
+body.expos-page .loader {
+  border-top-color: #004a99;
 }
 
 .season-playoffs {
@@ -1724,6 +2121,51 @@ ol > li::marker {
   .menu {
     margin-bottom: 0px;
   }
+
+  .expos-game-detail {
+    grid-template-columns: 28px auto minmax(0, 1fr) auto;
+    row-gap: 10px;
+  }
+
+  .expos-game-pool {
+    grid-column: 3;
+    justify-self: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #e6f0fb;
+    white-space: nowrap;
+  }
+
+  .expos-game-teams {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .expos-game-score {
+    grid-column: 4;
+    grid-row: 1;
+    color: #20468f;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .expos-bracket {
+    display: flex;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 20px 20px 12px;
+  }
+
+  .expos-bracket-round {
+    flex: 0 0 220px;
+  }
+
+  .expos-bracket-connector {
+    flex: 0 0 36px;
+    min-height: 220px;
+    padding-top: 48px;
+  }
+
 }
 
 @media screen and (max-width: 1000px) {
