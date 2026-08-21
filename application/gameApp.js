@@ -1572,7 +1572,8 @@ function buildInningContainer(
     cell.classList.add("inning-next-batter");
     cell.title = "Prochain frappeur";
   }
-  if (ON_BASE_STATES.includes(baseState)) {
+  // Le surlignage "sur les buts" ne s'applique pas si le coureur est retiré (R)
+  if (ON_BASE_STATES.includes(baseState) && !playerStats.R) {
     cell.classList.add("on-base");
   }
 
@@ -1704,7 +1705,8 @@ function toggleRForInning(playerIndex, inningIndex, isExtra = false) {
   }
 
   const currentValue = currentLineup[playerIndex][inningsKey][inningIndex].R;
-  currentLineup[playerIndex][inningsKey][inningIndex].R = !currentValue;
+  const newRValue = !currentValue;
+  currentLineup[playerIndex][inningsKey][inningIndex].R = newRValue;
 
   setCurrentLineup(currentLineup);
 
@@ -1717,6 +1719,14 @@ function toggleRForInning(playerIndex, inningIndex, isExtra = false) {
     inning_container.querySelectorAll(".stat-button"),
   ).find((btn) => btn.textContent === "R");
   rButton.classList.toggle("active");
+
+  // Retirer/rétablir le surlignage "sur les buts" selon le nouvel état de retrait
+  const currentBase = cell.querySelector(".base-image")?.dataset.currentBase;
+  cell.classList.toggle(
+    "on-base",
+    ON_BASE_STATES.includes(currentBase) && !newRValue,
+  );
+
   updateActiveInningInfo();
   console.log("Refresh inning indicators after toggling R");
   refreshInningIndicators();
@@ -1738,10 +1748,11 @@ function rotateBase(imgElement) {
 
   // Get the stats container for this cell and update button states
   const cell = imgElement.closest(".inning-cell");
-  cell.classList.toggle("on-base", ON_BASE_STATES.includes(nextBase));
   const statsContainer = cell.parentElement.querySelector(".stats-container");
   const buttons = statsContainer.querySelectorAll(".stat-button");
   const rbutton = cell.parentElement.querySelector(":scope > .stat-button");
+  const isOut = rbutton.classList.contains("active");
+  cell.classList.toggle("on-base", ON_BASE_STATES.includes(nextBase) && !isOut);
 
   rbutton.disabled = nextBase === "field";
   buttons.forEach((button) => {
