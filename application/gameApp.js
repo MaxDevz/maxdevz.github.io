@@ -12,6 +12,9 @@ let currentPlayerIndex = -1;
 let currentInningIndex = -1;
 let currentInningIsExtra = false;
 let freeMode = false;
+// Tant que la partie n'est pas démarrée (bouton "Démarrer la partie"), rien n'est
+// enregistré dans le localStorage, même si date/heure/équipes sont déjà remplis.
+let gameStarted = false;
 // Second at-bat columns for innings where the lineup batted around (index = inning - 1).
 let homeExtraPasses = [];
 let awayExtraPasses = [];
@@ -21,11 +24,18 @@ let inningPointsLimit = 4;
 // Index = inning - 1, { normal, extra } = passage concerné.
 let homeInningOverrides = [];
 let awayInningOverrides = [];
+// Compteur de coureurs par équipe : gardé en mémoire (localStorage) mais jamais inclus dans le JSON généré.
+let homeRunnerCount = 0;
+let awayRunnerCount = 0;
 
 const YEAR = 2026;
 const BASES_ORDER = ["field", "0B", "1B", "2B", "3B", "4B"];
+const ON_BASE_STATES = ["1B", "2B", "3B"];
 const DEFAULT_LINEUP_SIZE = 11;
-const MAX_INNINGS = 9;
+// Nombre de manches par défaut, modifiable via l'UI (voir updateInningsCount()).
+let maxInnings = 9;
+const DEFAULT_MAX_INNINGS_FREE = 6;
+const DEFAULT_MAX_INNINGS_TEAM = 9;
 const DEFAULT_INNING_POINTS_LIMIT = 4;
 const OUTS_LIMIT = 3;
 const STATS_OPTIONS = ["1B", "2B", "3B", "CC", "BB", "Opt", "Err", "Sac"];
@@ -42,7 +52,17 @@ const statMap = {
 };
 
 // LocalStorage management
-const STORAGE_KEY = "gameApp_state";
+// Une clé distincte par partie (date + heure + équipes) permet d'ouvrir plusieurs
+// parties dans des onglets différents sans qu'elles n'écrasent leur état respectif.
+const STORAGE_KEY_PREFIX = "gameApp_state";
+
+function getStorageKey() {
+  const gameDate = document.getElementById("game-date")?.value || "nodate";
+  const gameTime = getGameTime() || "notime";
+  const home = selectedTeam || "nohome";
+  const away = selectedVisitorTeam || "noaway";
+  return [STORAGE_KEY_PREFIX, gameDate, gameTime, home, away].join("::");
+}
 
 function formatTimeForFilename(timeValue) {
   // Convertit "19:00" (input type=time) en "19h00" (format utilisé pour les noms de fichiers)
@@ -79,18 +99,11 @@ function applyGameUrlParameters() {
 
   if (!away && !home && !date && !time) return;
 
+  // Ne fait que renseigner les champs (date/heure/équipes) : le lineup en mémoire
+  // (localStorage) pour cette partie précise sera restauré ensuite par restoreGameState().
   freeMode = params.get("free") === "1";
   selectedVisitorTeam = away || "";
   selectedTeam = home || "";
-  homeLineup = [];
-  awayLineup = [];
-  homeExtraPasses = [];
-  awayExtraPasses = [];
-  homeInningOverrides = createDefaultInningOverrides();
-  awayInningOverrides = createDefaultInningOverrides();
-  currentTab = "away";
-  currentPlayerIndex = -1;
-  currentInningIndex = -1;
 
   applyFreeModeUI();
   if (date) document.getElementById("game-date").value = date;
@@ -103,17 +116,54 @@ function applyGameUrlParameters() {
 
   updateTeamSelects();
   updateTabLabels();
-  saveGameState();
 }
 
 function createDefaultInningOverrides() {
-  return Array.from({ length: MAX_INNINGS }, () => ({
+  return Array.from({ length: maxInnings }, () => ({
     normal: false,
     extra: false,
   }));
 }
 
+function hasRequiredGameInfo() {
+  const gameDate = document.getElementById("game-date")?.value || "";
+  const gameTime = getGameTime();
+  return Boolean(gameDate && gameTime && selectedTeam && selectedVisitorTeam);
+}
+
+function updateGameStartUI() {
+  const button = document.getElementById("start-game-button");
+  const status = document.getElementById("game-status-label");
+  if (button) {
+    button.disabled = gameStarted;
+    button.textContent = gameStarted
+      ? "Partie démarrée"
+      : "Démarrer la partie";
+  }
+  if (status) {
+    status.textContent = gameStarted
+      ? "Partie en cours : enregistrement automatique actif."
+      : "Sélectionnez la date, l'heure et les 2 équipes, puis démarrez la partie pour activer l'enregistrement automatique.";
+  }
+}
+
+function startGame() {
+  if (!hasRequiredGameInfo()) {
+    alert(
+      "Veuillez sélectionner la date, l'heure et les 2 équipes avant de démarrer la partie.",
+    );
+    return;
+  }
+  gameStarted = true;
+  updateGameStartUI();
+  saveGameState();
+}
+
 function saveGameState() {
+  // On n'enregistre l'état de la partie que si elle a été démarrée explicitement
+  // et que la date, l'heure et les 2 équipes sont renseignées.
+  if (!gameStarted || !hasRequiredGameInfo()) return;
+
   const state = {
     gameDate: document.getElementById("game-date")?.value || "",
     gameTime: getGameTime() || "19h00",
@@ -125,17 +175,207 @@ function saveGameState() {
     homeExtraPasses,
     awayExtraPasses,
     inningPointsLimit,
+    maxInnings,
     homeInningOverrides,
     awayInningOverrides,
+    homeRunnerCount,
+    awayRunnerCount,
     currentTab,
     currentPlayerIndex,
     currentInningIndex,
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  refreshMemoryGamesList();
+}
+
+function getMemoryGameKeys() {
+  return Object.keys(localStorage).filter((key) =>
+    key.startsWith(`${STORAGE_KEY_PREFIX}::`),
+  );
+}
+
+function parseMemoryGameKey(key) {
+  const [, gameDate, gameTime, home, away] = key.split("::");
+  return { gameDate, gameTime, home, away };
+}
+
+function formatMemoryGameLabel(key) {
+  const { gameDate, gameTime, home, away } = parseMemoryGameKey(key);
+  const dateLabel = gameDate === "nodate" ? "Date ?" : gameDate;
+  const timeLabel = gameTime === "notime" ? "" : ` ${formatTimeForInput(gameTime)}`;
+  const homeLabel = home === "nohome" ? "?" : formatTeamName(home);
+  const awayLabel = away === "noaway" ? "?" : formatTeamName(away);
+  return `${dateLabel}${timeLabel} — ${awayLabel} @ ${homeLabel}`;
+}
+
+function refreshMemoryGamesList() {
+  const select = document.getElementById("memory-games-select");
+  if (!select) return;
+
+  const currentKey = getStorageKey();
+  const previousValue = select.value;
+  // Tri du plus récent au plus ancien (les clés commencent par la date au format ISO).
+  const keys = getMemoryGameKeys().sort().reverse();
+
+  select.innerHTML =
+    '<option value="">Sélectionner une partie en mémoire...</option>';
+  keys.forEach((key) => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent =
+      formatMemoryGameLabel(key) + (key === currentKey ? " (partie active)" : "");
+    select.appendChild(option);
+  });
+
+  // La partie active (celle chargée via le lien ou en cours) doit toujours
+  // apparaître sélectionnée dans le menu, sinon on garde la sélection précédente.
+  if (keys.includes(currentKey)) {
+    select.value = currentKey;
+  } else if (keys.includes(previousValue)) {
+    select.value = previousValue;
+  }
+}
+
+function loadSelectedMemoryGame(lineupOnly = false) {
+  const select = document.getElementById("memory-games-select");
+  const key = select?.value;
+  if (!key) return;
+
+  const raw = localStorage.getItem(key);
+  if (!raw) return;
+
+  let savedState;
+  try {
+    savedState = JSON.parse(raw);
+  } catch (e) {
+    console.error("Error parsing saved game state:", e);
+    return;
+  }
+
+  if (lineupOnly) {
+    applyLineupOnlyFromMemoryGame(savedState);
+  } else {
+    restoreGameState(savedState);
+    // Met à jour l'URL pour refléter la partie sélectionnée (au lieu de garder les
+    // paramètres de l'ancienne partie), afin que le lien reste correct après un refresh.
+    syncUrlParameters();
+  }
+
+  const pointsLimitInput = document.getElementById("points-limit-input");
+  if (pointsLimitInput) pointsLimitInput.value = inningPointsLimit;
+
+  updateLineupDisplay();
+  updateScoreDisplay();
+  updateRunnerCountDisplay();
+  updateActiveInningInfo();
+  refreshMemoryGamesList();
+}
+
+function resetLineupStats(lineup) {
+  return lineup.map((player) => ({
+    ...player,
+    innings: Array.from({ length: maxInnings }, () => createDefaultStats()),
+    innings2: Array.from({ length: maxInnings }, () => createDefaultStats()),
+  }));
+}
+
+// Reprend uniquement l'alignement (sans les stats) d'une partie en mémoire pour chaque
+// côté (locale/visiteuse) dont l'équipe correspond à la partie en cours, peu importe le
+// côté qu'elle occupait dans la partie en mémoire.
+function applyLineupOnlyFromMemoryGame(savedState) {
+  let matched = false;
+
+  if (selectedTeam && selectedTeam === savedState.selectedTeam) {
+    homeLineup = resetLineupStats(savedState.homeLineup || []);
+    matched = true;
+  } else if (selectedTeam && selectedTeam === savedState.selectedVisitorTeam) {
+    homeLineup = resetLineupStats(savedState.awayLineup || []);
+    matched = true;
+  }
+  if (matched) {
+    homeExtraPasses = Array.from({ length: maxInnings }, () => false);
+    homeInningOverrides = createDefaultInningOverrides();
+  }
+
+  let visitorMatched = false;
+  if (
+    selectedVisitorTeam &&
+    selectedVisitorTeam === savedState.selectedVisitorTeam
+  ) {
+    awayLineup = resetLineupStats(savedState.awayLineup || []);
+    visitorMatched = true;
+  } else if (
+    selectedVisitorTeam &&
+    selectedVisitorTeam === savedState.selectedTeam
+  ) {
+    awayLineup = resetLineupStats(savedState.homeLineup || []);
+    visitorMatched = true;
+  }
+  if (visitorMatched) {
+    awayExtraPasses = Array.from({ length: maxInnings }, () => false);
+    awayInningOverrides = createDefaultInningOverrides();
+  }
+
+  if (!matched && !visitorMatched) {
+    alert(
+      "Cette partie en mémoire ne concerne aucune des équipes sélectionnées.",
+    );
+    return;
+  }
+
+  saveGameState();
+}
+
+function syncUrlParameters() {
+  const gameDate = document.getElementById("game-date")?.value || "";
+  const gameTime = getGameTime();
+  const params = new URLSearchParams();
+  if (selectedVisitorTeam) params.set("away", selectedVisitorTeam);
+  if (selectedTeam) params.set("home", selectedTeam);
+  if (gameDate) params.set("date", gameDate);
+  if (gameTime) params.set("time", gameTime);
+  if (freeMode) params.set("free", "1");
+
+  const query = params.toString();
+  const newUrl = query
+    ? `${window.location.pathname}?${query}`
+    : window.location.pathname;
+  window.history.replaceState({}, "", newUrl);
+}
+
+function deleteSelectedMemoryGame() {
+  const select = document.getElementById("memory-games-select");
+  const key = select?.value;
+  if (!key) return;
+  if (!confirm("Oublier cette partie de la mémoire du navigateur ?")) return;
+
+  localStorage.removeItem(key);
+  refreshMemoryGamesList();
+}
+
+function updateRunnerCountDisplay() {
+  const homeEl = document.getElementById("home-runner-count");
+  const awayEl = document.getElementById("away-runner-count");
+  if (homeEl) homeEl.textContent = homeRunnerCount;
+  if (awayEl) awayEl.textContent = awayRunnerCount;
+}
+
+function incrementRunnerCount(side) {
+  if (side === "home") homeRunnerCount++;
+  else awayRunnerCount++;
+  updateRunnerCountDisplay();
+  saveGameState();
+}
+
+function decrementRunnerCount(side) {
+  if (side === "home") homeRunnerCount = Math.max(0, homeRunnerCount - 1);
+  else awayRunnerCount = Math.max(0, awayRunnerCount - 1);
+  updateRunnerCountDisplay();
+  saveGameState();
 }
 
 function loadGameState() {
-  const state = localStorage.getItem(STORAGE_KEY);
+  const state = localStorage.getItem(getStorageKey());
   if (!state) return null;
 
   try {
@@ -147,12 +387,13 @@ function loadGameState() {
 }
 
 function clearGameState() {
-  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(getStorageKey());
 }
 
 function resetGameState() {
   clearGameState();
 
+  gameStarted = false;
   selectedTeam = "";
   selectedVisitorTeam = "";
   homeLineup = [];
@@ -160,8 +401,9 @@ function resetGameState() {
   homeExtraPasses = [];
   awayExtraPasses = [];
   inningPointsLimit = DEFAULT_INNING_POINTS_LIMIT;
-  homeInningOverrides = createDefaultInningOverrides();
-  awayInningOverrides = createDefaultInningOverrides();
+  setInningsCount(getDefaultMaxInnings());
+  homeRunnerCount = 0;
+  awayRunnerCount = 0;
   currentTab = "away";
   currentPlayerIndex = -1;
   currentInningIndex = -1;
@@ -194,7 +436,10 @@ function resetGameState() {
   updateTabLabels();
   updateLineupDisplay();
   updateActiveInningInfo();
+  updateRunnerCountDisplay();
   document.getElementById("output").textContent = "";
+  updateGameStartUI();
+  refreshMemoryGamesList();
 }
 
 function applyFreeModeUI() {
@@ -221,14 +466,14 @@ function toggleFreeMode() {
 
   // Réinitialiser la sélection des équipes et les lineups: les deux modes
   // ont des structures de données incompatibles (id d'équipe vs nom libre).
+  gameStarted = false;
   selectedTeam = "";
   selectedVisitorTeam = "";
   homeLineup = [];
   awayLineup = [];
   homeExtraPasses = [];
   awayExtraPasses = [];
-  homeInningOverrides = createDefaultInningOverrides();
-  awayInningOverrides = createDefaultInningOverrides();
+  setInningsCount(getDefaultMaxInnings());
 
   document.getElementById("team-select").value = "";
   document.getElementById("team-select-visiteur").value = "";
@@ -240,6 +485,7 @@ function toggleFreeMode() {
   updateTeamSelects();
   updateTabLabels();
   updateLineupDisplay();
+  updateGameStartUI();
   saveGameState();
 }
 
@@ -266,7 +512,7 @@ function updateCustomLineupName(index, name) {
       name: trimmedName,
       innings:
         existing?.innings ||
-        Array.from({ length: MAX_INNINGS }, () => createDefaultStats()),
+        Array.from({ length: maxInnings }, () => createDefaultStats()),
       isCustom: true,
     };
   }
@@ -344,8 +590,13 @@ function getInningOutsForPass(lineup, inningIndex, isExtra) {
 }
 
 function isInningAutoClosed(lineup, inningIndex, isExtra) {
+  const outsReached =
+    getInningOutsForPass(lineup, inningIndex, isExtra) >= OUTS_LIMIT;
+  // La dernière manche se termine uniquement par les retraits, jamais par la limite de points.
+  const isLastInning = inningIndex === maxInnings - 1;
+  if (isLastInning) return outsReached;
   return (
-    getInningOutsForPass(lineup, inningIndex, isExtra) >= OUTS_LIMIT ||
+    outsReached ||
     getInningPointsForPass(lineup, inningIndex, isExtra) >= inningPointsLimit
   );
 }
@@ -395,23 +646,72 @@ function toggleInningOverride(inningIndex, isExtra) {
   updateLineupDisplay();
 }
 
-// Dernier frappeur (par ordre d'alignement) ayant une action enregistrée dans ce passage de manche.
-function getLastActiveIndexForInning(lineup, inningIndex, isExtra) {
+// Point de départ (index d'alignement) du frappeur qui a commencé ce passage de manche :
+// reprend où le passage précédent (2e passage de la même manche, ou manche précédente)
+// s'est arrêté, ou l'index 0 pour tout premier passage.
+function getPassStartIndex(currentLineup, extraPasses, inningIndex, isExtra) {
+  if (isExtra) {
+    const normalLastBatter = getLastActiveIndexForInning(
+      currentLineup,
+      extraPasses,
+      inningIndex,
+      false,
+    );
+    return normalLastBatter === -1
+      ? 0
+      : (normalLastBatter + 1) % DEFAULT_LINEUP_SIZE;
+  }
+
+  if (inningIndex <= 0) return 0;
+
+  const prevInningIndex = inningIndex - 1;
+  const prevIsExtra = !!extraPasses[prevInningIndex];
+  const prevLastBatter = getLastActiveIndexForInning(
+    currentLineup,
+    extraPasses,
+    prevInningIndex,
+    prevIsExtra,
+  );
+  return prevLastBatter === -1
+    ? 0
+    : (prevLastBatter + 1) % DEFAULT_LINEUP_SIZE;
+}
+
+// Dernier frappeur ayant une action enregistrée dans ce passage de manche, en suivant l'ordre
+// réel d'alignement à partir du frappeur qui a commencé le passage (l'alignement peut boucler,
+// donc on ne peut pas simplement prendre le plus grand index du tableau).
+function getLastActiveIndexForInning(
+  lineup,
+  extraPasses,
+  inningIndex,
+  isExtra,
+) {
   if (!Array.isArray(lineup)) return -1;
   const inningsKey = isExtra ? "innings2" : "innings";
+  const size = DEFAULT_LINEUP_SIZE;
+  const startIndex = getPassStartIndex(
+    lineup,
+    extraPasses,
+    inningIndex,
+    isExtra,
+  );
+
   let lastIndex = -1;
-  lineup.forEach((player, index) => {
-    const stat = player?.[inningsKey]?.[inningIndex];
+  for (let step = 0; step < size; step++) {
+    const idx = (startIndex + step) % size;
+    const stat = lineup[idx]?.[inningsKey]?.[inningIndex];
     if (stat && stat.bags && stat.bags !== "field") {
-      lastIndex = index;
+      lastIndex = idx;
+    } else {
+      break;
     }
-  });
+  }
   return lastIndex;
 }
 
 // Prochain frappeur attendu pour ce passage de manche : continue l'ordre d'alignement à partir
-// du dernier frappeur ayant déjà une valeur dans ce passage, ou sinon reprend où le passage
-// précédent (2e passage de la même manche, ou manche précédente) s'est terminé.
+// du dernier frappeur ayant déjà une valeur dans ce passage, ou sinon reprend au point de départ
+// du passage (2e passage de la même manche, ou manche précédente).
 function getNextBatterIndexForInning(
   currentLineup,
   extraPasses,
@@ -422,6 +722,7 @@ function getNextBatterIndexForInning(
 
   const lastActiveInThisPass = getLastActiveIndexForInning(
     currentLineup,
+    extraPasses,
     inningIndex,
     isExtra,
   );
@@ -429,31 +730,7 @@ function getNextBatterIndexForInning(
     return (lastActiveInThisPass + 1) % DEFAULT_LINEUP_SIZE;
   }
 
-  if (isExtra) {
-    // Le 2e passage reprend directement où le passage normal de la même manche s'est arrêté.
-    const normalLastBatter = getLastActiveIndexForInning(
-      currentLineup,
-      inningIndex,
-      false,
-    );
-    return normalLastBatter === -1
-      ? -1
-      : (normalLastBatter + 1) % DEFAULT_LINEUP_SIZE;
-  }
-
-  if (inningIndex <= 0) return -1;
-  const prevInningIndex = inningIndex - 1;
-  const prevIsExtra = !!extraPasses[prevInningIndex];
-  if (!isCurrentInningClosed(prevInningIndex, prevIsExtra)) return -1;
-
-  const prevLastBatter = getLastActiveIndexForInning(
-    currentLineup,
-    prevInningIndex,
-    prevIsExtra,
-  );
-  return prevLastBatter === -1
-    ? -1
-    : (prevLastBatter + 1) % DEFAULT_LINEUP_SIZE;
+  return getPassStartIndex(currentLineup, extraPasses, inningIndex, isExtra);
 }
 
 function updatePointsLimit() {
@@ -466,6 +743,70 @@ function updatePointsLimit() {
   if (input) input.value = inningPointsLimit;
   saveGameState();
   updateLineupDisplay();
+}
+
+// Regénère les colonnes de manches du tableau de pointage pour correspondre à maxInnings.
+function renderScoreTableInningColumns() {
+  const headerRow = document.getElementById("score-header-row");
+  const awayRow = document.getElementById("away-score-row");
+  const homeRow = document.getElementById("home-score-row");
+  if (!headerRow || !awayRow || !homeRow) return;
+
+  headerRow
+    .querySelectorAll(".inning-col-header")
+    .forEach((el) => el.remove());
+  const errHeader = document.getElementById("err-total");
+  for (let i = 1; i <= maxInnings; i++) {
+    const th = document.createElement("th");
+    th.className = "inning-col-header";
+    th.id = `inning-header-${i}`;
+    th.textContent = i.toString();
+    headerRow.insertBefore(th, errHeader);
+  }
+
+  [
+    { row: awayRow, side: "away" },
+    { row: homeRow, side: "home" },
+  ].forEach(({ row, side }) => {
+    row.querySelectorAll(".inning-col").forEach((el) => el.remove());
+    const errCell = document.getElementById(`${side}-err-total`);
+    for (let i = 1; i <= maxInnings; i++) {
+      const td = document.createElement("td");
+      td.className = "inning-col";
+      td.id = `${side}-inning-${i}`;
+      td.textContent = "0";
+      row.insertBefore(td, errCell);
+    }
+  });
+
+  highlightActiveInning();
+}
+
+// Nombre de manches par défaut selon le mode (6 en mode libre, 9 en mode équipes).
+function getDefaultMaxInnings() {
+  return freeMode ? DEFAULT_MAX_INNINGS_FREE : DEFAULT_MAX_INNINGS_TEAM;
+}
+
+// Applique un nouveau nombre de manches: régénère le tableau et les états dépendants.
+function setInningsCount(count) {
+  const parsed = parseInt(count, 10);
+  maxInnings =
+    Number.isFinite(parsed) && parsed > 0 ? parsed : getDefaultMaxInnings();
+
+  const inningsCountInput = document.getElementById("innings-count-input");
+  if (inningsCountInput) inningsCountInput.value = maxInnings;
+
+  renderScoreTableInningColumns();
+  homeInningOverrides = createDefaultInningOverrides();
+  awayInningOverrides = createDefaultInningOverrides();
+}
+
+function updateInningsCount() {
+  const input = document.getElementById("innings-count-input");
+  setInningsCount(input?.value);
+  saveGameState();
+  updateLineupDisplay();
+  updateScoreDisplay();
 }
 
 // Avertit et bascule automatiquement vers l'autre équipe dès qu'une manche vient de se fermer
@@ -487,26 +828,40 @@ function notifyInningClosedIfNeeded(inningIndex, isExtra, wasClosed) {
   switchTab(currentTab === "home" ? "away" : "home");
 }
 
+// Trouve le passage actif (le premier passage non fermé, dans l'ordre chronologique) : seul ce
+// passage doit surligner un "prochain frappeur", les manches suivantes n'ont pas encore commencé.
+function findActivePass(extraPasses) {
+  for (let j = 0; j < maxInnings; j++) {
+    if (!isCurrentInningClosed(j, false)) return { inningIndex: j, isExtra: false };
+    if (extraPasses[j] && !isCurrentInningClosed(j, true)) {
+      return { inningIndex: j, isExtra: true };
+    }
+  }
+  return null;
+}
+
 // Met à jour uniquement les surlignages "dernier frappeur" / "prochain frappeur" sur les
 // cellules déjà affichées, sans reconstruire tout le tableau (évite de perdre l'état du DOM).
 function refreshInningIndicators() {
   const currentLineup = getCurrentLineup();
   const extraPasses = getCurrentExtraPasses();
+  const activePass = findActivePass(extraPasses);
 
-  for (let j = 0; j < MAX_INNINGS; j++) {
+  for (let j = 0; j < maxInnings; j++) {
     [false, true].forEach((isExtra) => {
       if (isExtra && !extraPasses[j]) return;
 
       const closed = isCurrentInningClosed(j, isExtra);
       const lastBatter = closed
-        ? getLastActiveIndexForInning(currentLineup, j, isExtra)
+        ? getLastActiveIndexForInning(currentLineup, extraPasses, j, isExtra)
         : -1;
-      const nextBatter = getNextBatterIndexForInning(
-        currentLineup,
-        extraPasses,
-        j,
-        isExtra,
-      );
+      const isActivePass =
+        activePass &&
+        activePass.inningIndex === j &&
+        activePass.isExtra === isExtra;
+      const nextBatter = isActivePass
+        ? getNextBatterIndexForInning(currentLineup, extraPasses, j, isExtra)
+        : -1;
       const suffix = isExtra ? "-ex" : "";
 
       for (let i = 0; i < DEFAULT_LINEUP_SIZE; i++) {
@@ -565,21 +920,44 @@ function countActiveOuts() {
 }
 
 function updateActiveInningInfo() {
-  const activeTeamLabel = document.getElementById("active-team-label");
   const activeInningLabel = document.getElementById("active-inning-label");
   const activeOutLabel = document.getElementById("active-out-label");
-  const activeTeamName = getActiveTeamName();
   const activeInning =
     currentInningIndex === -1
       ? "N/A"
       : `${currentInningIndex + 1}${currentInningIsExtra ? " (2e passage)" : ""}`;
   const outCount = countActiveOuts();
 
-  if (activeTeamLabel)
-    activeTeamLabel.textContent = `Équipe active: ${activeTeamName}`;
   if (activeInningLabel)
     activeInningLabel.textContent = `Manche active: ${activeInning}`;
   if (activeOutLabel) activeOutLabel.textContent = `Out (R): ${outCount}`;
+
+  highlightActiveInning();
+}
+
+// Surligne dans le tableau de pointage la colonne de la manche en cours, ainsi que la
+// cellule de l'équipe correspondant à l'onglet sélectionné (home/away).
+function highlightActiveInning() {
+  document
+    .querySelectorAll(".inning-col-header.active-inning, .inning-col.active-inning")
+    .forEach((el) => el.classList.remove("active-inning"));
+  document
+    .querySelectorAll(".inning-col.active-team-inning")
+    .forEach((el) => el.classList.remove("active-team-inning"));
+
+  if (currentInningIndex === -1) return;
+
+  const inningNumber = currentInningIndex + 1;
+  const header = document.getElementById(`inning-header-${inningNumber}`);
+  const homeCell = document.getElementById(`home-inning-${inningNumber}`);
+  const awayCell = document.getElementById(`away-inning-${inningNumber}`);
+
+  if (header) header.classList.add("active-inning");
+  if (homeCell) homeCell.classList.add("active-inning");
+  if (awayCell) awayCell.classList.add("active-inning");
+
+  const activeCell = currentTab === "home" ? homeCell : awayCell;
+  if (activeCell) activeCell.classList.add("active-team-inning");
 }
 
 function updateScoreDisplay() {
@@ -590,7 +968,7 @@ function updateScoreDisplay() {
   const homeCCTotal = countCC(homeLineup);
   const awayCCTotal = countCC(awayLineup);
 
-  for (let inning = 1; inning <= MAX_INNINGS; inning++) {
+  for (let inning = 1; inning <= maxInnings; inning++) {
     const homeInningCell = document.getElementById(`home-inning-${inning}`);
     const awayInningCell = document.getElementById(`away-inning-${inning}`);
     const homeInningPoints = calculateInningPoints(homeLineup, inning - 1);
@@ -627,71 +1005,87 @@ async function init() {
   updateTeamSelects(); // Ensure selects are updated initially
   setupDateDefaults();
 
-  homeInningOverrides = createDefaultInningOverrides();
-  awayInningOverrides = createDefaultInningOverrides();
+  // Renseigne d'abord la date/heure/équipes depuis l'URL (lien du calendrier),
+  // puis restaure le lineup sauvegardé pour cette partie précise (clé basée
+  // sur date/heure/équipes), afin que plusieurs onglets/parties ouverts en
+  // même temps ne se marchent pas dessus dans le localStorage.
+  applyGameUrlParameters();
 
-  // Restore from localStorage if available
-  const savedState = loadGameState();
-  if (savedState) {
-    freeMode = savedState.freeMode || false;
-    selectedTeam = savedState.selectedTeam;
-    selectedVisitorTeam = savedState.selectedVisitorTeam;
-    homeLineup = savedState.homeLineup || [];
-    awayLineup = savedState.awayLineup || [];
-    homeExtraPasses = savedState.homeExtraPasses || [];
-    awayExtraPasses = savedState.awayExtraPasses || [];
-    inningPointsLimit =
-      savedState.inningPointsLimit || DEFAULT_INNING_POINTS_LIMIT;
-    homeInningOverrides =
-      savedState.homeInningOverrides || createDefaultInningOverrides();
-    awayInningOverrides =
-      savedState.awayInningOverrides || createDefaultInningOverrides();
-    currentTab = savedState.currentTab || "away";
-    currentPlayerIndex = savedState.currentPlayerIndex || -1;
-    currentInningIndex = savedState.currentInningIndex || -1;
+  // Doit être appelé après applyGameUrlParameters() pour tenir compte du freeMode
+  // (mode libre = 6 manches par défaut) déterminé depuis l'URL (?free=1).
+  setInningsCount(getDefaultMaxInnings());
 
-    // Restore form values
-    if (savedState.gameDate) {
-      document.getElementById("game-date").value = savedState.gameDate;
-    }
-    if (savedState.gameTime) {
-      setGameTime(savedState.gameTime);
-    }
-
-    applyFreeModeUI();
-
-    if (freeMode) {
-      document.getElementById("team-name-input").value =
-        savedState.selectedTeam || "";
-      document.getElementById("team-name-input-visiteur").value =
-        savedState.selectedVisitorTeam || "";
-    } else {
-      if (savedState.selectedTeam) {
-        document.getElementById("team-select").value =
-          savedState.selectedTeam;
-      }
-      if (savedState.selectedVisitorTeam) {
-        document.getElementById("team-select-visiteur").value =
-          savedState.selectedVisitorTeam;
-      }
-    }
-
-    updateTeamSelects();
-    updateTabLabels();
-    document
-      .querySelectorAll(".tab-button")
-      .forEach((btn) => btn.classList.remove("active"));
-    const activeButton = document.querySelector(
-      `.tab-button[onclick="switchTab('${currentTab}')"]`,
-    );
-    if (activeButton) activeButton.classList.add("active");
-  }
+  restoreGameState();
 
   const pointsLimitInput = document.getElementById("points-limit-input");
   if (pointsLimitInput) pointsLimitInput.value = inningPointsLimit;
 
-  applyGameUrlParameters();
   updateLineupDisplay(); // Ajout de cette ligne pour afficher la liste vide au démarrage
+  updateRunnerCountDisplay();
+  updateGameStartUI();
+  refreshMemoryGamesList();
+}
+
+function restoreGameState(savedState = loadGameState()) {
+  if (!savedState) return;
+
+  // Une partie retrouvée en mémoire a nécessairement été démarrée auparavant.
+  gameStarted = true;
+  freeMode = savedState.freeMode || false;
+  selectedTeam = savedState.selectedTeam;
+  selectedVisitorTeam = savedState.selectedVisitorTeam;
+  homeLineup = savedState.homeLineup || [];
+  awayLineup = savedState.awayLineup || [];
+  homeExtraPasses = savedState.homeExtraPasses || [];
+  awayExtraPasses = savedState.awayExtraPasses || [];
+  inningPointsLimit =
+    savedState.inningPointsLimit || DEFAULT_INNING_POINTS_LIMIT;
+  setInningsCount(savedState.maxInnings || getDefaultMaxInnings());
+  homeInningOverrides =
+    savedState.homeInningOverrides || createDefaultInningOverrides();
+  awayInningOverrides =
+    savedState.awayInningOverrides || createDefaultInningOverrides();
+  homeRunnerCount = savedState.homeRunnerCount || 0;
+  awayRunnerCount = savedState.awayRunnerCount || 0;
+  currentTab = savedState.currentTab || "away";
+  currentPlayerIndex = savedState.currentPlayerIndex || -1;
+  currentInningIndex = savedState.currentInningIndex || -1;
+
+  // Restore form values
+  if (savedState.gameDate) {
+    document.getElementById("game-date").value = savedState.gameDate;
+  }
+  if (savedState.gameTime) {
+    setGameTime(savedState.gameTime);
+  }
+
+  applyFreeModeUI();
+
+  if (freeMode) {
+    document.getElementById("team-name-input").value =
+      savedState.selectedTeam || "";
+    document.getElementById("team-name-input-visiteur").value =
+      savedState.selectedVisitorTeam || "";
+  } else {
+    if (savedState.selectedTeam) {
+      document.getElementById("team-select").value = savedState.selectedTeam;
+    }
+    if (savedState.selectedVisitorTeam) {
+      document.getElementById("team-select-visiteur").value =
+        savedState.selectedVisitorTeam;
+    }
+  }
+
+  updateTeamSelects();
+  updateTabLabels();
+  document
+    .querySelectorAll(".tab-button")
+    .forEach((btn) => btn.classList.remove("active"));
+  const activeButton = document.querySelector(
+    `.tab-button[onclick="switchTab('${currentTab}')"]`,
+  );
+  if (activeButton) activeButton.classList.add("active");
+  updateGameStartUI();
 }
 
 function setupDateDefaults() {
@@ -954,34 +1348,39 @@ function updateLineupDisplay() {
   const normalLastBatterByInning = [];
   const extraClosedByInning = [];
   const extraLastBatterByInning = [];
-  for (let j = 0; j < MAX_INNINGS; j++) {
+  for (let j = 0; j < maxInnings; j++) {
     const normalClosed = isCurrentInningClosed(j, false);
     normalClosedByInning[j] = normalClosed;
     normalLastBatterByInning[j] = normalClosed
-      ? getLastActiveIndexForInning(currentLineup, j, false)
+      ? getLastActiveIndexForInning(currentLineup, extraPasses, j, false)
       : -1;
 
     const extraClosed = isCurrentInningClosed(j, true);
     extraClosedByInning[j] = extraClosed;
     extraLastBatterByInning[j] = extraClosed
-      ? getLastActiveIndexForInning(currentLineup, j, true)
+      ? getLastActiveIndexForInning(currentLineup, extraPasses, j, true)
       : -1;
   }
 
-  // Prochain frappeur attendu pour chaque passage de manche (progresse au fur et à mesure
-  // que les frappeurs précédents obtiennent une valeur, jusqu'à la fermeture de la manche).
-  const normalNextBatterByInning = Array.from({ length: MAX_INNINGS }, (_, j) =>
-    getNextBatterIndexForInning(currentLineup, extraPasses, j, false),
+  // Prochain frappeur attendu : uniquement pour le passage actif (le premier non fermé), les
+  // manches suivantes n'affichent pas de surlignage tant que leur tour n'est pas arrivé.
+  const activePass = findActivePass(extraPasses);
+  const normalNextBatterByInning = Array.from({ length: maxInnings }, (_, j) =>
+    activePass && activePass.inningIndex === j && !activePass.isExtra
+      ? getNextBatterIndexForInning(currentLineup, extraPasses, j, false)
+      : -1,
   );
-  const extraNextBatterByInning = Array.from({ length: MAX_INNINGS }, (_, j) =>
-    getNextBatterIndexForInning(currentLineup, extraPasses, j, true),
+  const extraNextBatterByInning = Array.from({ length: maxInnings }, (_, j) =>
+    activePass && activePass.inningIndex === j && activePass.isExtra
+      ? getNextBatterIndexForInning(currentLineup, extraPasses, j, true)
+      : -1,
   );
 
   const headerRow = document.createElement("div");
   headerRow.className = "lineup-header";
   headerRow.innerHTML = `
                 <div class="player-info">Joueur</div>
-                ${Array.from({ length: MAX_INNINGS }, (_, i) => {
+                ${Array.from({ length: maxInnings }, (_, i) => {
                   const isExtra = !!extraPasses[i];
                   const toggleTitle = isExtra
                     ? "Retirer le 2e passage de cette manche"
@@ -1020,6 +1419,9 @@ function updateLineupDisplay() {
                 }).join("")}
         `;
   container.appendChild(headerRow);
+
+  const rowsWrapper = document.createElement("div");
+  rowsWrapper.className = "lineup-rows";
 
   // Créer les 11 lignes de joueurs
   for (let i = 0; i < DEFAULT_LINEUP_SIZE; i++) {
@@ -1091,7 +1493,7 @@ function updateLineupDisplay() {
     row.appendChild(playerSection);
 
     // Pour chaque manche (1-9), avec un 2e passage optionnel si le lineup a fait le tour
-    for (let j = 0; j < MAX_INNINGS; j++) {
+    for (let j = 0; j < maxInnings; j++) {
       row.appendChild(
         buildInningContainer(
           currentLineup,
@@ -1118,9 +1520,10 @@ function updateLineupDisplay() {
       }
     }
 
-    container.appendChild(row);
+    rowsWrapper.appendChild(row);
   }
 
+  container.appendChild(rowsWrapper);
   updateScoreDisplay();
   updateActiveInningInfo();
 }
@@ -1168,6 +1571,9 @@ function buildInningContainer(
   if (isNextBatter && baseState === "field") {
     cell.classList.add("inning-next-batter");
     cell.title = "Prochain frappeur";
+  }
+  if (ON_BASE_STATES.includes(baseState)) {
+    cell.classList.add("on-base");
   }
 
   const img = document.createElement("img");
@@ -1240,12 +1646,12 @@ function toggleStatForInning(playerIndex, inningIndex, stat, isExtra = false) {
   const currentLineup = getCurrentLineup();
   if (!currentLineup[playerIndex]) {
     currentLineup[playerIndex] = {
-      innings: Array.from({ length: MAX_INNINGS }, () => createDefaultStats()),
+      innings: Array.from({ length: maxInnings }, () => createDefaultStats()),
     };
   }
   if (!currentLineup[playerIndex][inningsKey]) {
     currentLineup[playerIndex][inningsKey] = Array.from(
-      { length: MAX_INNINGS },
+      { length: maxInnings },
       () => createDefaultStats(),
     );
   }
@@ -1284,12 +1690,12 @@ function toggleRForInning(playerIndex, inningIndex, isExtra = false) {
   const currentLineup = getCurrentLineup();
   if (!currentLineup[playerIndex]) {
     currentLineup[playerIndex] = {
-      innings: Array.from({ length: MAX_INNINGS }, () => createDefaultStats()),
+      innings: Array.from({ length: maxInnings }, () => createDefaultStats()),
     };
   }
   if (!currentLineup[playerIndex][inningsKey]) {
     currentLineup[playerIndex][inningsKey] = Array.from(
-      { length: MAX_INNINGS },
+      { length: maxInnings },
       () => createDefaultStats(),
     );
   }
@@ -1312,6 +1718,7 @@ function toggleRForInning(playerIndex, inningIndex, isExtra = false) {
   ).find((btn) => btn.textContent === "R");
   rButton.classList.toggle("active");
   updateActiveInningInfo();
+  console.log("Refresh inning indicators after toggling R");
   refreshInningIndicators();
   notifyInningClosedIfNeeded(inningIndex, isExtra, wasClosed);
 }
@@ -1331,6 +1738,7 @@ function rotateBase(imgElement) {
 
   // Get the stats container for this cell and update button states
   const cell = imgElement.closest(".inning-cell");
+  cell.classList.toggle("on-base", ON_BASE_STATES.includes(nextBase));
   const statsContainer = cell.parentElement.querySelector(".stats-container");
   const buttons = statsContainer.querySelectorAll(".stat-button");
   const rbutton = cell.parentElement.querySelector(":scope > .stat-button");
@@ -1447,7 +1855,7 @@ function updateLineupSpot(index, playerId) {
       currentLineup[index] = {
         id: player.id,
         name: player.name,
-        innings: Array.from({ length: MAX_INNINGS }, () =>
+        innings: Array.from({ length: maxInnings }, () =>
           createDefaultStats(),
         ),
         isSubstitute: document.getElementById(`sub-${index}`)?.checked || false,
@@ -1599,7 +2007,7 @@ function buildGameData(lineup, includeNames = false, extraPasses = []) {
 
   const innings = [];
 
-  for (let inning = 0; inning < MAX_INNINGS; inning++) {
+  for (let inning = 0; inning < maxInnings; inning++) {
     const hitters = [];
     let hasValidStats = false;
 
@@ -1723,15 +2131,14 @@ async function saveJson() {
   }
 }
 
-function buildLineupFromGameData(data, teamName, lineupOnly = false) {
+function buildLineupFromGameData(data, teamName) {
   const ids = Array.isArray(data?.lineup) ? data.lineup : [];
   const nameMap = data?.players || {};
   const team = teams.find((t) => t.name === teamName);
   const teamPlayerIds = team ? new Set(team.players) : new Set();
 
   return ids.map((id) => {
-    const innings = Array.from({ length: MAX_INNINGS }, (_, inningIndex) => {
-      if (lineupOnly) return createDefaultStats();
+    const innings = Array.from({ length: maxInnings }, (_, inningIndex) => {
       const inning = Array.isArray(data?.innings)
         ? data.innings.find(
             (inn) =>
@@ -1744,8 +2151,7 @@ function buildLineupFromGameData(data, teamName, lineupOnly = false) {
       return { ...createDefaultStats(), ...stats };
     });
 
-    const innings2 = Array.from({ length: MAX_INNINGS }, (_, inningIndex) => {
-      if (lineupOnly) return createDefaultStats();
+    const innings2 = Array.from({ length: maxInnings }, (_, inningIndex) => {
       const inning = Array.isArray(data?.innings)
         ? data.innings.find(
             (inn) =>
@@ -1774,12 +2180,12 @@ function buildLineupFromGameData(data, teamName, lineupOnly = false) {
 }
 
 function getExtraPassesFromGameData(data) {
-  const extraPasses = Array.from({ length: MAX_INNINGS }, () => false);
+  const extraPasses = Array.from({ length: maxInnings }, () => false);
   if (Array.isArray(data?.innings)) {
     data.innings.forEach((inning) => {
       if (inning.pass === 2) {
         const inningIndex = parseInt(inning.value, 10) - 1;
-        if (inningIndex >= 0 && inningIndex < MAX_INNINGS) {
+        if (inningIndex >= 0 && inningIndex < maxInnings) {
           extraPasses[inningIndex] = true;
         }
       }
@@ -1827,38 +2233,51 @@ async function loadGameJson() {
     return;
   }
 
-  const lineupOnly =
-    document.getElementById("lineup-only-toggle")?.checked || false;
-
-  const results = await Promise.all(
+  const fetched = await Promise.all(
     loads.map(async ({ filename, teamName, side, label }) => {
       try {
         const response = await fetch(
           `http://127.0.0.1:5000/load?filename=${filename}`,
         );
         if (!response.ok) {
-          return `${label}: aucune partie trouvée pour cette date/heure.`;
+          return {
+            side,
+            label,
+            error: "aucune partie trouvée pour cette date/heure.",
+          };
         }
         const data = await response.json();
-        const lineup = buildLineupFromGameData(data, teamName, lineupOnly);
-        const extraPasses = lineupOnly
-          ? Array.from({ length: MAX_INNINGS }, () => false)
-          : getExtraPassesFromGameData(data);
-        if (side === "home") {
-          homeLineup = lineup;
-          homeExtraPasses = extraPasses;
-          homeInningOverrides = createDefaultInningOverrides();
-        } else {
-          awayLineup = lineup;
-          awayExtraPasses = extraPasses;
-          awayInningOverrides = createDefaultInningOverrides();
-        }
-        return `${label}: partie chargée.`;
+        return { side, label, teamName, data };
       } catch (error) {
-        return `${label}: erreur lors du chargement (${error}).`;
+        return { side, label, error: `erreur lors du chargement (${error}).` };
       }
     }),
   );
+
+  // Ajuste le nombre de manches en fonction de la partie chargée avant de reconstruire les alignements.
+  const loadedInningsCounts = fetched
+    .filter((r) => !r.error && Array.isArray(r.data?.innings))
+    .flatMap((r) => r.data.innings.map((inn) => parseInt(inn.value, 10)))
+    .filter((n) => Number.isFinite(n));
+  if (loadedInningsCounts.length > 0) {
+    setInningsCount(Math.max(maxInnings, ...loadedInningsCounts));
+  }
+
+  const results = fetched.map(({ side, label, teamName, data, error }) => {
+    if (error) return `${label}: ${error}`;
+    const lineup = buildLineupFromGameData(data, teamName);
+    const extraPasses = getExtraPassesFromGameData(data);
+    if (side === "home") {
+      homeLineup = lineup;
+      homeExtraPasses = extraPasses;
+      homeInningOverrides = createDefaultInningOverrides();
+    } else {
+      awayLineup = lineup;
+      awayExtraPasses = extraPasses;
+      awayInningOverrides = createDefaultInningOverrides();
+    }
+    return `${label}: partie chargée.`;
+  });
 
   updateLineupDisplay();
   updateScoreDisplay();

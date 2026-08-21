@@ -10,42 +10,24 @@
     <div class="container">
       <div class="game-controls">
         <div class="game-info">
-          <div class="mode-selection">
-            <label for="free-mode-toggle">
-              <input
-                type="checkbox"
-                id="free-mode-toggle"
-                onchange="toggleFreeMode()"
-              />
-              Mode libre (équipes et joueurs personnalisés)
-            </label>
-          </div>
           <div class="game-details">
-            <div class="time-details">
-              <div class="date-selection">
-                <label for="game-date">Date du match:</label>
-                <input type="date" id="game-date" />
-              </div>
-              <div class="time-selection">
-                <label for="game-time">Heure du match:</label>
-                <select id="game-time-select" onchange="saveGameState()">
-                  <option value="19h00">19h00</option>
-                  <option value="20h30">20h30</option>
-                </select>
-                <input
-                  type="time"
-                  id="game-time-input"
-                  style="display: none"
-                  onchange="saveGameState()"
-                />
-              </div>
-            </div>
             <div class="score-details">
               <div class="score-inputs">
                 <div class="active-inning-info" id="active-inning-info">
-                  <span id="active-team-label">Équipe active: Visiteur</span>
                   <span id="active-inning-label">Manche active: N/A</span>
                   <span id="active-out-label">Out (R): 0</span>
+                  <span class="points-limit-control">
+                    <label for="innings-count-input"
+                      >Nombre de manches à jouer:</label
+                    >
+                    <input
+                      type="number"
+                      id="innings-count-input"
+                      min="1"
+                      value="9"
+                      onchange="updateInningsCount()"
+                    />
+                  </span>
                   <span class="points-limit-control">
                     <label for="points-limit-input"
                       >Limite de points par manche:</label
@@ -61,27 +43,38 @@
                 </div>
               </div>
               <div class="score-table-wrapper">
+                <div class="time-details">
+                  <div class="date-selection">
+                    <label for="game-date">Date du match:</label>
+                    <input type="date" id="game-date" onchange="saveGameState()" />
+                  </div>
+                  <div class="time-selection">
+                    <label for="game-time">Heure du match:</label>
+                    <select id="game-time-select" onchange="saveGameState()">
+                      <option value="19h00">19h00</option>
+                      <option value="20h30">20h30</option>
+                    </select>
+                    <input
+                      type="time"
+                      id="game-time-input"
+                      style="display: none"
+                      onchange="saveGameState()"
+                    />
+                  </div>
+                </div>
                 <table class="score-table" id="score-table">
                   <thead>
-                    <tr>
+                    <tr id="score-header-row">
                       <th></th>
                       <th>Équipe</th>
-                      <th>1</th>
-                      <th>2</th>
-                      <th>3</th>
-                      <th>4</th>
-                      <th>5</th>
-                      <th>6</th>
-                      <th>7</th>
-                      <th>8</th>
-                      <th>9</th>
                       <th id="err-total">Err</th>
                       <th>CC</th>
                       <th>Total</th>
+                      <th>Coureurs</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <tr id="away-score-row">
                       <td><label>Visiteur</label></td>
                       <td>
                         <select
@@ -97,20 +90,18 @@
                           oninput="updateCustomTeamName('away', this.value)"
                         />
                       </td>
-                      <td id="away-inning-1">0</td>
-                      <td id="away-inning-2">0</td>
-                      <td id="away-inning-3">0</td>
-                      <td id="away-inning-4">0</td>
-                      <td id="away-inning-5">0</td>
-                      <td id="away-inning-6">0</td>
-                      <td id="away-inning-7">0</td>
-                      <td id="away-inning-8">0</td>
-                      <td id="away-inning-9">0</td>
                       <td id="away-err-total">0</td>
                       <td id="away-cc-total">0</td>
                       <td id="away-total">0</td>
+                      <td>
+                        <div class="runner-count-cell">
+                          <button type="button" onclick="decrementRunnerCount('away')">-</button>
+                          <span id="away-runner-count">0</span>
+                          <button type="button" onclick="incrementRunnerCount('away')">+</button>
+                        </div>
+                      </td>
                     </tr>
-                    <tr>
+                    <tr id="home-score-row">
                       <td><label>Local</label></td>
                       <td>
                         <select
@@ -126,37 +117,82 @@
                           oninput="updateCustomTeamName('home', this.value)"
                         />
                       </td>
-                      <td id="home-inning-1">0</td>
-                      <td id="home-inning-2">0</td>
-                      <td id="home-inning-3">0</td>
-                      <td id="home-inning-4">0</td>
-                      <td id="home-inning-5">0</td>
-                      <td id="home-inning-6">0</td>
-                      <td id="home-inning-7">0</td>
-                      <td id="home-inning-8">0</td>
-                      <td id="home-inning-9">0</td>
                       <td id="home-err-total">0</td>
                       <td id="home-cc-total">0</td>
                       <td id="home-total">0</td>
+                      <td>
+                        <div class="runner-count-cell">
+                          <button type="button" onclick="decrementRunnerCount('home')">-</button>
+                          <span id="home-runner-count">0</span>
+                          <button type="button" onclick="incrementRunnerCount('home')">+</button>
+                        </div>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
             <div class="top-actions">
-              <button id="save-top-button" onclick="saveJson()">
-                Générer et sauvegarder
-              </button>
-              <button id="load-top-button" onclick="loadGameJson()">
-                Charger une partie
-              </button>
-              <button id="reset-top-button" onclick="resetGameState()">
-                Réinitialiser
-              </button>
-              <label for="lineup-only-toggle" class="lineup-only-label">
-                <input type="checkbox" id="lineup-only-toggle" />
-                Charger seulement le lineup (sans les manches)
-              </label>
+               <div class="game-start-control">
+                <button
+                  type="button"
+                  id="start-game-button"
+                  onclick="startGame()"
+                >
+                  Démarrer la partie
+                </button>
+                <span id="game-status-label" class="game-status-label"></span>
+              </div>
+              <div class="memory-games-selection">
+                <div>
+                  <label for="memory-games-select">Parties en mémoire :</label>
+                  <select id="memory-games-select"></select>
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    id="memory-games-load-button"
+                    onclick="loadSelectedMemoryGame(false)"
+                  >
+                    Reprendre
+                  </button>
+                  <button
+                    type="button"
+                    id="memory-games-load-lineup-button"
+                    onclick="loadSelectedMemoryGame(true)"
+                  >
+                    Charger seulement le lineup
+                  </button>
+                  <button
+                    type="button"
+                    id="memory-games-delete-button"
+                    onclick="deleteSelectedMemoryGame()"
+                  >
+                    Oublier
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label for="free-mode-toggle" class="toggle-label">
+                  <input
+                    type="checkbox"
+                    id="free-mode-toggle"
+                    onchange="toggleFreeMode()"
+                  />
+                  Mode libre
+                </label>
+              </div>
+              <div class="file-actions">
+                <button id="save-top-button" onclick="saveJson()">
+                  Générer et sauvegarder (Fichier)
+                </button>
+                <button id="load-top-button" onclick="loadGameJson()">
+                  Charger une partie (Fichier)
+                </button>
+                <button id="reset-top-button" onclick="resetGameState()">
+                  Réinitialiser
+                </button>
+              </div>
             </div>
           </div>
           <div class="tabs">

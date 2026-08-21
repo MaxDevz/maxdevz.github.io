@@ -1,11 +1,16 @@
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
+  overflow: hidden;
 }
 
 .tabs {
   display: flex;
-  margin-bottom: 16px;
 }
 
 .tab-button {
@@ -30,7 +35,12 @@ body {
 .score-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 8px;
+}
+
+.score-table-wrapper{
+  display: flex;
+
 }
 
 #home-total,
@@ -45,15 +55,52 @@ body {
   border-left: 2px solid #888;
 }
 
+.runner-count-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.runner-count-cell button {
+  width: 24px;
+  cursor: pointer;
+}
+
+.runner-count-cell span {
+  display: inline-block;
+  min-width: 20px;
+  margin: 0 6px;
+  font-weight: bold;
+}
+
 .score-table th,
 .score-table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 4px 6px;
   text-align: center;
+}
+
+.score-table .inning-col-header.active-inning,
+.score-table .inning-col.active-inning {
+  background-color: #fff3cd;
+}
+
+.score-table .inning-col.active-team-inning {
+  background-color: #4caf50;
+  color: #fff;
+  font-weight: bold;
 }
 
 .container {
   display: flex;
+  height: 100%;
+}
+
+.game-controls {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
 }
 
 .field-container {
@@ -111,28 +158,15 @@ body {
 
 .game-info {
   width: 100vw;
-  position: sticky;
   background: #f5f5f5;
-  top: 0;
-  z-index: 1;
+  flex: 0 0 auto;
 }
 
 .game-details {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-}
-
-.mode-selection {
-  width: 100%;
-  text-align: center;
-  padding: 5px 0 10px;
-}
-
-.mode-selection label {
-  cursor: pointer;
-  font-weight: 600;
+  justify-content: space-evenly;
+  padding: 6px 12px;
 }
 
 .team-name-input {
@@ -143,7 +177,6 @@ body {
 }
 
 .player-name-input {
-  flex: 1;
   padding: 5px;
 }
 
@@ -161,9 +194,9 @@ body {
 }
 
 .stat-button {
-  padding: 2px 4px;
-  width: 30px;
-  font-size: 0.8em;
+  padding: 1px 1px;
+  width: 25px;
+  font-size: 0.7em;
   cursor: pointer;
   border: 1px solid #ddd;
   background: white;
@@ -185,7 +218,7 @@ body {
 }
 
 .stat-button.active:disabled {
-  background: #8fbc94;
+  background: #61ad64;
   border-color: #7ea583;
 }
 
@@ -197,6 +230,19 @@ body {
   display: flex;
   flex-direction: column;
   margin: 20px;
+  align-items: center;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.lineup-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .lineup-player {
@@ -267,7 +313,7 @@ body {
 .date-selection,
 .time-selection,
 .team-selection {
-  margin: 10px;
+  margin: 4px 10px 4px 0;
 }
 
 .spot-container {
@@ -323,8 +369,10 @@ body {
 .top-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 20px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  flex-flow: column
 }
 
 .top-actions button {
@@ -349,34 +397,93 @@ body {
   opacity: 0.95;
 }
 
-.lineup-only-label {
+.game-start-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.game-start-control button {
+  width: 170px;
+  background: #ff9800;
+}
+
+.game-start-control button:disabled {
+  background: #9e9e9e;
+  cursor: default;
+}
+
+.game-status-label {
+  width: 400px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.toggle-label {
   display: flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.memory-games-selection {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.memory-games-selection select {
+  min-width: 160px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.memory-games-selection button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #ffffff;
+  background: #2196f3;
+  width: auto;
+}
+
+#memory-games-delete-button {
+  background: #f44336;
+}
+
+.memory-games-selection button:hover {
+  opacity: 0.95;
 }
 
 .lineup-header {
   display: flex;
   align-items: stretch;
-  gap: 5px;
   margin-bottom: 5px;
   background: #f5f5f5;
   padding: 10px;
   font-weight: bold;
+  flex: 0 0 auto;
 }
 
 .lineup-header .player-info {
-  flex: 0 0 300px;
-  width: 300px;
+  flex: 0 0 310px;
+  width: 310px;
+  text-align: center;
 }
 
 .lineup-row {
   display: flex;
-  align-items: flex-start;
-  gap: 5px;
-  margin-bottom: 5px;
+  align-items: flex-center;
 }
 
 .lineup-row > .player-section {
@@ -389,6 +496,7 @@ body {
   align-items: center;
   gap: 10px;
   padding: 5px;
+  justify-content: center;
 }
 
 .player-section select {
@@ -397,8 +505,8 @@ body {
 }
 
 .inning-cell {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   background: #f5f5f5;
   border: 1px solid #ddd;
   display: flex;
@@ -426,9 +534,13 @@ body {
   box-shadow: inset 0 0 0 3px rgba(33, 150, 243, 0.6);
 }
 
+.inning-cell.on-base {
+  background: #fff9c4;
+}
+
 .inning-container-closed {
   background: #f0f0f0;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .inning-container-closed .inning-cell {
@@ -453,31 +565,30 @@ body {
 .active-inning-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   justify-content: center;
 }
 
 .active-inning-info span {
-  padding: 8px 12px;
+  padding: 4px 8px;
   background: white;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .base-image {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
 }
 
 .inning-header {
-  flex: 0 0 129px;
-  width: 129px;
+  flex: 0 0 114px;
+  width: 114px;
   text-align: center;
-  padding: 5px;
   position: relative;
 }
 
@@ -534,11 +645,11 @@ body {
 .inning-container {
   display: flex;
   flex-direction: column;
-  width: 127px;
-  flex: 0 0 127px;
+  width: 106px;
+  flex: 0 0 106px;
   align-items: center;
-  gap: 5px;
-  padding: 5px;
+  gap: 1px;
+  padding: 1px 3px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
