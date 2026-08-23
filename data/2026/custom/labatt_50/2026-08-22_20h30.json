@@ -1,0 +1,86 @@
+{
+  "lineup": [
+    -1,
+    -2,
+    -3,
+    -4,
+    -5,
+    -6,
+    -7,
+    -8,
+    -9,
+    -10,
+    -11
+  ],
+  "innings": [
+    {
+      "value": "1",
+      "hitters": [
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": -1
+        },
+        {
+          "bags": "0B",
+          "CS": false,
+          "R": true,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": -2
+        }
+      ]
+    },
+    {
+      "value": "3",
+      "hitters": [
+        {
+          "bags": "4B",
+          "CS": false,
+          "R": false,
+          "S": false,
+          "double": false,
+          "triple": false,
+          "CC": false,
+          "BB": false,
+          "OPT": false,
+          "ERR": false,
+          "SAC": false,
+          "PP": 0,
+          "id": -8
+        }
+      ]
+    }
+  ],
+  "players": {
+    "-1": "rocky morin",
+    "-2": "jeanne harriston",
+    "-3": "martin st-pierre",
+    "-4": "guylain landry",
+    "-5": "JT leblanc",
+    "-6": "jody smith",
+    "-7": "claude leblanc",
+    "-8": "PO bonin",
+    "-9": "Patrick morin",
+    "-10": "Pascal",
+    "-11": "melanie caron"
+  },
+  "team": "Labatt 50"
+}
