@@ -221,5 +221,112 @@
       ]
     }
   ],
-  "playoffs": []
+  "playoffs": [
+    {
+      "date": "2025-09-02",
+      "games": [
+        {
+          "game_number": 1,
+          "time": "19h00",
+          "home": "centrale_auto_SM",
+          "home_position": 1,
+          "away": "TBD",
+          "away_position": 4,
+          "semi_final": true
+        },
+        {
+          "game_number": 1,
+          "time": "20h30",
+          "home": "la_bouchée_d'or",
+          "home_position": 2,
+          "away": "TBD",
+          "away_position": 3,
+          "semi_final": true
+        }
+      ]
+    },
+    {
+      "date": "2025-09-09",
+      "games": [
+        {
+          "game_number": 2,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 3,
+          "away": "la_bouchée_d'or",
+          "away_position": 2,
+          "semi_final": true
+        },
+        {
+          "game_number": 2,
+          "time": "20h30",
+          "home": "TBD",
+          "home_position": 4,
+          "away": "centrale_auto_SM",
+          "away_position": 1,
+          "semi_final": true
+        }
+      ]
+    },
+    {
+      "date": "2025-09-16",
+      "games": [ 
+        {
+          "game_number": 3,
+          "time": "19h00",
+          "home": "centrale_auto_SM",
+          "home_position": 1,
+          "away": "TBD",
+          "away_position": 4,
+          "semi_final": true
+        },
+        {
+          "game_number": 3,
+          "time": "20h30",
+          "home": "la_bouchée_d'or",
+          "home_position": 2,
+          "away": "TBD",
+          "away_position": 3,
+          "semi_final": true
+        }
+      ]
+    },
+    {
+      "date": "2025-09-23",
+      "games": [
+        {
+          "game_number": 1,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0,
+          "final": true
+        },
+         {
+          "game_number": 2,
+          "time": "20h30",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0,
+          "final": true
+        }
+      ]
+    },
+    {
+      "date": "2025-09-30",
+      "games": [
+        {
+          "game_number": 3,
+          "time": "19h00",
+          "home": "TBD",
+          "home_position": 0,
+          "away": "TBD",
+          "away_position": 0,
+          "final": true
+        }
+      ]
+    }
+  ]
 }

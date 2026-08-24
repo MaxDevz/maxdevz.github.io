@@ -133,7 +133,7 @@ table .header th {
 
 .winner-img {
   max-height: 550px;
-  display: none;
+  max-width: 700px;
   margin: 10px;
   margin-bottom: 100px;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.55);
