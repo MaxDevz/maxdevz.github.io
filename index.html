@@ -53,7 +53,8 @@
       if (document.body.classList.contains("expos-page")) {
         const toolbarLink = document.querySelector(".toolbar a");
         toolbarLink.removeAttribute("href");
-        toolbarLink.querySelector("img").src = "./img/logo/Drummond_Expos_Logo.png";
+        toolbarLink.querySelector("img").src =
+          "./img/logo/Drummond_Expos_Logo.png";
       }
     </script>
     <input
@@ -94,7 +95,7 @@
           <a id="leaders" href="/?page=leaders"
             ><div>
               <i class="fas fa-star"></i>Meneurs
-              <span class="menu-badge">nouveau</span>
+              <!--span class="menu-badge">nouveau</span-->
             </div></a
           >
         </li>
@@ -135,7 +136,11 @@
         </li>
       </ul>
     </div>
-    <label for="openSidebarMenu" class="sidebarOverlay" title="Fermer le menu"></label>
+    <label
+      for="openSidebarMenu"
+      class="sidebarOverlay"
+      title="Fermer le menu"
+    ></label>
 
     <div class="content" role="main">
       <div id="page" class="page">
