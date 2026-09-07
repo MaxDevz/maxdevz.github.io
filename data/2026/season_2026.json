@@ -224,7 +224,32 @@
   ],
   "playoffs": [
     {
-      "date": "2025-09-02",
+      "date": "2026-09-02",
+      "games": [
+        {
+          "game_number": 1,
+          "time": "19h00",
+          "home": "centrale_auto_SM",
+          "home_position": 1,
+          "away": "buffet_frédéric",
+          "away_position": 4,
+          "semi_final": true,
+          "reported": "Pluie"
+        },
+        {
+          "game_number": 1,
+          "time": "20h30",
+          "home": "la_bouchée_d'or",
+          "home_position": 2,
+          "away": "bar_le_cocotier",
+          "away_position": 3,
+          "semi_final": true,
+          "reported": "Pluie"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-09",
       "games": [
         {
           "game_number": 1,
@@ -247,7 +272,7 @@
       ]
     },
     {
-      "date": "2025-09-09",
+      "date": "2026-09-16",
       "games": [
         {
           "game_number": 2,
@@ -270,8 +295,8 @@
       ]
     },
     {
-      "date": "2025-09-16",
-      "games": [ 
+      "date": "2026-09-23",
+      "games": [
         {
           "game_number": 3,
           "time": "19h00",
@@ -293,7 +318,7 @@
       ]
     },
     {
-      "date": "2025-09-23",
+      "date": "2026-09-30",
       "games": [
         {
           "game_number": 1,
@@ -304,7 +329,7 @@
           "away_position": 0,
           "final": true
         },
-         {
+        {
           "game_number": 2,
           "time": "20h30",
           "home": "TBD",
@@ -316,7 +341,7 @@
       ]
     },
     {
-      "date": "2025-09-30",
+      "date": "2026-10-07",
       "games": [
         {
           "game_number": 3,
