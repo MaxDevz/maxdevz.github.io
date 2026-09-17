@@ -19,7 +19,7 @@
       "ptsAgainst": 140,
       "ptsFor": 161,
       "record": "7-5-0",
-      "semiFinal": 0
+      "semiFinal": 1
     },
     {
       "final": 0,
@@ -28,7 +28,7 @@
       "ptsAgainst": 172,
       "ptsFor": 157,
       "record": "3-8-1",
-      "semiFinal": 0
+      "semiFinal": 1
     },
     {
       "final": 0,
@@ -302,33 +302,28 @@
         {
           "game_number": 1,
           "time": "19h00",
-          "home": "TBD",
-          "home_position": 0,
-          "away": "TBD",
-          "away_position": 0,
+          "home": "la_bouchée_d'or",
+          "home_position": 2,
+          "away": "buffet_frédéric",
+          "away_position": 4,
           "final": true
         },
         {
           "game_number": 2,
-          "time": "20h30",
-          "home": "TBD",
-          "home_position": 0,
-          "away": "TBD",
-          "away_position": 0,
+          "time": "20h00",
+          "home": "buffet_frédéric",
+          "home_position": 4,
+          "away": "la_bouchée_d'or",
+          "away_position": 2,
           "final": true
-        }
-      ]
-    },
-    {
-      "date": "2026-09-30",
-      "games": [
+        },
         {
           "game_number": 3,
-          "time": "19h00",
-          "home": "TBD",
-          "home_position": 0,
-          "away": "TBD",
-          "away_position": 0,
+          "time": "21h00",
+          "home": "la_bouchée_d'or",
+          "home_position": 2,
+          "away": "buffet_frédéric",
+          "away_position": 4,
           "final": true
         }
       ]
